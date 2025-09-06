@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxury Cottage with Mountain View - ChakaBNB</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .amenity-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+        }
+        .gallery-image {
+            transition: transform 0.3s ease;
+        }
+        .gallery-image:hover {
+            transform: scale(1.03);
+        }
+        .booking-panel {
+            box-shadow: 0 4px 20px rgba(0, 59, 149, 0.15);
+        }
+        .tab-active {
+            border-bottom: 3px solid #003B95;
+            color: #003B95;
+        }
+        
+        /* Notification animations */
+        #notification {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        #notification.show {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="index.html">
+                            <img src="logo.png" alt="ChakaBNB Logo" class="h-36 w-auto">
+                        </a>
+                    </div>
+                </div>
+                <div class="hidden md:ml-6 md:flex md:items-center md:space-x-8">
+                    <a href="list-property.html" id="list-property-link" class="text-gray-900 hover:text-[#003B95] px-3 py-2 text-sm font-medium">List your property</a>
+                    
+                    <!-- Currency Selector -->
+                    <div class="relative">
+                        <select id="currency-selector" class="appearance-none bg-transparent border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 hover:border-[#003B95] focus:outline-none focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] cursor-pointer">
+                            <option value="USD">$ USD</option>
+                            <option value="KES">KES</option>
+                            <option value="EUR">€ EUR</option>
+                            <option value="GBP">£ GBP</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                            <i data-feather="chevron-down" class="h-4 w-4 text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- User status indicator -->
+                    <div id="user-status" class="hidden">
+                        <span id="user-name-display" class="text-sm text-gray-600"></span>
+                    </div>
+                    
+                    <a href="login.html" id="login-link" class="bg-[#003B95] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#002b70]">Sign in</a>
+                    <button class="bg-[#4CAF50] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#45a049]">Book now</button>
+                </div>
+                <div class="-mr-2 flex items-center md:hidden">
+                    <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
+                        <i data-feather="menu"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Notification Container -->
+    <div id="notification" class="fixed top-4 right-4 z-50 hidden">
+        <div class="bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg max-w-sm">
+            <div class="flex items-start space-x-3">
+                <i data-feather="alert-circle" class="h-5 w-5 mt-0.5"></i>
+                <div class="flex-1">
+                    <p id="notification-message" class="text-sm font-medium">Please log in to list your property.</p>
+                    <div class="mt-3 flex space-x-2">
+                        <a href="login.html" class="bg-white text-red-500 px-3 py-1 rounded text-xs font-medium hover:bg-gray-100 transition-colors">
+                            Login Now
+                        </a>
+                        <button onclick="closeNotification()" class="text-white hover:text-gray-200 text-xs">
+                            Dismiss
+                        </button>
+                    </div>
+                </div>
+                <button onclick="closeNotification()" class="text-white hover:text-gray-200 ml-2">
+                    <i data-feather="x" class="h-4 w-4"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Property Header -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        <div class="mb-4">
+            <a href="index.html" class="text-sm font-medium text-[#003B95] hover:text-[#002b70] flex items-center">
+                <i data-feather="arrow-left" class="mr-1"></i>
+                Back to Search
+            </a>
+        </div>
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Luxury Cottage with Mountain View</h1>
+            <div class="mt-2 flex items-center">
+                <div class="flex items-center">
+                    <i data-feather="star" class="text-yellow-400 fill-current"></i>
+                    <span class="ml-1 text-gray-900 font-medium">4.9</span>
+                    <span class="mx-1 text-gray-500">·</span>
+                    <a href="#reviews" class="text-gray-600 hover:underline">24 reviews</a>
+                    <span class="mx-1 text-gray-500">·</span>
+                    <div class="flex items-center">
+                        <i data-feather="map-pin" class="text-gray-400"></i>
+                        <span class="ml-1 text-gray-600">Chaka Town, Nyeri</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Gallery -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div class="md:col-span-2 row-span-2 rounded-xl overflow-hidden">
+                <img src="http://static.photos/indoor/1200x630/5" alt="Cottage exterior" class="w-full h-full object-cover gallery-image">
+            </div>
+            <div class="rounded-xl overflow-hidden">
+                <img src="http://static.photos/indoor/640x360/8" alt="Living room" class="w-full h-full object-cover gallery-image">
+            </div>
+            <div class="rounded-xl overflow-hidden">
+                <img src="http://static.photos/indoor/640x360/9" alt="Bedroom" class="w-full h-full object-cover gallery-image">
+            </div>
+            <div class="rounded-xl overflow-hidden">
+                <img src="http://static.photos/outdoor/640x360/10" alt="Mountain view" class="w-full h-full object-cover gallery-image">
+            </div>
+            <div class="rounded-xl overflow-hidden">
+                <img src="http://static.photos/indoor/640x360/11" alt="Kitchen" class="w-full h-full object-cover gallery-image">
+            </div>
+        </div>
+        <div class="mt-3 text-right">
+            <button class="text-sm font-medium text-gray-700 hover:text-[#003B95] flex items-center">
+                <i data-feather="image" class="mr-1"></i> Show all photos
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        <div class="lg:grid lg:grid-cols-3 lg:gap-8">
+            <!-- Left Column -->
+            <div class="lg:col-span-2">
+                <!-- Property Details -->
+                <div class="border-b border-gray-200 pb-8">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900">Entire cottage hosted by James</h2>
+                            <p class="mt-1 text-gray-600">4 guests · 2 bedrooms · 2 beds · 1 bath</p>
+                        </div>
+                        <img src="http://static.photos/people/200x200/1" alt="Host" class="w-12 h-12 rounded-full">
+                    </div>
+                    
+                    <div class="mt-6 grid grid-cols-2 gap-4">
+                        <div class="flex items-center">
+                            <i data-feather="home" class="text-[#4CAF50]"></i>
+                            <span class="ml-2 text-gray-700">Entire home</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i data-feather="star" class="text-[#4CAF50]"></i>
+                            <span class="ml-2 text-gray-700">Enhanced clean</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i data-feather="map-pin" class="text-[#4CAF50]"></i>
+                            <span class="ml-2 text-gray-700">Great location</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i data-feather="clock" class="text-[#4CAF50]"></i>
+                            <span class="ml-2 text-gray-700">Self check-in</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Property Description -->
+                <div class="border-b border-gray-200 py-8">
+                    <h3 class="text-xl font-bold text-gray-900">About this place</h3>
+                    <p class="mt-4 text-gray-700">
+                        Nestled in the scenic hills of Chaka Town, this luxury cottage offers breathtaking views of Mount Kenya. 
+                        The space features a fully equipped kitchen, cozy living area with fireplace, and two comfortable bedrooms. 
+                        Enjoy your morning coffee on the private terrace while taking in the fresh mountain air.
+                    </p>
+                    <p class="mt-4 text-gray-700">
+                        Located just 15 minutes from Solio Game Reserve, this is the perfect base for wildlife enthusiasts 
+                        and those looking to explore the natural beauty of Nyeri County.
+                    </p>
+                    
+                    <div class="mt-6">
+                        <button class="flex items-center text-sm font-medium text-[#003B95] hover:text-[#002b70]">
+                            <span>Show more</span>
+                            <i data-feather="chevron-down" class="ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Amenities -->
+                <div class="border-b border-gray-200 py-8">
+                    <h3 class="text-xl font-bold text-gray-900">What this place offers</h3>
+                    
+                    <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="flex items-center">
+                            <i data-feather="wifi" class="text-[#003B95] amenity-icon"></i>
+                            <span class="text-gray-700">Free WiFi</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i data-feather="tv" class="text-[#003B95] amenity-icon"></i>
+                            <span class="text-gray-700">Smart TV</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i data-feather="coffee" class="text-[#003B95] amenity-icon"></i>
+                            <span class="text-gray-700">Coffee maker</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i data-feather="wind" class="text-[#003B95] amenity-icon"></i>
+                            <span class="text-gray-700">Air conditioning</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i data-feather="home" class="text-[#003B95] amenity-icon"></i>
+                            <span class="text-gray-700">Private terrace</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i data-feather="umbrella" class="text-[#003B95] amenity-icon"></i>
+                            <span class="text-gray-700">Outdoor furniture</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i data-feather="lock" class="text-[#003B95] amenity-icon"></i>
+                            <span class="text-gray-700">Safe</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i data-feather="parking" class="text-[#003B95] amenity-icon"></i>
+                            <span class="text-gray-700">Free parking</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <button class="flex items-center text-sm font-medium text-[#003B95] hover:text-[#002b70]">
+                            <span>Show all amenities</span>
+                            <i data-feather="chevron-down" class="ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Sleeping Arrangements -->
+                <div class="border-b border-gray-200 py-8">
+                    <h3 class="text-xl font-bold text-gray-900">Sleeping arrangements</h3>
+                    
+                    <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <i data-feather="home" class="text-[#8B4513] w-8 h-8"></i>
+                            <h4 class="mt-2 font-medium text-gray-900">Bedroom 1</h4>
+                            <p class="mt-1 text-gray-600">1 queen bed</p>
+                        </div>
+                        <div>
+                            <i data-feather="home" class="text-[#8B4513] w-8 h-8"></i>
+                            <h4 class="mt-2 font-medium text-gray-900">Bedroom 2</h4>
+                            <p class="mt-1 text-gray-600">2 single beds</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Location -->
+                <div class="border-b border-gray-200 py-8" id="location">
+                    <h3 class="text-xl font-bold text-gray-900">Location</h3>
+                    <p class="mt-2 text-gray-700">Chaka Town, Nyeri County, Kenya</p>
+                    
+                    <div class="mt-6 rounded-xl overflow-hidden h-96 bg-gray-200">
+                        <!-- Map placeholder -->
+                        <div class="w-full h-full flex items-center justify-center bg-gray-300">
+                            <i data-feather="map" class="w-16 h-16 text-gray-500"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h4 class="font-medium text-gray-900">Getting around</h4>
+                        <p class="mt-1 text-gray-600">
+                            The cottage is located 5km from Chaka Town center. We recommend having a car for easy access 
+                            to local attractions. Taxis and boda-bodas (motorcycle taxis) are also available.
+                        </p>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <h4 class="font-medium text-gray-900">Nearby attractions</h4>
+                        <div class="mt-2 space-y-2">
+                            <div class="flex items-center">
+                                <i data-feather="map-pin" class="text-[#4CAF50] w-4 h-4"></i>
+                                <span class="ml-2 text-gray-700">Solio Game Reserve - 15km</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i data-feather="map-pin" class="text-[#4CAF50] w-4 h-4"></i>
+                                <span class="ml-2 text-gray-700">Baden-Powell Museum - 8km</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i data-feather="map-pin" class="text-[#4CAF50] w-4 h-4"></i>
+                                <span class="ml-2 text-gray-700">Nyeri Town - 25km</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Host -->
+                <div class="border-b border-gray-200 py-8">
+                    <div class="flex items-start">
+                        <img src="http://static.photos/people/200x200/1" alt="Host" class="w-16 h-16 rounded-full">
+                        <div class="ml-4">
+                            <h3 class="text-xl font-bold text-gray-900">Hosted by James</h3>
+                            <p class="mt-1 text-gray-600">Joined in 2018</p>
+                            
+                            <div class="mt-4 flex items-center">
+                                <i data-feather="star" class="text-yellow-400 fill-current"></i>
+                                <span class="ml-1 text-gray-900">24 reviews</span>
+                                <span class="mx-2 text-gray-400">·</span>
+                                <i data-feather="check-circle" class="text-[#4CAF50]"></i>
+                                <span class="ml-1 text-gray-900">Identity verified</span>
+                            </div>
+                            
+                            <p class="mt-4 text-gray-700">
+                                Hi, I'm James! I've lived in Chaka Town for over 10 years and love sharing the beauty of this area with visitors. 
+                                I'm happy to provide recommendations for local restaurants, activities, and hidden gems.
+                            </p>
+                            
+                            <div class="mt-4">
+                                <span class="text-sm text-gray-500">Response rate: 100%</span>
+                                <span class="mx-2 text-gray-400">·</span>
+                                <span class="text-sm text-gray-500">Response time: within an hour</span>
+                            </div>
+                            
+                            <button class="mt-6 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-2 px-4 rounded-md shadow-sm">
+                                Contact host
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Reviews -->
+                <div class="py-8" id="reviews">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-xl font-bold text-gray-900">
+                            <i data-feather="star" class="text-yellow-400 fill-current inline"></i>
+                            <span class="ml-1">4.9 · 24 reviews</span>
+                        </h3>
+                        <button class="text-sm font-medium text-[#003B95] hover:text-[#002b70]">
+                            See all reviews
+                        </button>
+                    </div>
+                    
+                    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Review 1 -->
+                        <div>
+                            <div class="flex items-center">
+                                <img src="http://static.photos/people/200x200/2" alt="Reviewer" class="w-12 h-12 rounded-full">
+                                <div class="ml-4">
+                                    <h4 class="font-medium text-gray-900">Sarah</h4>
+                                    <p class="text-sm text-gray-500">March 2023</p>
+                                </div>
+                            </div>
+                            <p class="mt-4 text-gray-700">
+                                The cottage was even more beautiful than the photos! Waking up to the mountain views was incredible. 
+                                James was a wonderful host who gave us great tips for exploring the area.
+                            </p>
+                        </div>
+                        
+                        <!-- Review 2 -->
+                        <div>
+                            <div class="flex items-center">
+                                <img src="http://static.photos/people/200x200/3" alt="Reviewer" class="w-12 h-12 rounded-full">
+                                <div class="ml-4">
+                                    <h4 class="font-medium text-gray-900">Michael</h4>
+                                    <p class="text-sm text-gray-500">January 2023</p>
+                                </div>
+                            </div>
+                            <p class="mt-4 text-gray-700">
+                                Perfect location for visiting Solio Reserve. The cottage had everything we needed and was spotlessly clean. 
+                                The terrace was our favorite spot for evening drinks.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Things to Know -->
+                <div class="border-t border-gray-200 py-8">
+                    <h3 class="text-xl font-bold text-gray-900">Things to know</h3>
+                    
+                    <div class="mt-6">
+                        <div class="border-b border-gray-200">
+                            <div class="flex justify-between items-center py-4 cursor-pointer">
+                                <h4 class="font-medium text-gray-900">House rules</h4>
+                                <i data-feather="chevron-down" class="text-gray-500"></i>
+                            </div>
+                            <div class="pb-4 hidden">
+                                <p class="text-gray-700">Check-in: After 2:00 PM</p>
+                                <p class="mt-2 text-gray-700">Checkout: 11:00 AM</p>
+                                <p class="mt-2 text-gray-700">No smoking</p>
+                                <p class="mt-2 text-gray-700">No pets</p>
+                                <p class="mt-2 text-gray-700">No parties or events</p>
+                            </div>
+                        </div>
+                        
+                        <div class="border-b border-gray-200">
+                            <div class="flex justify-between items-center py-4 cursor-pointer">
+                                <h4 class="font-medium text-gray-900">Safety & property</h4>
+                                <i data-feather="chevron-down" class="text-gray-500"></i>
+                            </div>
+                            <div class="pb-4 hidden">
+                                <p class="text-gray-700">Security camera/recording device</p>
+                                <p class="mt-2 text-gray-700">Carbon monoxide alarm</p>
+                                <p class="mt-2 text-gray-700">Smoke alarm</p>
+                            </div>
+                        </div>
+                        
+                        <div class="border-b border-gray-200">
+                            <div class="flex justify-between items-center py-4 cursor-pointer">
+                                <h4 class="font-medium text-gray-900">Cancellation policy</h4>
+                                <i data-feather="chevron-down" class="text-gray-500"></i>
+                            </div>
+                            <div class="pb-4 hidden">
+                                <p class="text-gray-700">Free cancellation for 48 hours</p>
+                                <p class="mt-2 text-gray-700">After that, cancel before 7 days before check-in for a partial refund</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column - Booking Panel -->
+            <div class="mt-8 lg:mt-0 lg:col-span-1">
+                <div class="bg-white rounded-xl booking-panel p-6 sticky top-6">
+                    <div class="flex justify-between items-baseline">
+                        <p class="text-2xl font-bold text-gray-900">KSh 5,500 <span class="text-base font-normal text-gray-600">night</span></p>
+                        <div class="flex items-center">
+                            <i data-feather="star" class="text-yellow-400 fill-current"></i>
+                            <span class="ml-1 text-gray-900">4.9</span>
+                            <span class="mx-1 text-gray-500">·</span>
+                            <a href="#reviews" class="text-gray-600 hover:underline">24 reviews</a>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label for="check-in-detail" class="block text-xs font-medium text-gray-700 uppercase">Check-in</label>
+                                <input type="date" id="check-in-detail" class="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 text-sm">
+                            </div>
+                            <div>
+                                <label for="check-out-detail" class="block text-xs font-medium text-gray-700 uppercase">Check-out</label>
+                                <input type="date" id="check-out-detail" class="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 text-sm">
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <label for="guests-detail" class="block text-xs font-medium text-gray-700 uppercase">Guests</label>
+                            <select id="guests-detail" class="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 text-sm">
+                                <option>1 guest</option>
+                                <option>2 guests</option>
+                                <option>3 guests</option>
+                                <option>4 guests</option>
+                            </select>
+                        </div>
+                        
+                        <button class="mt-6 w-full bg-[#FFB700] hover:bg-[#e6a500] text-white font-medium py-3 px-4 rounded-md shadow-sm">
+                            Check availability
+                        </button>
+                        
+                        <div class="mt-4 text-center text-sm text-gray-600">
+                            You won't be charged yet
+                        </div>
+                        
+                        <div class="mt-6 space-y-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-700">KSh 5,500 x 5 nights</span>
+                                <span class="text-gray-900">KSh 27,500</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-700">Service fee</span>
+                                <span class="text-gray-900">KSh 3,850</span>
+                            </div>
+                            <div class="border-t border-gray-200 pt-4 flex justify-between font-bold">
+                                <span class="text-gray-900">Total</span>
+                                <span class="text-gray-900">KSh 31,350</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white mt-16">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Explore</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Destinations</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Experiences</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Travel Guides</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Special Offers</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Company</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Careers</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Press</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Support</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Safety Information</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Cancellation Options</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Report Issue</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Connect</h3>
+                    <div class="mt-4 flex space-x-6">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i data-feather="facebook" class="h-6 w-6"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i data-feather="instagram" class="h-6 w-6"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i data-feather="twitter" class="h-6 w-6"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i data-feather="youtube" class="h-6 w-6"></i>
+                        </a>
+                    </div>
+                    <div class="mt-6">
+                        <p class="text-sm text-gray-400">Download our app</p>
+                        <div class="mt-2 flex space-x-4">
+                            <a href="#" class="flex items-center">
+                                <i data-feather="smartphone" class="mr-2"></i>
+                                <span class="text-sm">App Store</span>
+                            </a>
+                            <a href="#" class="flex items-center">
+                                <i data-feather="smartphone" class="mr-2"></i>
+                                <span class="text-sm">Google Play</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 border-t border-gray-800 pt-8">
+                <div class="md:flex md:items-center md:justify-between">
+                    <div class="flex space-x-6 md:order-2">
+                        <a href="#" class="text-sm text-gray-400 hover:text-white">Privacy</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white">Terms</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white">Cookie Policy</a>
+                    </div>
+                    <p class="mt-8 text-base text-gray-400 md:mt-0 md:order-1">
+                        &copy; 2023 ChakaBNB. All rights reserved.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+        feather.replace();
+        
+        // Toggle accordion items
+        document.querySelectorAll('.border-b.border-gray-200 > div').forEach(item => {
+            item.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                const icon = this.querySelector('i');
+                
+                if (content.classList.contains('hidden')) {
+                    content.classList.remove('hidden');
+                    icon.setAttribute('data-feather', 'chevron-up');
+                } else {
+                    content.classList.add('hidden');
+                    icon.setAttribute('data-feather', 'chevron-down');
+                }
+                feather.replace();
+            });
+        });
+        
+        // Load saved currency preference on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
+            if (document.getElementById('currency-selector')) {
+                document.getElementById('currency-selector').value = savedCurrency;
+                updatePrices(savedCurrency);
+            }
+            
+            // Check if user is logged in and update navigation
+            updateUserNavigation();
+            
+            // Check list property access
+            checkListPropertyAccess();
+        });
+        
+        // Function to update navigation based on login status
+        function updateUserNavigation() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const userName = localStorage.getItem('userName');
+            const userStatus = document.getElementById('user-status');
+            const userNameDisplay = document.getElementById('user-name-display');
+            const loginLink = document.getElementById('login-link');
+            
+            if (isLoggedIn && userName) {
+                // User is logged in
+                userStatus.classList.remove('hidden');
+                userNameDisplay.textContent = `Welcome, ${userName}`;
+                userNameDisplay.className = 'text-sm text-green-600 font-medium';
+                loginLink.textContent = 'Sign out';
+                loginLink.href = '#';
+                loginLink.onclick = function() {
+                    localStorage.removeItem('isLoggedIn');
+                    localStorage.removeItem('userName');
+                    localStorage.removeItem('userEmail');
+                    window.location.reload();
+                };
+            } else {
+                // User is not logged in
+                userStatus.classList.add('hidden');
+                loginLink.textContent = 'Sign in';
+                loginLink.href = 'login.html';
+                loginLink.onclick = null;
+            }
+        }
+        
+        // Notification functions
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const messageElement = document.getElementById('notification-message');
+            
+            messageElement.textContent = message;
+            notification.classList.remove('hidden');
+            
+            // Trigger animation
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            // Auto-hide after 8 seconds
+            setTimeout(() => {
+                closeNotification();
+            }, 8000);
+        }
+        
+        function closeNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.remove('show');
+            
+            // Hide after animation completes
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 300);
+        }
+        
+        // Check login requirement for list property link
+        function checkListPropertyAccess() {
+            const listPropertyLink = document.getElementById('list-property-link');
+            listPropertyLink.addEventListener('click', function(e) {
+                const isLoggedIn = localStorage.getItem('isLoggedIn');
+                if (!isLoggedIn) {
+                    e.preventDefault();
+                    showNotification('Please log in to list your property.');
+                }
+            });
+        }
+        
+        // Currency conversion functionality
+        function updatePrices(currency) {
+            const exchangeRates = {
+                'USD': 1,
+                'KES': 130,
+                'EUR': 0.85,
+                'GBP': 0.73
+            };
+            
+            const rate = exchangeRates[currency] || 1;
+            const symbols = {
+                'USD': '$',
+                'KES': 'KSh ',
+                'EUR': '€',
+                'GBP': '£'
+            };
+            
+            const symbol = symbols[currency] || '$';
+            
+            // Update price elements
+            document.querySelectorAll('[data-price]').forEach(element => {
+                const originalPrice = parseFloat(element.getAttribute('data-price'));
+                if (!isNaN(originalPrice)) {
+                    const convertedPrice = originalPrice * rate;
+                    element.textContent = `${symbol}${convertedPrice.toFixed(2)}`;
+                }
+            });
+        }
+        
+        // Currency selector event listener
+        if (document.getElementById('currency-selector')) {
+            document.getElementById('currency-selector').addEventListener('change', function() {
+                const selectedCurrency = this.value;
+                localStorage.setItem('selectedCurrency', selectedCurrency);
+                updatePrices(selectedCurrency);
+            });
+        }
+    </script>
+</body>
+</html>

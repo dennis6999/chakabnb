@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChakaBNB - Book Unique Stays in Chaka Town</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #003B95 0%, #4CAF50 100%);
+        }
+        
+        /* Notification animations */
+        #notification {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        #notification.show {
+            transform: translateX(0);
+        }
+        
+        /* Horizontal scroll styles */
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .scroll-button {
+            transition: all 0.3s ease;
+        }
+        .amenity-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+        }
+        .property-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 59, 149, 0.2);
+        }
+        .deal-badge {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <img src="logo.png" alt="ChakaBNB Logo" class="h-36 w-auto">
+                    </div>
+                </div>
+                <div class="hidden md:ml-6 md:flex md:items-center md:space-x-8">
+                    <a href="list-property.html" id="list-property-link" class="text-gray-900 hover:text-[#003B95] px-3 py-2 text-sm font-medium">List your property</a>
+                    
+                    <!-- Currency Selector -->
+                    <div class="relative">
+                        <select id="currency-selector" class="appearance-none bg-transparent border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 hover:border-[#003B95] focus:outline-none focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] cursor-pointer">
+                            <option value="USD">$ USD</option>
+                            <option value="KES">KES</option>
+                            <option value="EUR">€ EUR</option>
+                            <option value="GBP">£ GBP</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                            <i data-feather="chevron-down" class="h-4 w-4 text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- User status indicator -->
+                    <div id="user-status" class="hidden">
+                        <span id="user-name-display" class="text-sm text-gray-600"></span>
+                    </div>
+                    
+                    <a href="login.html" id="login-link" class="bg-[#003B95] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#002b70]">Sign in</a>
+                </div>
+                <div class="-mr-2 flex items-center md:hidden">
+                    <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
+                        <i data-feather="menu"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Notification Container -->
+    <div id="notification" class="fixed top-4 right-4 z-50 hidden">
+        <div class="bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg max-w-sm">
+            <div class="flex items-start space-x-3">
+                <i data-feather="alert-circle" class="h-5 w-5 mt-0.5"></i>
+                <div class="flex-1">
+                    <p id="notification-message" class="text-sm font-medium">Please log in to list your property.</p>
+                    <div class="mt-3 flex space-x-2">
+                        <a href="login.html" class="bg-white text-red-500 px-3 py-1 rounded text-xs font-medium hover:bg-gray-100 transition-colors">
+                            Login Now
+                        </a>
+                        <button onclick="closeNotification()" class="text-white hover:text-gray-200 text-xs">
+                            Dismiss
+                        </button>
+                    </div>
+                </div>
+                <button onclick="closeNotification()" class="text-white hover:text-gray-200 ml-2">
+                    <i data-feather="x" class="h-4 w-4"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section with Search -->
+    <div class="hero-gradient py-16 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center">
+                <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
+                    Find your perfect stay in Chaka Town
+                </h1>
+                <p class="mt-3 max-w-md mx-auto text-lg text-white sm:text-xl md:mt-5 md:max-w-3xl">
+                    Discover unique accommodations near Solio Game Reserve, Baden-Powell Museum and more
+                </p>
+            </div>
+
+            <!-- Compact Search Widget -->
+            <div class="mt-10 bg-white rounded-xl shadow-lg p-6 max-w-4xl mx-auto" data-aos="fade-up">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <!-- Location Field -->
+                    <div class="md:col-span-2">
+                        <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Where are you going?</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-feather="map-pin" class="h-4 w-4 text-[#003B95]"></i>
+                            </div>
+                            <input type="text" name="location" id="location" 
+                                   class="w-full pl-10 pr-3 py-3 text-gray-900 placeholder-gray-500 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200" 
+                                   placeholder="Chaka Town, Nyeri" value="Chaka Town, Nyeri">
+                        </div>
+                    </div>
+                    
+                    <!-- Check-in Field -->
+                    <div>
+                        <label for="check-in" class="block text-sm font-medium text-gray-700 mb-1">Check-in</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-feather="calendar" class="h-4 w-4 text-[#003B95]"></i>
+                            </div>
+                            <input type="date" name="check-in" id="check-in" 
+                                   class="w-full pl-10 pr-3 py-3 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200">
+                        </div>
+                    </div>
+                    
+                    <!-- Check-out Field -->
+                    <div>
+                        <label for="check-out" class="block text-sm font-medium text-gray-700 mb-1">Check-out</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-feather="calendar" class="h-4 w-4 text-[#003B95]"></i>
+                            </div>
+                            <input type="date" name="check-out" id="check-out" 
+                                   class="w-full pl-10 pr-3 py-3 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <!-- Guests Field -->
+                    <div>
+                        <label for="guests" class="block text-sm font-medium text-gray-700 mb-1">Guests</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-feather="users" class="h-4 w-4 text-[#003B95]"></i>
+                            </div>
+                            <select id="guests" name="guests" class="w-full pl-10 pr-8 py-3 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200 appearance-none">
+                                <option>1 guest</option>
+                                <option>2 guests</option>
+                                <option>3 guests</option>
+                                <option>4+ guests</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i data-feather="chevron-down" class="h-4 w-4 text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Trip Type Field -->
+                    <div>
+                        <label for="trip-type" class="block text-sm font-medium text-gray-700 mb-1">Trip Type</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-feather="briefcase" class="h-4 w-4 text-[#003B95]"></i>
+                            </div>
+                            <select id="trip-type" name="trip-type" class="w-full pl-10 pr-8 py-3 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200 appearance-none">
+                                <option>Leisure</option>
+                                <option>Business</option>
+                                <option>Family</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i data-feather="chevron-down" class="h-4 w-4 text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Price Range Field -->
+                    <div>
+                        <label for="price-range" class="block text-sm font-medium text-gray-700 mb-1">Price Range</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-feather="dollar-sign" class="h-4 w-4 text-[#003B95]"></i>
+                            </div>
+                            <select id="price-range" name="price-range" class="w-full pl-10 pr-8 py-3 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200 appearance-none">
+                                <option>Any price</option>
+                                <option>Under $50</option>
+                                <option>$50 - $100</option>
+                                <option>$100 - $200</option>
+                                <option>$200+</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i data-feather="chevron-down" class="h-4 w-4 text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Search Button -->
+                    <div class="flex items-end">
+                        <button type="button" class="w-full bg-gradient-to-r from-[#003B95] to-[#4CAF50] hover:from-[#002b70] hover:to-[#45a049] text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center space-x-2">
+                            <i data-feather="search" class="h-4 w-4"></i>
+                            <span>Search</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Quick Filters -->
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-sm font-medium text-gray-600">Quick filters:</span>
+                        <button class="px-3 py-1.5 bg-gray-100 hover:bg-[#003B95] hover:text-white text-gray-600 rounded-full text-xs font-medium transition-all duration-200">
+                            <i data-feather="wifi" class="h-3 w-3 inline mr-1"></i>
+                            WiFi
+                        </button>
+                        <button class="px-3 py-1.5 bg-gray-100 hover:bg-[#003B95] hover:text-white text-gray-600 rounded-full text-xs font-medium transition-all duration-200">
+                            <i data-feather="car" class="h-3 w-3 inline mr-1"></i>
+                            Parking
+                        </button>
+                        <button class="px-3 py-1.5 bg-gray-100 hover:bg-[#003B95] hover:text-white text-gray-600 rounded-full text-xs font-medium transition-all duration-200">
+                            <i data-feather="coffee" class="h-3 w-3 inline mr-1"></i>
+                            Breakfast
+                        </button>
+                        <button class="px-3 py-1.5 bg-gray-100 hover:bg-[#003B95] hover:text-white text-gray-600 rounded-full text-xs font-medium transition-all duration-200">
+                            <i data-feather="shield" class="h-3 w-3 inline mr-1"></i>
+                            Security
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popular Destinations -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-900">Explore Chaka Town</h2>
+            <p class="mt-2 text-lg text-gray-600">Discover these popular attractions near your stay</p>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Destination 1 -->
+            <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300" data-aos="fade-up">
+                <img src="http://static.photos/nature/640x360/1" alt="Solio Game Reserve" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Solio Game Reserve</h3>
+                    <p class="mt-1 text-sm text-gray-600">Home to rhinos, lions and other wildlife</p>
+                    <div class="mt-2 flex items-center">
+                        <i data-feather="map-pin" class="text-[#4CAF50] mr-1"></i>
+                        <span class="text-xs text-gray-500">15 km from Chaka Town</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Destination 2 -->
+            <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300" data-aos="fade-up" data-aos-delay="100">
+                <img src="http://static.photos/travel/640x360/2" alt="Baden-Powell Museum" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Baden-Powell Museum</h3>
+                    <p class="mt-1 text-sm text-gray-600">Scouting history and cultural exhibits</p>
+                    <div class="mt-2 flex items-center">
+                        <i data-feather="map-pin" class="text-[#4CAF50] mr-1"></i>
+                        <span class="text-xs text-gray-500">8 km from Chaka Town</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Destination 3 -->
+            <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300" data-aos="fade-up" data-aos-delay="200">
+                <img src="http://static.photos/outdoor/640x360/3" alt="Mount Kenya" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Mount Kenya</h3>
+                    <p class="mt-1 text-sm text-gray-600">Hiking trails and breathtaking views</p>
+                    <div class="mt-2 flex items-center">
+                        <i data-feather="map-pin" class="text-[#4CAF50] mr-1"></i>
+                        <span class="text-xs text-gray-500">40 km from Chaka Town</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Destination 4 -->
+            <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300" data-aos="fade-up" data-aos-delay="300">
+                <img src="http://static.photos/cityscape/640x360/4" alt="Nyeri Town" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Nyeri Town</h3>
+                    <p class="mt-1 text-sm text-gray-600">Local markets and urban experiences</p>
+                    <div class="mt-2 flex items-center">
+                        <i data-feather="map-pin" class="text-[#4CAF50] mr-1"></i>
+                        <span class="text-xs text-gray-500">25 km from Chaka Town</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Properties -->
+    <div class="bg-gray-50 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900">Featured Stays in Chaka Town</h2>
+                <p class="mt-2 text-lg text-gray-600">Highly rated by visitors</p>
+            </div>
+            
+            <!-- Horizontal Scroll Container -->
+            <div class="relative">
+                <!-- Scroll Buttons -->
+                <button id="scroll-left" class="scroll-button absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg transition-all duration-300 opacity-0 pointer-events-none">
+                    <i data-feather="chevron-left" class="h-6 w-6 text-gray-600"></i>
+                </button>
+                <button id="scroll-right" class="scroll-button absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg transition-all duration-300">
+                    <i data-feather="chevron-right" class="h-6 w-6 text-gray-600"></i>
+                </button>
+                
+                <!-- Properties Container -->
+                <div id="properties-container" class="flex space-x-6 overflow-x-auto scrollbar-hide pb-4" style="scroll-behavior: smooth; scroll-snap-type: x mandatory;">
+                <!-- Property 1 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-md property-card transition-all duration-300 flex-shrink-0 w-80 scroll-snap-align-start" data-aos="fade-up">
+                    <div class="relative">
+                        <img src="http://static.photos/indoor/640x360/5" alt="Luxury Cottage" class="w-full h-64 object-cover">
+                        <div class="absolute top-3 right-3 bg-[#FFB700] text-white text-xs font-bold px-2 py-1 rounded-full deal-badge">
+                            Popular
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-xl font-bold text-gray-900">Luxury Cottage with Mountain View</h3>
+                            <div class="flex items-center">
+                                <i data-feather="star" class="text-yellow-400 fill-current"></i>
+                                <span class="ml-1 text-gray-900">4.9</span>
+                            </div>
+                        </div>
+                        <p class="mt-1 text-gray-600">Entire cottage · 2 beds · 1 bath</p>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                <i data-feather="wifi" class="amenity-icon"></i> Free WiFi
+                            </span>
+                            <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                <i data-feather="coffee" class="amenity-icon"></i> Breakfast
+                            </span>
+                            <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                <i data-feather="home" class="amenity-icon"></i> Terrace
+                            </span>
+                        </div>
+                        <div class="mt-4 flex justify-between items-center">
+                            <div>
+                                <p class="text-sm text-gray-500">From</p>
+                                <p class="text-xl font-bold text-[#003B95]">KSh 5,500 <span class="text-sm font-normal text-gray-500">/ night</span></p>
+                            </div>
+                            <a href="property-detail.html" class="text-sm font-medium text-[#003B95] hover:text-[#002b70]">
+                                View details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Property 2 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-md property-card transition-all duration-300 flex-shrink-0 w-80 scroll-snap-align-start" data-aos="fade-up" data-aos-delay="100">
+                    <div class="relative">
+                        <img src="http://static.photos/workspace/640x360/6" alt="Modern Apartment" class="w-full h-64 object-cover">
+                        <div class="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                            -20% Today
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-xl font-bold text-gray-900">Modern Apartment in Town Center</h3>
+                            <div class="flex items-center">
+                                <i data-feather="star" class="text-yellow-400 fill-current"></i>
+                                <span class="ml-1 text-gray-900">4.7</span>
+                            </div>
+                        </div>
+                        <p class="mt-1 text-gray-600">Entire apartment · 1 bed · 1 bath</p>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                <i data-feather="wifi" class="amenity-icon"></i> Free WiFi
+                            </span>
+                            <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                <i data-feather="tv" class="amenity-icon"></i> Smart TV
+                            </span>
+                            <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                <i data-feather="lock" class="amenity-icon"></i> Secure
+                            </span>
+                        </div>
+                        <div class="mt-4 flex justify-between items-center">
+                            <div>
+                                <p class="text-sm text-gray-500">From</p>
+                                <p class="text-xl font-bold text-[#003B95]">KSh 3,800 <span class="text-sm font-normal text-gray-500 line-through">KSh 4,750</span></p>
+                            </div>
+                            <a href="property-detail.html" class="text-sm font-medium text-[#003B95] hover:text-[#002b70]">
+                                View details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Property 3 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-md property-card transition-all duration-300 flex-shrink-0 w-80 scroll-snap-align-start" data-aos="fade-up" data-aos-delay="200">
+                    <div class="relative">
+                        <img src="http://static.photos/outdoor/640x360/7" alt="Eco Lodge" class="w-full h-64 object-cover">
+                        <div class="absolute top-3 right-3 bg-[#4CAF50] text-white text-xs font-bold px-2 py-1 rounded-full">
+                            Eco-friendly
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-xl font-bold text-gray-900">Eco Lodge Near Solio Reserve</h3>
+                            <div class="flex items-center">
+                                <i data-feather="star" class="text-yellow-400 fill-current"></i>
+                                <span class="ml-1 text-gray-900">4.8</span>
+                            </div>
+                        </div>
+                        <p class="mt-1 text-gray-600">Private room · 1 bed · Shared bath</p>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                <i data-feather="sun" class="amenity-icon"></i> Solar power
+                            </span>
+                            <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                <i data-feather="tree" class="amenity-icon"></i> Garden
+                            </span>
+                            <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                <i data-feather="coffee" class="amenity-icon"></i> Breakfast
+                            </span>
+                        </div>
+                        <div class="mt-4 flex justify-between items-center">
+                            <div>
+                                <p class="text-sm text-gray-500">From</p>
+                                <p class="text-xl font-bold text-[#003B95]">KSh 2,900 <span class="text-sm font-normal text-gray-500">/ night</span></p>
+                            </div>
+                            <a href="property-detail.html" class="text-sm font-medium text-[#003B95] hover:text-[#002b70]">
+                                View details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Property 4 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-md property-card transition-all duration-300 flex-shrink-0 w-80 scroll-snap-align-start" data-aos="fade-up" data-aos-delay="300">
+                    <div class="relative">
+                        <img src="http://static.photos/indoor/640x360/8" alt="Cozy Studio" class="w-full h-64 object-cover">
+                        <div class="absolute top-3 right-3 bg-purple-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                            New
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-xl font-bold text-gray-900">Cozy Studio Apartment</h3>
+                            <div class="flex items-center">
+                                <i data-feather="star" class="text-yellow-400 fill-current"></i>
+                                <span class="ml-1 text-gray-900">4.7</span>
+                            </div>
+                        </div>
+                        <p class="mt-1 text-gray-600">Entire apartment · 1 bed · 1 bath</p>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                <i data-feather="wifi" class="amenity-icon"></i> Free WiFi
+                            </span>
+                            <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                <i data-feather="tv" class="amenity-icon"></i> Smart TV
+                            </span>
+                            <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                <i data-feather="lock" class="amenity-icon"></i> Secure
+                            </span>
+                        </div>
+                        <div class="mt-4 flex justify-between items-center">
+                            <div>
+                                <p class="text-sm text-gray-500">From</p>
+                                <p class="text-xl font-bold text-[#003B95]">KSh 2,200 <span class="text-sm font-normal text-gray-500">/ night</span></p>
+                            </div>
+                            <a href="property-detail.html" class="text-sm font-medium text-[#003B95] hover:text-[#002b70]">
+                                View details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Property 5 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-md property-card transition-all duration-300 flex-shrink-0 w-80 scroll-snap-align-start" data-aos="fade-up" data-aos-delay="400">
+                    <div class="relative">
+                        <img src="http://static.photos/outdoor/640x360/9" alt="Mountain Villa" class="w-full h-64 object-cover">
+                        <div class="absolute top-3 right-3 bg-[#FFB700] text-white text-xs font-bold px-2 py-1 rounded-full">
+                            Premium
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-xl font-bold text-gray-900">Luxury Mountain Villa</h3>
+                            <div class="flex items-center">
+                                <i data-feather="star" class="text-yellow-400 fill-current"></i>
+                                <span class="ml-1 text-gray-900">4.9</span>
+                            </div>
+                        </div>
+                        <p class="mt-1 text-gray-600">Entire villa · 4 beds · 3 baths</p>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                <i data-feather="mountain" class="amenity-icon"></i> Mountain View
+                            </span>
+                            <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                <i data-feather="car" class="amenity-icon"></i> Parking
+                            </span>
+                            <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                <i data-feather="home" class="amenity-icon"></i> Garden
+                            </span>
+                        </div>
+                        <div class="mt-4 flex justify-between items-center">
+                            <div>
+                                <p class="text-sm text-gray-500">From</p>
+                                <p class="text-xl font-bold text-[#003B95]">KSh 8,500 <span class="text-sm font-normal text-gray-500">/ night</span></p>
+                            </div>
+                            <a href="property-detail.html" class="text-sm font-medium text-[#003B95] hover:text-[#002b70]">
+                                View details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Property 6 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-md property-card transition-all duration-300 flex-shrink-0 w-80 scroll-snap-align-start" data-aos="fade-up" data-aos-delay="500">
+                    <div class="relative">
+                        <img src="http://static.photos/indoor/640x360/10" alt="Business Suite" class="w-full h-64 object-cover">
+                        <div class="absolute top-3 right-3 bg-blue-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                            Business
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-xl font-bold text-gray-900">Executive Business Suite</h3>
+                            <div class="flex items-center">
+                                <i data-feather="star" class="text-yellow-400 fill-current"></i>
+                                <span class="ml-1 text-gray-900">4.8</span>
+                            </div>
+                        </div>
+                        <p class="mt-1 text-gray-600">Entire suite · 2 beds · 2 baths</p>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                <i data-feather="wifi" class="amenity-icon"></i> High-speed WiFi
+                            </span>
+                            <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                <i data-feather="briefcase" class="amenity-icon"></i> Workspace
+                            </span>
+                            <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                <i data-feather="coffee" class="amenity-icon"></i> Coffee Machine
+                            </span>
+                        </div>
+                        <div class="mt-4 flex justify-between items-center">
+                            <div>
+                                <p class="text-sm text-gray-500">From</p>
+                                <p class="text-xl font-bold text-[#003B95]">KSh 4,200 <span class="text-sm font-normal text-gray-500">/ night</span></p>
+                            </div>
+                            <a href="property-detail.html" class="text-sm font-medium text-[#003B95] hover:text-[#002b70]">
+                                View details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Property 7 -->
+                <div class="bg-white rounded-xl overflow-hidden shadow-md property-card transition-all duration-300 flex-shrink-0 w-80 scroll-snap-align-start" data-aos="fade-up" data-aos-delay="600">
+                    <div class="relative">
+                        <img src="http://static.photos/outdoor/640x360/11" alt="Riverside Cabin" class="w-full h-64 object-cover">
+                        <div class="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                            Nature
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-xl font-bold text-gray-900">Riverside Cabin Retreat</h3>
+                            <div class="flex items-center">
+                                <i data-feather="star" class="text-yellow-400 fill-current"></i>
+                                <span class="ml-1 text-gray-900">4.6</span>
+                            </div>
+                        </div>
+                        <p class="mt-1 text-gray-600">Entire cabin · 2 beds · 1 bath</p>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                <i data-feather="droplet" class="amenity-icon"></i> River View
+                            </span>
+                            <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                <i data-feather="tree" class="amenity-icon"></i> Forest
+                            </span>
+                            <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                <i data-feather="campfire" class="amenity-icon"></i> Fireplace
+                            </span>
+                        </div>
+                        <div class="mt-4 flex justify-between items-center">
+                            <div>
+                                <p class="text-sm text-gray-500">From</p>
+                                <p class="text-xl font-bold text-[#003B95]">KSh 3,800 <span class="text-sm font-normal text-gray-500">/ night</span></p>
+                            </div>
+                            <a href="property-detail.html" class="text-sm font-medium text-[#003B95] hover:text-[#002b70]">
+                                View details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Why Choose Us -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900">Why Book with ChakaBNB?</h2>
+            <p class="mt-2 text-lg text-gray-600">We make your stay in Chaka Town exceptional</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center p-6 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow duration-300" data-aos="fade-up">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-[#FFB700] text-white mb-4">
+                    <i data-feather="shield" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Secure Booking</h3>
+                <p class="text-gray-600">Your payment information is always protected with our secure system.</p>
+            </div>
+            
+            <div class="text-center p-6 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow duration-300" data-aos="fade-up" data-aos-delay="100">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-[#4CAF50] text-white mb-4">
+                    <i data-feather="map" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Local Expertise</h3>
+                <p class="text-gray-600">Our team knows Chaka Town inside out and can recommend the best spots.</p>
+            </div>
+            
+            <div class="text-center p-6 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow duration-300" data-aos="fade-up" data-aos-delay="200">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-[#003B95] text-white mb-4">
+                    <i data-feather="headphones" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">24/7 Support</h3>
+                <p class="text-gray-600">We're here to help anytime with our dedicated customer service team.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Newsletter -->
+    <div class="bg-[#003B95] py-16 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto text-center">
+            <h2 class="text-3xl font-bold text-white">Get Travel Tips & Deals</h2>
+            <p class="mt-3 text-lg text-blue-100">Subscribe to our newsletter for the latest offers and travel inspiration in Chaka Town</p>
+            
+            <div class="mt-8 sm:mx-auto sm:max-w-lg sm:flex">
+                <div class="min-w-0 flex-1">
+                    <label for="email" class="sr-only">Email address</label>
+                    <input id="email" type="email" class="block w-full px-5 py-3 text-base rounded-md placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#FFB700]" placeholder="Enter your email">
+                </div>
+                <div class="mt-4 sm:mt-0 sm:ml-3">
+                    <button type="submit" class="block w-full py-3 px-5 rounded-md bg-[#FFB700] text-white font-medium hover:bg-[#e6a500] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#003B95]">
+                        Subscribe
+                    </button>
+                </div>
+            </div>
+            
+            <p class="mt-3 text-sm text-blue-100">
+                We care about your data. Read our <a href="#" class="text-white font-medium underline">Privacy Policy</a>.
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Explore</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Destinations</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Experiences</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Travel Guides</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Special Offers</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Company</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Careers</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Press</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Support</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Safety Information</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Cancellation Options</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Report Issue</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Connect</h3>
+                    <div class="mt-4 flex space-x-6">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i data-feather="facebook" class="h-6 w-6"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i data-feather="instagram" class="h-6 w-6"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i data-feather="twitter" class="h-6 w-6"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i data-feather="youtube" class="h-6 w-6"></i>
+                        </a>
+                    </div>
+                    <div class="mt-6">
+                        <p class="text-sm text-gray-400">Download our app</p>
+                        <div class="mt-2 flex space-x-4">
+                            <a href="#" class="flex items-center">
+                                <i data-feather="smartphone" class="mr-2"></i>
+                                <span class="text-sm">App Store</span>
+                            </a>
+                            <a href="#" class="flex items-center">
+                                <i data-feather="smartphone" class="mr-2"></i>
+                                <span class="text-sm">Google Play</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 border-t border-gray-800 pt-8">
+                <div class="md:flex md:items-center md:justify-between">
+                    <div class="flex space-x-6 md:order-2">
+                        <a href="#" class="text-sm text-gray-400 hover:text-white">Privacy</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white">Terms</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white">Cookie Policy</a>
+                    </div>
+                    <p class="mt-8 text-base text-gray-400 md:mt-0 md:order-1">
+                        &copy; 2023 ChakaBNB. All rights reserved.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+        feather.replace();
+        
+        // Currency selector functionality
+        document.getElementById('currency-selector').addEventListener('change', function() {
+            const selectedCurrency = this.value;
+            console.log('Currency changed to:', selectedCurrency);
+            
+            // Store currency preference in localStorage
+            localStorage.setItem('selectedCurrency', selectedCurrency);
+            
+            // Update all price displays on the page
+            updatePrices(selectedCurrency);
+        });
+        
+        // Function to update prices based on currency
+        function updatePrices(currency) {
+            const priceElements = document.querySelectorAll('.price');
+            const exchangeRates = {
+                'USD': 1,
+                'KES': 150, // 1 USD = 150 KES (approximate)
+                'EUR': 0.85, // 1 USD = 0.85 EUR (approximate)
+                'GBP': 0.73 // 1 USD = 0.73 GBP (approximate)
+            };
+            
+            priceElements.forEach(element => {
+                const basePrice = parseFloat(element.dataset.basePrice) || 100; // Default base price
+                const convertedPrice = basePrice * exchangeRates[currency];
+                
+                if (currency === 'KES') {
+                    element.textContent = `KSh ${Math.round(convertedPrice).toLocaleString()}`;
+                } else if (currency === 'EUR') {
+                    element.textContent = `€${convertedPrice.toFixed(2)}`;
+                } else if (currency === 'GBP') {
+                    element.textContent = `£${convertedPrice.toFixed(2)}`;
+                } else {
+                    element.textContent = `$${convertedPrice.toFixed(2)}`;
+                }
+            });
+        }
+        
+        // Load saved currency preference on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
+            document.getElementById('currency-selector').value = savedCurrency;
+            updatePrices(savedCurrency);
+            
+            // Check if user is logged in and update navigation
+            updateUserNavigation();
+            
+            // Check list property access
+            checkListPropertyAccess();
+            
+            // Initialize horizontal scroll
+            initHorizontalScroll();
+        });
+        
+        // Function to update navigation based on login status
+        function updateUserNavigation() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const userName = localStorage.getItem('userName');
+            const userStatus = document.getElementById('user-status');
+            const userNameDisplay = document.getElementById('user-name-display');
+            const loginLink = document.getElementById('login-link');
+            
+            if (isLoggedIn && userName) {
+                // User is logged in
+                userStatus.classList.remove('hidden');
+                userNameDisplay.textContent = `Welcome, ${userName}`;
+                userNameDisplay.className = 'text-sm text-green-600 font-medium';
+                loginLink.textContent = 'Sign out';
+                loginLink.href = '#';
+                loginLink.onclick = function() {
+                    localStorage.removeItem('isLoggedIn');
+                    localStorage.removeItem('userName');
+                    localStorage.removeItem('userEmail');
+                    window.location.reload();
+                };
+            } else {
+                // User is not logged in
+                userStatus.classList.add('hidden');
+                loginLink.textContent = 'Sign in';
+                loginLink.href = 'login.html';
+                loginLink.onclick = null;
+            }
+        }
+        
+        // Notification functions
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const messageElement = document.getElementById('notification-message');
+            
+            messageElement.textContent = message;
+            notification.classList.remove('hidden');
+            
+            // Trigger animation
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            // Auto-hide after 8 seconds
+            setTimeout(() => {
+                closeNotification();
+            }, 8000);
+        }
+        
+        function closeNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.remove('show');
+            
+            // Hide after animation completes
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 300);
+        }
+        
+        // Check login requirement for list property link
+        function checkListPropertyAccess() {
+            const listPropertyLink = document.getElementById('list-property-link');
+            listPropertyLink.addEventListener('click', function(e) {
+                const isLoggedIn = localStorage.getItem('isLoggedIn');
+                if (!isLoggedIn) {
+                    e.preventDefault();
+                    showNotification('Please log in to list your property.');
+                }
+            });
+        }
+        
+        // Horizontal scroll functionality
+        function initHorizontalScroll() {
+            const container = document.getElementById('properties-container');
+            const scrollLeftBtn = document.getElementById('scroll-left');
+            const scrollRightBtn = document.getElementById('scroll-right');
+            
+            if (!container || !scrollLeftBtn || !scrollRightBtn) return;
+            
+            const scrollAmount = 320; // Width of one property card + gap
+            
+            // Update button visibility based on scroll position
+            function updateScrollButtons() {
+                const isAtStart = container.scrollLeft <= 5; // Small tolerance
+                const isAtEnd = container.scrollLeft >= (container.scrollWidth - container.clientWidth - 5);
+                
+                scrollLeftBtn.style.opacity = isAtStart ? '0' : '1';
+                scrollLeftBtn.style.pointerEvents = isAtStart ? 'none' : 'auto';
+                
+                scrollRightBtn.style.opacity = isAtEnd ? '0' : '1';
+                scrollRightBtn.style.pointerEvents = isAtEnd ? 'none' : 'auto';
+            }
+            
+            // Simple scroll left
+            scrollLeftBtn.addEventListener('click', () => {
+                container.scrollBy({
+                    left: -scrollAmount,
+                    behavior: 'smooth'
+                });
+            });
+            
+            // Simple scroll right
+            scrollRightBtn.addEventListener('click', () => {
+                container.scrollBy({
+                    left: scrollAmount,
+                    behavior: 'smooth'
+                });
+            });
+            
+            // Update buttons on scroll with throttling
+            let scrollTimeout;
+            container.addEventListener('scroll', () => {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(updateScrollButtons, 10);
+            });
+            
+            // Initial button state
+            updateScrollButtons();
+        }
+    </script>
+</body>
+</html>

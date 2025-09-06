@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - ChakaBNB</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+        }
+        .login-gradient {
+            background: linear-gradient(135deg, #003B95 0%, #4CAF50 100%);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="index.html">
+                            <img src="logo.png" alt="ChakaBNB Logo" class="h-36 w-auto">
+                        </a>
+                    </div>
+                </div>
+                <div class="hidden md:ml-6 md:flex md:items-center md:space-x-8">
+                    <a href="index.html" class="text-gray-900 hover:text-[#003B95] px-3 py-2 text-sm font-medium">Browse</a>
+                    
+                    <!-- Currency Selector -->
+                    <div class="relative">
+                        <select id="currency-selector" class="appearance-none bg-transparent border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 hover:border-[#003B95] focus:outline-none focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] cursor-pointer">
+                            <option value="USD">$ USD</option>
+                            <option value="KES">KES</option>
+                            <option value="EUR">€ EUR</option>
+                            <option value="GBP">£ GBP</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                            <i data-feather="chevron-down" class="h-4 w-4 text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <a href="login.html" class="bg-[#003B95] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#002b70]">Sign in</a>
+                </div>
+                <div class="-mr-2 flex items-center md:hidden">
+                    <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
+                        <i data-feather="menu"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Registration Section -->
+    <div class="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8">
+        <div class="w-full max-w-md space-y-4">
+            <div class="text-center">
+                <h2 class="text-2xl font-extrabold text-gray-900">
+                    Join ChakaBNB
+                </h2>
+                <p class="mt-2 text-sm text-gray-600">
+                    Already have an account? <a href="login.html" class="font-medium text-[#003B95] hover:text-[#002b70]">Sign in</a>
+                </p>
+                <p class="mt-2 text-sm text-gray-600">
+                    <a href="index.html" class="font-medium text-[#003B95] hover:text-[#002b70]">← Back to Home</a>
+                </p>
+            </div>
+            
+            <!-- Single Registration Form -->
+            <form id="registration-form" class="mt-8 space-y-3" action="#" method="POST">
+                <div class="rounded-md shadow-sm space-y-2">
+                    <!-- Full Name -->
+                    <div>
+                        <label for="full-name" class="sr-only">Full Name</label>
+                        <div class="relative">
+                            <input id="full-name" name="full-name" type="text" autocomplete="name" required 
+                                   class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-[#003B95] focus:border-[#003B95] focus:z-10 sm:text-sm" 
+                                   placeholder="Full Name">
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i data-feather="user" class="h-5 w-5 text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Email -->
+                    <div>
+                        <label for="email" class="sr-only">Email address</label>
+                        <div class="relative">
+                            <input id="email" name="email" type="email" autocomplete="email" required 
+                                   class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#003B95] focus:border-[#003B95] focus:z-10 sm:text-sm" 
+                                   placeholder="Email address">
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i data-feather="mail" class="h-5 w-5 text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Phone Number -->
+                    <div>
+                        <label for="phone" class="sr-only">Phone Number</label>
+                        <div class="relative">
+                            <input id="phone" name="phone" type="tel" autocomplete="tel" required 
+                                   class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#003B95] focus:border-[#003B95] focus:z-10 sm:text-sm" 
+                                   placeholder="Phone Number">
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i data-feather="phone" class="h-5 w-5 text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Password -->
+                    <div>
+                        <label for="password" class="sr-only">Password</label>
+                        <div class="relative">
+                            <input id="password" name="password" type="password" autocomplete="new-password" required 
+                                   class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#003B95] focus:border-[#003B95] focus:z-10 sm:text-sm" 
+                                   placeholder="Password">
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i data-feather="lock" class="h-5 w-5 text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Confirm Password -->
+                    <div>
+                        <label for="confirm-password" class="sr-only">Confirm Password</label>
+                        <div class="relative">
+                            <input id="confirm-password" name="confirm-password" type="password" autocomplete="new-password" required 
+                                   class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-[#003B95] focus:border-[#003B95] focus:z-10 sm:text-sm" 
+                                   placeholder="Confirm Password">
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                <i data-feather="lock" class="h-5 w-5 text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Terms and Conditions -->
+                <div class="flex items-center">
+                    <input id="terms" name="terms" type="checkbox" required 
+                           class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                    <label for="terms" class="ml-2 block text-sm text-gray-900">
+                        I agree to the <a href="#" class="text-[#003B95] hover:text-[#002b70]">Terms of Service</a> and <a href="#" class="text-[#003B95] hover:text-[#002b70]">Privacy Policy</a>
+                    </label>
+                </div>
+                
+                <!-- Submit Button -->
+                <div>
+                    <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#003B95] hover:bg-[#002b70] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003B95]">
+                        Create Account
+                    </button>
+                </div>
+            </form>
+            
+            <!-- Social Login (for both forms) -->
+            <div class="mt-6">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-white text-gray-500"> Or continue with </span>
+                    </div>
+                </div>
+                
+                <div class="mt-4 grid grid-cols-2 gap-3">
+                    <button type="button" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003B95]">
+                        <i data-feather="facebook" class="h-4 w-4 text-[#3b5998]"></i>
+                        <span class="ml-2">Facebook</span>
+                    </button>
+                    <button type="button" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003B95]">
+                        <i data-feather="google" class="h-4 w-4 text-[#db4437]"></i>
+                        <span class="ml-2">Google</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        feather.replace();
+        
+        // Form validation function
+        function validateForm() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const terms = document.getElementById('terms').checked;
+            
+            // Check if passwords match
+            if (password !== confirmPassword) {
+                alert('Passwords do not match. Please try again.');
+                return false;
+            }
+            
+            // Check if terms are accepted
+            if (!terms) {
+                alert('Please accept the Terms of Service and Privacy Policy to continue.');
+                return false;
+            }
+            
+            // Check password strength
+            if (password.length < 8) {
+                alert('Password must be at least 8 characters long.');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Single form validation
+        document.getElementById('registration-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (validateForm()) {
+                // Store user as logged in (no user type distinction)
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userEmail', document.getElementById('email').value);
+                localStorage.setItem('userName', document.getElementById('full-name').value);
+                
+                alert('Account created successfully! Welcome to ChakaBNB! You can now browse properties and list your own.');
+                window.location.href = 'index.html';
+            }
+        });
+        
+        // Real-time password confirmation validation
+        document.getElementById('confirm-password').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            
+            if (confirmPassword && password !== confirmPassword) {
+                this.style.borderColor = '#ef4444';
+            } else {
+                this.style.borderColor = '#d1d5db';
+            }
+        });
+    </script>
+</body>
+</html>

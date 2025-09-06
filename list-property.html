@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Your Property - ChakaBNB</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <!-- Leaflet CSS and JS for interactive maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .step-active {
+            background-color: #003B95;
+            color: white;
+        }
+        .step-completed {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        /* Notification animations */
+        #notification {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        #notification.show {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <img src="logo.png" alt="ChakaBNB Logo" class="h-36 w-auto">
+                    </div>
+                </div>
+                <div class="hidden md:ml-6 md:flex md:items-center md:space-x-8">
+                    <a href="index.html" class="text-gray-900 hover:text-[#003B95] px-3 py-2 text-sm font-medium">Browse</a>
+                    
+                    <!-- Currency Selector -->
+                    <div class="relative">
+                        <select id="currency-selector" class="appearance-none bg-transparent border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 hover:border-[#003B95] focus:outline-none focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] cursor-pointer">
+                            <option value="USD">$ USD</option>
+                            <option value="KES">KES</option>
+                            <option value="EUR">€ EUR</option>
+                            <option value="GBP">£ GBP</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                            <i data-feather="chevron-down" class="h-4 w-4 text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- User status indicator -->
+                    <div id="user-status" class="hidden">
+                        <span id="user-name-display" class="text-sm text-gray-600"></span>
+                    </div>
+                    
+                    <a href="login.html" id="login-link" class="bg-[#003B95] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#002b70]">Sign in</a>
+                </div>
+                <div class="-mr-2 flex items-center md:hidden">
+                    <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
+                        <i data-feather="menu"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Notification Container -->
+    <div id="notification" class="fixed top-4 right-4 z-50 hidden">
+        <div class="bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg max-w-sm">
+            <div class="flex items-start space-x-3">
+                <i data-feather="alert-circle" class="h-5 w-5 mt-0.5"></i>
+                <div class="flex-1">
+                    <p id="notification-message" class="text-sm font-medium">Please log in to list your property.</p>
+                    <div class="mt-3 flex space-x-2">
+                        <a href="login.html" class="bg-white text-red-500 px-3 py-1 rounded text-xs font-medium hover:bg-gray-100 transition-colors">
+                            Login Now
+                        </a>
+                        <button onclick="closeNotification()" class="text-white hover:text-gray-200 text-xs">
+                            Dismiss
+                        </button>
+                    </div>
+                </div>
+                <button onclick="closeNotification()" class="text-white hover:text-gray-200 ml-2">
+                    <i data-feather="x" class="h-4 w-4"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Steps -->
+    <div class="bg-white border-b">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="step-active w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium">1</div>
+                    <span class="text-sm font-medium text-gray-900">Basic Info</span>
+                </div>
+                <div class="flex-1 h-0.5 bg-gray-200 mx-4"></div>
+                <div class="flex items-center space-x-4">
+                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium text-gray-500">2</div>
+                    <span class="text-sm font-medium text-gray-500">Location</span>
+                </div>
+                <div class="flex-1 h-0.5 bg-gray-200 mx-4"></div>
+                <div class="flex items-center space-x-4">
+                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium text-gray-500">3</div>
+                    <span class="text-sm font-medium text-gray-500">Amenities</span>
+                </div>
+                <div class="flex-1 h-0.5 bg-gray-200 mx-4"></div>
+                <div class="flex items-center space-x-4">
+                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium text-gray-500">4</div>
+                    <span class="text-sm font-medium text-gray-500">Photos</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white rounded-lg shadow-sm p-8">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900">List your property</h1>
+                <p class="mt-2 text-lg text-gray-600">Share your space with travelers in Chaka Town</p>
+            </div>
+
+            <!-- Step 1: Basic Information -->
+            <div id="step-1" class="space-y-8">
+            <form class="space-y-8">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6">Basic Information</h2>
+                    
+                    <!-- Property Type -->
+                    <div class="mb-6" id="property-type-section">
+                        <label class="block text-sm font-medium text-gray-700 mb-3">Property Type <span class="text-red-500">*</span></label>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="property-type" value="apartment" class="sr-only">
+                                <div class="border-2 border-gray-200 rounded-lg p-4 text-center hover:border-[#003B95] transition-colors">
+                                    <i data-feather="home" class="mx-auto h-8 w-8 text-gray-400 mb-2"></i>
+                                    <div class="text-sm font-medium">Apartment</div>
+                                </div>
+                            </label>
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="property-type" value="house" class="sr-only">
+                                <div class="border-2 border-gray-200 rounded-lg p-4 text-center hover:border-[#003B95] transition-colors">
+                                    <i data-feather="home" class="mx-auto h-8 w-8 text-gray-400 mb-2"></i>
+                                    <div class="text-sm font-medium">House</div>
+                                </div>
+                            </label>
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="property-type" value="cottage" class="sr-only">
+                                <div class="border-2 border-gray-200 rounded-lg p-4 text-center hover:border-[#003B95] transition-colors">
+                                    <i data-feather="home" class="mx-auto h-8 w-8 text-gray-400 mb-2"></i>
+                                    <div class="text-sm font-medium">Cottage</div>
+                                </div>
+                            </label>
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="property-type" value="lodge" class="sr-only">
+                                <div class="border-2 border-gray-200 rounded-lg p-4 text-center hover:border-[#003B95] transition-colors">
+                                    <i data-feather="home" class="mx-auto h-8 w-8 text-gray-400 mb-2"></i>
+                                    <div class="text-sm font-medium">Lodge</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Property Title -->
+                    <div class="mb-6">
+                        <label for="property-title" class="block text-sm font-medium text-gray-700 mb-2">Property Title <span class="text-red-500">*</span></label>
+                        <input type="text" id="property-title" name="property-title" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#003B95] focus:border-[#003B95]" placeholder="e.g., Luxury Cottage with Mountain View">
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-6">
+                        <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description <span class="text-red-500">*</span></label>
+                        <textarea id="description" name="description" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#003B95] focus:border-[#003B95]" placeholder="Describe your property and what makes it special..."></textarea>
+                    </div>
+
+                    <!-- Accommodation Details -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div>
+                            <label for="guests" class="block text-sm font-medium text-gray-700 mb-2">Max Guests</label>
+                            <select id="guests" name="guests" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#003B95] focus:border-[#003B95]">
+                                <option value="1">1 guest</option>
+                                <option value="2">2 guests</option>
+                                <option value="3">3 guests</option>
+                                <option value="4">4 guests</option>
+                                <option value="5">5 guests</option>
+                                <option value="6">6+ guests</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="bedrooms" class="block text-sm font-medium text-gray-700 mb-2">Bedrooms</label>
+                            <select id="bedrooms" name="bedrooms" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#003B95] focus:border-[#003B95]">
+                                <option value="1">1 bedroom</option>
+                                <option value="2">2 bedrooms</option>
+                                <option value="3">3 bedrooms</option>
+                                <option value="4">4 bedrooms</option>
+                                <option value="5">5+ bedrooms</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="bathrooms" class="block text-sm font-medium text-gray-700 mb-2">Bathrooms</label>
+                            <select id="bathrooms" name="bathrooms" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#003B95] focus:border-[#003B95]">
+                                <option value="1">1 bathroom</option>
+                                <option value="2">2 bathrooms</option>
+                                <option value="3">3 bathrooms</option>
+                                <option value="4">4+ bathrooms</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Pricing -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label for="price-per-night" class="block text-sm font-medium text-gray-700 mb-2">Price per Night (KSh) <span class="text-red-500">*</span></label>
+                            <input type="number" id="price-per-night" name="price-per-night" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#003B95] focus:border-[#003B95]" placeholder="5000">
+                        </div>
+                        <div>
+                            <label for="cleaning-fee" class="block text-sm font-medium text-gray-700 mb-2">Cleaning Fee (KSh)</label>
+                            <input type="number" id="cleaning-fee" name="cleaning-fee" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#003B95] focus:border-[#003B95]" placeholder="1000">
+                        </div>
+                    </div>
+
+                    <!-- Host Information -->
+                    <div class="border-t pt-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Host Information</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="host-name" class="block text-sm font-medium text-gray-700 mb-2">Your Name <span class="text-red-500">*</span></label>
+                                <input type="text" id="host-name" name="host-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#003B95] focus:border-[#003B95]" placeholder="John Doe">
+                            </div>
+                            <div>
+                                <label for="host-phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number <span class="text-red-500">*</span></label>
+                                <input type="tel" id="host-phone" name="host-phone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#003B95] focus:border-[#003B95]" placeholder="+254 700 000 000">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="flex justify-between pt-6 border-t">
+                    <a href="index.html" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003B95]">
+                        Cancel
+                    </a>
+                    <button type="button" id="next-location-btn" class="px-6 py-2 bg-[#003B95] text-white rounded-md hover:bg-[#002b70] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003B95]">
+                        Next: Location
+                    </button>
+                </div>
+            </form>
+            </div>
+
+            <!-- Step 2: Location -->
+            <div id="step-2" class="space-y-8 hidden">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6">Location Details</h2>
+                    
+                    <!-- Address -->
+                    <div class="mb-6">
+                        <label for="address" class="block text-sm font-medium text-gray-700 mb-2">Street Address <span class="text-red-500">*</span></label>
+                        <input type="text" id="address" name="address" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#003B95] focus:border-[#003B95]" placeholder="Enter your property address">
+                    </div>
+
+                    <!-- City and Area -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label for="city" class="block text-sm font-medium text-gray-700 mb-2">City</label>
+                            <input type="text" id="city" name="city" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#003B95] focus:border-[#003B95]" placeholder="Chaka Town" value="Chaka Town">
+                        </div>
+                        <div>
+                            <label for="area" class="block text-sm font-medium text-gray-700 mb-2">Area/Neighborhood <span class="text-red-500">*</span></label>
+                            <input type="text" id="area" name="area" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#003B95] focus:border-[#003B95]" placeholder="e.g., Town Center, Near Solio Reserve">
+                        </div>
+                    </div>
+
+                    <!-- County and Country -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label for="county" class="block text-sm font-medium text-gray-700 mb-2">County</label>
+                            <input type="text" id="county" name="county" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#003B95] focus:border-[#003B95]" placeholder="Nyeri County" value="Nyeri County">
+                        </div>
+                        <div>
+                            <label for="country" class="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                            <input type="text" id="country" name="country" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#003B95] focus:border-[#003B95]" placeholder="Kenya" value="Kenya">
+                        </div>
+                    </div>
+
+                    <!-- Postal Code -->
+                    <div class="mb-6">
+                        <label for="postal-code" class="block text-sm font-medium text-gray-700 mb-2">Postal Code <span class="text-red-500">*</span></label>
+                        <input type="text" id="postal-code" name="postal-code" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#003B95] focus:border-[#003B95]" placeholder="10100">
+                    </div>
+
+                    <!-- Interactive Map -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Property Location on Map <span class="text-red-500">*</span></label>
+                        <div class="w-full h-64 rounded-lg border border-gray-300 overflow-hidden">
+                            <div id="map" class="w-full h-full"></div>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-2">Click on the map to set your property's exact location</p>
+                        <div class="mt-2 flex items-center space-x-4">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                                <span class="text-sm text-gray-600">Selected Location</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+                                <span class="text-sm text-gray-600">Current Location</span>
+                            </div>
+                        </div>
+                        <!-- Hidden inputs to store coordinates -->
+                        <input type="hidden" id="latitude" name="latitude">
+                        <input type="hidden" id="longitude" name="longitude">
+                    </div>
+
+                    <!-- Nearby Attractions -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-3">Nearby Attractions (Select all that apply)</label>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <label class="flex items-center">
+                                <input type="checkbox" name="nearby-attractions" value="solio-reserve" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Solio Game Reserve</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="nearby-attractions" value="baden-powell" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Baden-Powell Museum</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="nearby-attractions" value="mount-kenya" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Mount Kenya</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="nearby-attractions" value="nyeri-town" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Nyeri Town</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="nearby-attractions" value="shopping" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Shopping Centers</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="nearby-attractions" value="restaurants" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Restaurants</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="flex justify-between pt-6 border-t">
+                    <button type="button" id="back-basic-btn" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003B95]">
+                        Back: Basic Info
+                    </button>
+                    <button type="button" id="next-amenities-btn" class="px-6 py-2 bg-[#003B95] text-white rounded-md hover:bg-[#002b70] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003B95]">
+                        Next: Amenities
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: Amenities -->
+            <div id="step-3" class="space-y-8 hidden">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6">Amenities & Features</h2>
+                    
+                    <!-- Basic Amenities -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Basic Amenities</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="wifi" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Free WiFi</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="parking" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Free Parking</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="kitchen" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Kitchen</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="tv" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">TV</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="ac" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Air Conditioning</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="heating" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Heating</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="washer" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Washing Machine</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="dryer" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Dryer</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="safe" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Safe</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Outdoor Features -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Outdoor Features</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="balcony" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Balcony</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="terrace" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Terrace</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="garden" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Garden</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="pool" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Swimming Pool</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="bbq" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">BBQ Area</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="fireplace" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Fireplace</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Safety Features -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Safety Features</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="smoke-alarm" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Smoke Alarm</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="co-alarm" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">CO Alarm</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="first-aid" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">First Aid Kit</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="security-cameras" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Security Cameras</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="locks" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Secure Locks</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Accessibility -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Accessibility</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="wheelchair-accessible" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Wheelchair Accessible</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="ground-floor" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Ground Floor</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="amenities" value="wide-doorways" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                                <span class="ml-2 text-sm text-gray-700">Wide Doorways</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="flex justify-between pt-6 border-t">
+                    <button type="button" id="back-location-btn" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003B95]">
+                        Back: Location
+                    </button>
+                    <button type="button" id="next-photos-btn" class="px-6 py-2 bg-[#003B95] text-white rounded-md hover:bg-[#002b70] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003B95]">
+                        Next: Photos
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 4: Photos -->
+            <div id="step-4" class="space-y-8 hidden">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6">Property Photos</h2>
+                    <p class="text-gray-600 mb-6">Add high-quality photos to showcase your property. You can upload up to 20 photos.</p>
+                    
+                    <!-- Photo Upload Area -->
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-[#003B95] transition-colors">
+                        <div class="space-y-4">
+                            <i data-feather="camera" class="mx-auto h-12 w-12 text-gray-400"></i>
+                            <div>
+                                <p class="text-lg font-medium text-gray-900">Upload your photos</p>
+                                <p class="text-sm text-gray-600">Drag and drop photos here, or click to browse</p>
+                            </div>
+                            <button type="button" class="px-4 py-2 bg-[#003B95] text-white rounded-md hover:bg-[#002b70] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003B95]">
+                                Choose Photos
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Photo Guidelines -->
+                    <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h4 class="text-sm font-medium text-blue-900 mb-2">Photo Guidelines</h4>
+                        <ul class="text-sm text-blue-800 space-y-1">
+                            <li>• Use high-resolution photos (at least 1024x768 pixels)</li>
+                            <li>• Include photos of all main rooms and outdoor spaces</li>
+                            <li>• Ensure good lighting and clean, tidy spaces</li>
+                            <li>• Avoid photos with personal items or clutter</li>
+                            <li>• First photo will be your cover photo</li>
+                        </ul>
+                    </div>
+
+                    <!-- Photo Preview Grid -->
+                    <div class="mt-8">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Photo Preview</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="photo-preview">
+                            <!-- Placeholder for uploaded photos -->
+                            <div class="aspect-square bg-gray-200 rounded-lg flex items-center justify-center">
+                                <div class="text-center">
+                                    <i data-feather="image" class="mx-auto h-8 w-8 text-gray-400 mb-2"></i>
+                                    <p class="text-sm text-gray-500">No photos yet</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Property Highlights -->
+                    <div class="mt-8">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Property Highlights</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="highlight-1" class="block text-sm font-medium text-gray-700 mb-2">Highlight 1</label>
+                                <input type="text" id="highlight-1" name="highlight-1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#003B95] focus:border-[#003B95]" placeholder="e.g., Breathtaking mountain views">
+                            </div>
+                            <div>
+                                <label for="highlight-2" class="block text-sm font-medium text-gray-700 mb-2">Highlight 2</label>
+                                <input type="text" id="highlight-2" name="highlight-2" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#003B95] focus:border-[#003B95]" placeholder="e.g., Private terrace with garden">
+                            </div>
+                            <div>
+                                <label for="highlight-3" class="block text-sm font-medium text-gray-700 mb-2">Highlight 3</label>
+                                <input type="text" id="highlight-3" name="highlight-3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#003B95] focus:border-[#003B95]" placeholder="e.g., Walking distance to Solio Reserve">
+                            </div>
+                            <div>
+                                <label for="highlight-4" class="block text-sm font-medium text-gray-700 mb-2">Highlight 4</label>
+                                <input type="text" id="highlight-4" name="highlight-4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-[#003B95] focus:border-[#003B95]" placeholder="e.g., Fully equipped kitchen">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="flex justify-between pt-6 border-t">
+                    <button type="button" id="back-amenities-btn" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003B95]">
+                        Back: Amenities
+                    </button>
+                    <button type="button" id="submit-listing-btn" class="px-6 py-2 bg-[#4CAF50] text-white rounded-md hover:bg-[#45a049] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4CAF50]">
+                        Submit Listing
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white mt-16">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Explore</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Destinations</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Experiences</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Travel Guides</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Special Offers</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Company</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Careers</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Press</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Support</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Safety Information</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Cancellation Options</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Report Issue</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Connect</h3>
+                    <div class="mt-4 flex space-x-6">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i data-feather="facebook" class="h-6 w-6"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i data-feather="instagram" class="h-6 w-6"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i data-feather="twitter" class="h-6 w-6"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i data-feather="youtube" class="h-6 w-6"></i>
+                        </a>
+                    </div>
+                    <div class="mt-6">
+                        <p class="text-sm text-gray-400">Download our app</p>
+                        <div class="mt-2 flex space-x-4">
+                            <a href="#" class="flex items-center">
+                                <i data-feather="smartphone" class="mr-2"></i>
+                                <span class="text-sm">App Store</span>
+                            </a>
+                            <a href="#" class="flex items-center">
+                                <i data-feather="smartphone" class="mr-2"></i>
+                                <span class="text-sm">Google Play</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 border-t border-gray-800 pt-8">
+                <div class="md:flex md:items-center md:justify-between">
+                    <div class="flex space-x-6 md:order-2">
+                        <a href="#" class="text-sm text-gray-400 hover:text-white">Privacy</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white">Terms</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white">Cookie Policy</a>
+                    </div>
+                    <p class="mt-8 text-base text-gray-400 md:mt-0 md:order-1">
+                        &copy; 2023 ChakaBNB. All rights reserved.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        feather.replace();
+        
+        // Check if user is logged in
+        function checkUserAccess() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (!isLoggedIn) {
+                // Show notification instead of alert
+                showNotification('Please log in to list your property.');
+                return false;
+            }
+            return true;
+        }
+        
+        // Notification functions
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            const messageElement = document.getElementById('notification-message');
+            
+            messageElement.textContent = message;
+            notification.classList.remove('hidden');
+            
+            // Trigger animation
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            // Auto-hide after 8 seconds
+            setTimeout(() => {
+                closeNotification();
+            }, 8000);
+        }
+        
+        function closeNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.remove('show');
+            
+            // Hide after animation completes
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 300);
+        }
+        
+        // Check access on page load
+        if (!checkUserAccess()) {
+            // Page will redirect, so we don't need to continue
+        }
+        
+        let currentStep = 1;
+        const totalSteps = 4;
+        let map;
+        let marker;
+        let selectedLocation = null;
+        
+        // Property type selection
+        document.querySelectorAll('input[name="property-type"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Remove active class from all options
+                document.querySelectorAll('input[name="property-type"]').forEach(r => {
+                    r.parentElement.querySelector('div').classList.remove('border-[#003B95]', 'bg-blue-50');
+                    r.parentElement.querySelector('div').classList.add('border-gray-200');
+                });
+                
+                // Add active class to selected option
+                if (this.checked) {
+                    this.parentElement.querySelector('div').classList.add('border-[#003B95]', 'bg-blue-50');
+                    this.parentElement.querySelector('div').classList.remove('border-gray-200');
+                }
+            });
+        });
+        
+        // Step navigation functions
+        function updateProgressSteps() {
+            const steps = document.querySelectorAll('.step-active, .step-completed');
+            steps.forEach((step, index) => {
+                const stepNumber = index + 1;
+                if (stepNumber < currentStep) {
+                    step.className = 'step-completed w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium';
+                } else if (stepNumber === currentStep) {
+                    step.className = 'step-active w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium';
+                } else {
+                    step.className = 'w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium text-gray-500';
+                }
+            });
+        }
+        
+        function showStep(stepNumber) {
+            // Hide all steps
+            document.querySelectorAll('[id^="step-"]').forEach(step => {
+                step.classList.add('hidden');
+            });
+            
+            // Show current step
+            document.getElementById(`step-${stepNumber}`).classList.remove('hidden');
+            
+            // Update progress
+            updateProgressSteps();
+            
+            // Scroll to top of the form
+            const formContainer = document.querySelector('.bg-white.rounded-lg.shadow-sm.p-8');
+            if (formContainer) {
+                formContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+        
+        // Validation functions for each step
+        function validateStep1() {
+            let isValid = true;
+            
+            // Clear previous errors
+            clearErrors();
+            
+            // Check property type
+            if (!document.querySelector('input[name="property-type"]:checked')) {
+                showPropertyTypeError('Please select a property type');
+                isValid = false;
+            }
+            
+            // Check required fields
+            const requiredFields = [
+                { id: 'property-title', name: 'Property Title' },
+                { id: 'description', name: 'Description' },
+                { id: 'host-name', name: 'Host Name' },
+                { id: 'host-phone', name: 'Host Phone' },
+                { id: 'price-per-night', name: 'Price per Night' }
+            ];
+            
+            requiredFields.forEach(field => {
+                const element = document.getElementById(field.id);
+                if (!element.value.trim()) {
+                    showError(field.id, `${field.name} is required`);
+                    isValid = false;
+                }
+            });
+            
+            // Check price is a valid number
+            const price = document.getElementById('price-per-night').value;
+            if (price && (isNaN(price) || parseFloat(price) <= 0)) {
+                showError('price-per-night', 'Price per night must be a valid positive number');
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+        
+        
+        function validateStep3() {
+            // Amenities step - no required fields, user can skip amenities
+            return true;
+        }
+        
+        function validateStep4() {
+            let isValid = true;
+            
+            // Clear previous errors
+            clearErrors();
+            
+            // Check at least one highlight is provided
+            const highlights = [
+                document.getElementById('highlight-1').value,
+                document.getElementById('highlight-2').value,
+                document.getElementById('highlight-3').value,
+                document.getElementById('highlight-4').value
+            ];
+            
+            const filledHighlights = highlights.filter(h => h.trim() !== '');
+            
+            if (filledHighlights.length === 0) {
+                showError('highlight-1', 'Please provide at least one property highlight');
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+        
+        // Helper functions for error handling
+        function showError(fieldId, message) {
+            const element = document.getElementById(fieldId);
+            if (element) {
+                // Add error styling to input
+                element.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+                element.classList.remove('border-gray-300', 'focus:border-[#003B95]', 'focus:ring-[#003B95]');
+                
+                // Create or update error message
+                let errorElement = element.parentNode.querySelector('.error-message');
+                if (!errorElement) {
+                    errorElement = document.createElement('div');
+                    errorElement.className = 'error-message text-red-500 text-sm mt-1';
+                    element.parentNode.appendChild(errorElement);
+                }
+                errorElement.textContent = message;
+            }
+        }
+        
+        function showPropertyTypeError(message) {
+            // Find the property type container by ID
+            const propertyTypeContainer = document.getElementById('property-type-section');
+            
+            if (propertyTypeContainer) {
+                // Create or update error message
+                let errorElement = propertyTypeContainer.querySelector('.property-type-error');
+                if (!errorElement) {
+                    errorElement = document.createElement('div');
+                    errorElement.className = 'property-type-error text-red-500 text-sm mt-2';
+                    propertyTypeContainer.appendChild(errorElement);
+                }
+                errorElement.textContent = message;
+            }
+        }
+        
+        function clearErrors() {
+            // Remove error styling from all inputs
+            document.querySelectorAll('input, textarea, select').forEach(element => {
+                element.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+                element.classList.add('border-gray-300', 'focus:border-[#003B95]', 'focus:ring-[#003B95]');
+            });
+            
+            // Remove all error messages
+            document.querySelectorAll('.error-message, .property-type-error').forEach(errorElement => {
+                errorElement.remove();
+            });
+        }
+        
+        // Function to collect all form data
+        function collectFormData() {
+            const data = {
+                basicInfo: {
+                    propertyType: document.querySelector('input[name="property-type"]:checked')?.value,
+                    title: document.getElementById('property-title').value,
+                    description: document.getElementById('description').value,
+                    guests: document.getElementById('guests').value,
+                    bedrooms: document.getElementById('bedrooms').value,
+                    bathrooms: document.getElementById('bathrooms').value,
+                    pricePerNight: document.getElementById('price-per-night').value,
+                    cleaningFee: document.getElementById('cleaning-fee').value,
+                    hostName: document.getElementById('host-name').value,
+                    hostPhone: document.getElementById('host-phone').value
+                },
+                location: {
+                    address: document.getElementById('address').value,
+                    city: document.getElementById('city').value,
+                    area: document.getElementById('area').value,
+                    county: document.getElementById('county').value,
+                    country: document.getElementById('country').value,
+                    postalCode: document.getElementById('postal-code').value,
+                    latitude: document.getElementById('latitude').value,
+                    longitude: document.getElementById('longitude').value,
+                    nearbyAttractions: Array.from(document.querySelectorAll('input[name="nearby-attractions"]:checked')).map(cb => cb.value)
+                },
+                amenities: Array.from(document.querySelectorAll('input[name="amenities"]:checked')).map(cb => cb.value),
+                highlights: {
+                    highlight1: document.getElementById('highlight-1').value,
+                    highlight2: document.getElementById('highlight-2').value,
+                    highlight3: document.getElementById('highlight-3').value,
+                    highlight4: document.getElementById('highlight-4').value
+                }
+            };
+            
+            return data;
+        }
+        
+        // Add real-time validation
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('input, textarea, select')) {
+                // Clear error styling when user starts typing
+                e.target.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500');
+                e.target.classList.add('border-gray-300', 'focus:border-[#003B95]', 'focus:ring-[#003B95]');
+                
+                // Remove error message
+                const errorElement = e.target.parentNode.querySelector('.error-message');
+                if (errorElement) {
+                    errorElement.remove();
+                }
+            }
+        });
+        
+        // Clear property type error when selection is made
+        document.querySelectorAll('input[name="property-type"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const errorElement = document.querySelector('.property-type-error');
+                if (errorElement) {
+                    errorElement.remove();
+                }
+            });
+        });
+        
+        // Event listeners for navigation buttons
+        document.getElementById('next-location-btn').addEventListener('click', function() {
+            if (validateStep1()) {
+                currentStep = 2;
+                showStep(currentStep);
+            }
+        });
+        
+        document.getElementById('back-basic-btn').addEventListener('click', function() {
+            currentStep = 1;
+            showStep(currentStep);
+        });
+        
+        document.getElementById('next-amenities-btn').addEventListener('click', function() {
+            if (validateStep2()) {
+                currentStep = 3;
+                showStep(currentStep);
+            }
+        });
+        
+        document.getElementById('back-location-btn').addEventListener('click', function() {
+            currentStep = 2;
+            showStep(currentStep);
+        });
+        
+        document.getElementById('next-photos-btn').addEventListener('click', function() {
+            if (validateStep3()) {
+                currentStep = 4;
+                showStep(currentStep);
+            }
+        });
+        
+        document.getElementById('back-amenities-btn').addEventListener('click', function() {
+            currentStep = 3;
+            showStep(currentStep);
+        });
+        
+        document.getElementById('submit-listing-btn').addEventListener('click', function() {
+            if (validateStep4()) {
+                // Collect all form data
+                const formData = collectFormData();
+                
+                // Show success message
+                alert('Property listing submitted successfully! Your property will be reviewed and published within 24 hours.');
+                
+                // Redirect to home page
+                window.location.href = 'index.html';
+            }
+        });
+        
+        // Initialize interactive map using Leaflet
+        function initMap() {
+            // Default location (Chaka Town, Kenya)
+            const defaultLocation = [-0.3031, 36.0800];
+            
+            // Initialize the map
+            map = L.map('map').setView(defaultLocation, 13);
+            
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            
+            // Try to get user's current location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const userLocation = [position.coords.latitude, position.coords.longitude];
+                        map.setView(userLocation, 13);
+                        
+                        // Add a marker for current location
+                        L.marker(userLocation, {
+                            icon: L.divIcon({
+                                className: 'current-location-marker',
+                                html: '<div style="background-color: #3B82F6; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>',
+                                iconSize: [16, 16],
+                                iconAnchor: [8, 8]
+                            })
+                        }).addTo(map).bindPopup('Your Current Location');
+                    },
+                    function() {
+                        // If geolocation fails, use default location
+                        console.log('Geolocation failed, using default location');
+                    }
+                );
+            }
+            
+            // Add click listener to map
+            map.on('click', function(e) {
+                const lat = e.latlng.lat;
+                const lng = e.latlng.lng;
+                
+                // Remove existing marker
+                if (marker) {
+                    map.removeLayer(marker);
+                }
+                
+                // Add new marker
+                marker = L.marker([lat, lng], {
+                    icon: L.divIcon({
+                        className: 'property-location-marker',
+                        html: '<div style="background-color: #EF4444; width: 20px; height: 20px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>',
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 10]
+                    })
+                }).addTo(map).bindPopup('Property Location');
+                
+                // Store coordinates
+                selectedLocation = { lat: lat, lng: lng };
+                document.getElementById('latitude').value = lat;
+                document.getElementById('longitude').value = lng;
+                
+                // Simple reverse geocoding using OpenStreetMap Nominatim
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.display_name) {
+                            const addressField = document.getElementById('address');
+                            if (!addressField.value) {
+                                addressField.value = data.display_name;
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.log('Reverse geocoding failed:', error);
+                    });
+            });
+        }
+        
+        // Update validation to include map location
+        function validateStep2() {
+            let isValid = true;
+            
+            // Clear previous errors
+            clearErrors();
+            
+            // Check required fields
+            const requiredFields = [
+                { id: 'address', name: 'Street Address' },
+                { id: 'area', name: 'Area/Neighborhood' },
+                { id: 'postal-code', name: 'Postal Code' }
+            ];
+            
+            requiredFields.forEach(field => {
+                const element = document.getElementById(field.id);
+                if (!element.value.trim()) {
+                    showError(field.id, `${field.name} is required`);
+                    isValid = false;
+                }
+            });
+            
+            // Check if location is selected on map
+            if (!selectedLocation) {
+                const mapContainer = document.getElementById('map').parentElement;
+                let errorElement = mapContainer.querySelector('.map-error');
+                if (!errorElement) {
+                    errorElement = document.createElement('div');
+                    errorElement.className = 'map-error text-red-500 text-sm mt-2';
+                    mapContainer.appendChild(errorElement);
+                }
+                errorElement.textContent = 'Please click on the map to select your property location';
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+        
+        // Initialize
+        updateProgressSteps();
+        
+        // Initialize map when page loads
+        initMap();
+        
+        // Load saved currency preference on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
+            if (document.getElementById('currency-selector')) {
+                document.getElementById('currency-selector').value = savedCurrency;
+            }
+            
+            // Check if user is logged in and update navigation
+            updateUserNavigation();
+        });
+        
+        // Function to update navigation based on login status
+        function updateUserNavigation() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const userName = localStorage.getItem('userName');
+            const userStatus = document.getElementById('user-status');
+            const userNameDisplay = document.getElementById('user-name-display');
+            const loginLink = document.getElementById('login-link');
+            
+            if (isLoggedIn && userName) {
+                // User is logged in
+                userStatus.classList.remove('hidden');
+                userNameDisplay.textContent = `Welcome, ${userName}`;
+                userNameDisplay.className = 'text-sm text-green-600 font-medium';
+                loginLink.textContent = 'Sign out';
+                loginLink.href = '#';
+                loginLink.onclick = function() {
+                    localStorage.removeItem('isLoggedIn');
+                    localStorage.removeItem('userName');
+                    localStorage.removeItem('userEmail');
+                    window.location.reload();
+                };
+            } else {
+                // User is not logged in
+                userStatus.classList.add('hidden');
+                loginLink.textContent = 'Sign in';
+                loginLink.href = 'login.html';
+                loginLink.onclick = null;
+            }
+        }
+        
+        // Currency selector event listener
+        if (document.getElementById('currency-selector')) {
+            document.getElementById('currency-selector').addEventListener('change', function() {
+                const selectedCurrency = this.value;
+                localStorage.setItem('selectedCurrency', selectedCurrency);
+            });
+        }
+    </script>
+</body>
+</html>
