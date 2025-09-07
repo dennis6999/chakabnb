@@ -19,6 +19,64 @@
             background: linear-gradient(135deg, #003B95 0%, #4CAF50 100%);
         }
         
+        /* Mobile Navigation */
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+        .mobile-overlay {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+        .mobile-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Touch-friendly interactions */
+        .touch-target {
+            min-height: 44px;
+            min-width: 44px;
+        }
+        
+        /* Mobile-optimized search form */
+        .mobile-search-form {
+            padding: 1rem;
+            margin: 0 -1rem;
+        }
+        
+        /* Enhanced property cards for mobile */
+        .property-card-mobile {
+            width: 280px;
+            flex-shrink: 0;
+        }
+        
+        /* Mobile scroll indicators */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 4px;
+        }
+        .scroll-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+        .scroll-dot.active {
+            background: white;
+            width: 20px;
+            border-radius: 3px;
+        }
+        
         /* Notification animations */
         #notification {
             transform: translateX(100%);
@@ -57,11 +115,147 @@
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
+        
+        /* Mobile-specific optimizations */
+        @media (max-width: 768px) {
+            .hero-gradient {
+                padding: 2rem 0;
+            }
+            .property-card {
+                width: 280px;
+                margin-right: 1rem;
+            }
+            .scroll-button {
+                display: none;
+            }
+            .mobile-search-form .grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .mobile-search-form .md\\:col-span-2 {
+                grid-column: span 1;
+            }
+        }
+        
+        /* Touch gestures for mobile */
+        @media (hover: none) and (pointer: coarse) {
+            .property-card:hover {
+                transform: none;
+                box-shadow: 0 4px 12px rgba(0, 59, 149, 0.15);
+            }
+            .property-card:active {
+                transform: scale(0.98);
+            }
+        }
+        
+        /* Enhanced touch interactions */
+        .touch-feedback {
+            transition: all 0.2s ease;
+        }
+        
+        .touch-feedback:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+        
+        /* Swipe indicators */
+        .swipe-indicator {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+        
+        .swipe-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .swipe-dot.active {
+            background: white;
+            transform: scale(1.2);
+        }
+        
+        /* Pull-to-refresh indicator */
+        .pull-refresh {
+            position: fixed;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 59, 149, 0.9);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 0 0 12px 12px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: top 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .pull-refresh.show {
+            top: 0;
+        }
+        
+        /* Mobile scroll snap */
+        .scroll-snap {
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+        }
+        
+        .scroll-snap-item {
+            scroll-snap-align: start;
+        }
+        
+        /* Mobile loading states */
+        .loading-skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Mobile haptic feedback simulation */
+        .haptic-light {
+            animation: hapticLight 0.1s ease;
+        }
+        
+        .haptic-medium {
+            animation: hapticMedium 0.15s ease;
+        }
+        
+        .haptic-heavy {
+            animation: hapticHeavy 0.2s ease;
+        }
+        
+        @keyframes hapticLight {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(0.98); }
+        }
+        
+        @keyframes hapticMedium {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(0.95); }
+        }
+        
+        @keyframes hapticHeavy {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(0.92); }
+        }
     </style>
 </head>
 <body class="bg-gray-50">
     <!-- Navigation -->
-    <nav class="bg-white shadow-sm">
+    <nav class="bg-white shadow-sm sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
@@ -92,14 +286,95 @@
                     
                     <a href="login.html" id="login-link" class="bg-[#003B95] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#002b70]">Sign in</a>
                 </div>
-                <div class="-mr-2 flex items-center md:hidden">
-                    <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
-                        <i data-feather="menu"></i>
+                <div class="flex items-center md:hidden">
+                    <!-- Mobile Currency Selector -->
+                    <div class="relative mr-3">
+                        <select id="mobile-currency-selector" class="appearance-none bg-transparent border border-gray-300 rounded-md px-2 py-1 text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#003B95] focus:border-[#003B95] cursor-pointer">
+                            <option value="USD">$</option>
+                            <option value="KES">KSh</option>
+                            <option value="EUR">€</option>
+                            <option value="GBP">£</option>
+                        </select>
+                    </div>
+                    <button type="button" id="mobile-menu-button" class="touch-target inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#003B95]">
+                        <i data-feather="menu" class="h-6 w-6"></i>
                     </button>
                 </div>
             </div>
         </div>
     </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-overlay" class="mobile-overlay fixed inset-0 bg-black bg-opacity-50 z-50 md:hidden"></div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu fixed inset-y-0 left-0 z-50 w-80 bg-white shadow-xl md:hidden">
+        <div class="flex flex-col h-full">
+            <!-- Mobile Menu Header -->
+            <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                <img src="logo.png" alt="ChakaBNB Logo" class="h-8 w-auto">
+                <button id="mobile-menu-close" class="touch-target p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100">
+                    <i data-feather="x" class="h-6 w-6"></i>
+                </button>
+            </div>
+            
+            <!-- Mobile Menu Content -->
+            <div class="flex-1 px-4 py-6 space-y-6">
+                <!-- User Status (Mobile) -->
+                <div id="mobile-user-status" class="hidden">
+                    <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                        <div class="w-10 h-10 bg-[#003B95] rounded-full flex items-center justify-center">
+                            <i data-feather="user" class="h-5 w-5 text-white"></i>
+                        </div>
+                        <div>
+                            <p id="mobile-user-name" class="text-sm font-medium text-gray-900"></p>
+                            <p class="text-xs text-gray-500">Account</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Links -->
+                <div class="space-y-1">
+                    <a href="index.html" class="flex items-center px-3 py-3 text-base font-medium text-gray-900 rounded-lg hover:bg-gray-100 touch-target">
+                        <i data-feather="home" class="h-5 w-5 mr-3"></i>
+                        Browse Properties
+                    </a>
+                    <a href="list-property.html" id="mobile-list-property-link" class="flex items-center px-3 py-3 text-base font-medium text-gray-900 rounded-lg hover:bg-gray-100 touch-target">
+                        <i data-feather="plus-circle" class="h-5 w-5 mr-3"></i>
+                        List Your Property
+                    </a>
+                </div>
+                
+                <!-- Currency Selector (Mobile) -->
+                <div class="border-t border-gray-200 pt-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Currency</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button class="currency-option px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003B95]" data-currency="USD">$ USD</button>
+                        <button class="currency-option px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003B95]" data-currency="KES">KSh</button>
+                        <button class="currency-option px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003B95]" data-currency="EUR">€ EUR</button>
+                        <button class="currency-option px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003B95]" data-currency="GBP">£ GBP</button>
+                    </div>
+                </div>
+                
+                <!-- Account Actions -->
+                <div class="border-t border-gray-200 pt-6">
+                    <div id="mobile-login-section" class="space-y-3">
+                        <a href="login.html" class="block w-full bg-[#003B95] text-white text-center py-3 px-4 rounded-md font-medium hover:bg-[#002b70] touch-target">
+                            Sign In
+                        </a>
+                        <a href="register.html" class="block w-full border border-[#003B95] text-[#003B95] text-center py-3 px-4 rounded-md font-medium hover:bg-[#003B95] hover:text-white touch-target">
+                            Create Account
+                        </a>
+                    </div>
+                    <div id="mobile-logout-section" class="hidden">
+                        <button id="mobile-logout" class="block w-full bg-red-600 text-white text-center py-3 px-4 rounded-md font-medium hover:bg-red-700 touch-target">
+                            Sign Out
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Notification Container -->
     <div id="notification" class="fixed top-4 right-4 z-50 hidden">
@@ -125,122 +400,210 @@
     </div>
 
     <!-- Hero Section with Search -->
-    <div class="hero-gradient py-16 px-4 sm:px-6 lg:px-8">
+    <div class="hero-gradient py-8 md:py-16 px-4 sm:px-6 lg:px-8">
         <div class="max-w-7xl mx-auto">
             <div class="text-center">
-                <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
+                <h1 class="text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight text-white leading-tight">
                     Find your perfect stay in Chaka Town
                 </h1>
-                <p class="mt-3 max-w-md mx-auto text-lg text-white sm:text-xl md:mt-5 md:max-w-3xl">
+                <p class="mt-3 max-w-md mx-auto text-base md:text-lg lg:text-xl text-white md:mt-5 md:max-w-3xl">
                     Discover unique accommodations near Solio Game Reserve, Baden-Powell Museum and more
                 </p>
             </div>
 
-            <!-- Compact Search Widget -->
-            <div class="mt-10 bg-white rounded-xl shadow-lg p-6 max-w-4xl mx-auto" data-aos="fade-up">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <!-- Location Field -->
-                    <div class="md:col-span-2">
-                        <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Where are you going?</label>
-                        <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i data-feather="map-pin" class="h-4 w-4 text-[#003B95]"></i>
+            <!-- Mobile-Optimized Search Widget -->
+            <div class="mt-6 md:mt-10 bg-white rounded-xl shadow-lg p-4 md:p-6 max-w-4xl mx-auto" data-aos="fade-up">
+                <!-- Mobile Search Form -->
+                <div class="mobile-search-form md:hidden">
+                    <div class="space-y-4">
+                        <!-- Location Field -->
+                        <div>
+                            <label for="mobile-location" class="block text-sm font-medium text-gray-700 mb-2">Where are you going?</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i data-feather="map-pin" class="h-4 w-4 text-[#003B95]"></i>
+                                </div>
+                                <input type="text" name="mobile-location" id="mobile-location" 
+                                       class="w-full pl-10 pr-3 py-3 text-gray-900 placeholder-gray-500 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200 touch-target" 
+                                       placeholder="Chaka Town, Nyeri" value="Chaka Town, Nyeri">
                             </div>
-                            <input type="text" name="location" id="location" 
-                                   class="w-full pl-10 pr-3 py-3 text-gray-900 placeholder-gray-500 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200" 
-                                   placeholder="Chaka Town, Nyeri" value="Chaka Town, Nyeri">
                         </div>
-                    </div>
-                    
-                    <!-- Check-in Field -->
-                    <div>
-                        <label for="check-in" class="block text-sm font-medium text-gray-700 mb-1">Check-in</label>
-                        <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i data-feather="calendar" class="h-4 w-4 text-[#003B95]"></i>
+                        
+                        <!-- Date Fields -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label for="mobile-check-in" class="block text-sm font-medium text-gray-700 mb-2">Check-in</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i data-feather="calendar" class="h-4 w-4 text-[#003B95]"></i>
+                                    </div>
+                                    <input type="date" name="mobile-check-in" id="mobile-check-in" 
+                                           class="w-full pl-10 pr-3 py-3 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200 touch-target">
+                                </div>
                             </div>
-                            <input type="date" name="check-in" id="check-in" 
-                                   class="w-full pl-10 pr-3 py-3 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200">
-                        </div>
-                    </div>
-                    
-                    <!-- Check-out Field -->
-                    <div>
-                        <label for="check-out" class="block text-sm font-medium text-gray-700 mb-1">Check-out</label>
-                        <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i data-feather="calendar" class="h-4 w-4 text-[#003B95]"></i>
+                            <div>
+                                <label for="mobile-check-out" class="block text-sm font-medium text-gray-700 mb-2">Check-out</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i data-feather="calendar" class="h-4 w-4 text-[#003B95]"></i>
+                                    </div>
+                                    <input type="date" name="mobile-check-out" id="mobile-check-out" 
+                                           class="w-full pl-10 pr-3 py-3 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200 touch-target">
+                                </div>
                             </div>
-                            <input type="date" name="check-out" id="check-out" 
-                                   class="w-full pl-10 pr-3 py-3 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200">
                         </div>
+                        
+                        <!-- Guests and Trip Type -->
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label for="mobile-guests" class="block text-sm font-medium text-gray-700 mb-2">Guests</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i data-feather="users" class="h-4 w-4 text-[#003B95]"></i>
+                                    </div>
+                                    <select id="mobile-guests" name="mobile-guests" class="w-full pl-10 pr-8 py-3 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200 appearance-none touch-target">
+                                        <option>1 guest</option>
+                                        <option>2 guests</option>
+                                        <option>3 guests</option>
+                                        <option>4+ guests</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i data-feather="chevron-down" class="h-4 w-4 text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="mobile-trip-type" class="block text-sm font-medium text-gray-700 mb-2">Trip Type</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i data-feather="briefcase" class="h-4 w-4 text-[#003B95]"></i>
+                                    </div>
+                                    <select id="mobile-trip-type" name="mobile-trip-type" class="w-full pl-10 pr-8 py-3 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200 appearance-none touch-target">
+                                        <option>Leisure</option>
+                                        <option>Business</option>
+                                        <option>Family</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <i data-feather="chevron-down" class="h-4 w-4 text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Search Button -->
+                        <button type="button" class="w-full bg-gradient-to-r from-[#003B95] to-[#4CAF50] hover:from-[#002b70] hover:to-[#45a049] text-white font-semibold py-4 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center space-x-2 touch-target">
+                            <i data-feather="search" class="h-5 w-5"></i>
+                            <span class="text-lg">Search Properties</span>
+                        </button>
                     </div>
                 </div>
-                
-                <div class="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <!-- Guests Field -->
-                    <div>
-                        <label for="guests" class="block text-sm font-medium text-gray-700 mb-1">Guests</label>
-                        <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i data-feather="users" class="h-4 w-4 text-[#003B95]"></i>
+
+                <!-- Desktop Search Form -->
+                <div class="hidden md:block">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <!-- Location Field -->
+                        <div class="md:col-span-2">
+                            <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Where are you going?</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i data-feather="map-pin" class="h-4 w-4 text-[#003B95]"></i>
+                                </div>
+                                <input type="text" name="location" id="location" 
+                                       class="w-full pl-10 pr-3 py-3 text-gray-900 placeholder-gray-500 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200" 
+                                       placeholder="Chaka Town, Nyeri" value="Chaka Town, Nyeri">
                             </div>
-                            <select id="guests" name="guests" class="w-full pl-10 pr-8 py-3 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200 appearance-none">
-                                <option>1 guest</option>
-                                <option>2 guests</option>
-                                <option>3 guests</option>
-                                <option>4+ guests</option>
-                            </select>
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <i data-feather="chevron-down" class="h-4 w-4 text-gray-400"></i>
+                        </div>
+                        
+                        <!-- Check-in Field -->
+                        <div>
+                            <label for="check-in" class="block text-sm font-medium text-gray-700 mb-1">Check-in</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i data-feather="calendar" class="h-4 w-4 text-[#003B95]"></i>
+                                </div>
+                                <input type="date" name="check-in" id="check-in" 
+                                       class="w-full pl-10 pr-3 py-3 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200">
+                            </div>
+                        </div>
+                        
+                        <!-- Check-out Field -->
+                        <div>
+                            <label for="check-out" class="block text-sm font-medium text-gray-700 mb-1">Check-out</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i data-feather="calendar" class="h-4 w-4 text-[#003B95]"></i>
+                                </div>
+                                <input type="date" name="check-out" id="check-out" 
+                                       class="w-full pl-10 pr-3 py-3 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200">
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Trip Type Field -->
-                    <div>
-                        <label for="trip-type" class="block text-sm font-medium text-gray-700 mb-1">Trip Type</label>
-                        <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i data-feather="briefcase" class="h-4 w-4 text-[#003B95]"></i>
-                            </div>
-                            <select id="trip-type" name="trip-type" class="w-full pl-10 pr-8 py-3 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200 appearance-none">
-                                <option>Leisure</option>
-                                <option>Business</option>
-                                <option>Family</option>
-                            </select>
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <i data-feather="chevron-down" class="h-4 w-4 text-gray-400"></i>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Price Range Field -->
-                    <div>
-                        <label for="price-range" class="block text-sm font-medium text-gray-700 mb-1">Price Range</label>
-                        <div class="relative group">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i data-feather="dollar-sign" class="h-4 w-4 text-[#003B95]"></i>
-                            </div>
-                            <select id="price-range" name="price-range" class="w-full pl-10 pr-8 py-3 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200 appearance-none">
-                                <option>Any price</option>
-                                <option>Under $50</option>
-                                <option>$50 - $100</option>
-                                <option>$100 - $200</option>
-                                <option>$200+</option>
-                            </select>
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <i data-feather="chevron-down" class="h-4 w-4 text-gray-400"></i>
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <!-- Guests Field -->
+                        <div>
+                            <label for="guests" class="block text-sm font-medium text-gray-700 mb-1">Guests</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i data-feather="users" class="h-4 w-4 text-[#003B95]"></i>
+                                </div>
+                                <select id="guests" name="guests" class="w-full pl-10 pr-8 py-3 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200 appearance-none">
+                                    <option>1 guest</option>
+                                    <option>2 guests</option>
+                                    <option>3 guests</option>
+                                    <option>4+ guests</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <i data-feather="chevron-down" class="h-4 w-4 text-gray-400"></i>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- Search Button -->
-                    <div class="flex items-end">
-                        <button type="button" class="w-full bg-gradient-to-r from-[#003B95] to-[#4CAF50] hover:from-[#002b70] hover:to-[#45a049] text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center space-x-2">
-                            <i data-feather="search" class="h-4 w-4"></i>
-                            <span>Search</span>
-                        </button>
+                        
+                        <!-- Trip Type Field -->
+                        <div>
+                            <label for="trip-type" class="block text-sm font-medium text-gray-700 mb-1">Trip Type</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i data-feather="briefcase" class="h-4 w-4 text-[#003B95]"></i>
+                                </div>
+                                <select id="trip-type" name="trip-type" class="w-full pl-10 pr-8 py-3 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200 appearance-none">
+                                    <option>Leisure</option>
+                                    <option>Business</option>
+                                    <option>Family</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <i data-feather="chevron-down" class="h-4 w-4 text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Price Range Field -->
+                        <div>
+                            <label for="price-range" class="block text-sm font-medium text-gray-700 mb-1">Price Range</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i data-feather="dollar-sign" class="h-4 w-4 text-[#003B95]"></i>
+                                </div>
+                                <select id="price-range" name="price-range" class="w-full pl-10 pr-8 py-3 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200 appearance-none">
+                                    <option>Any price</option>
+                                    <option>Under $50</option>
+                                    <option>$50 - $100</option>
+                                    <option>$100 - $200</option>
+                                    <option>$200+</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <i data-feather="chevron-down" class="h-4 w-4 text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Search Button -->
+                        <div class="flex items-end">
+                            <button type="button" class="w-full bg-gradient-to-r from-[#003B95] to-[#4CAF50] hover:from-[#002b70] hover:to-[#45a049] text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center space-x-2">
+                                <i data-feather="search" class="h-4 w-4"></i>
+                                <span>Search</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
@@ -248,19 +611,19 @@
                 <div class="mt-4 pt-4 border-t border-gray-200">
                     <div class="flex flex-wrap items-center gap-2">
                         <span class="text-sm font-medium text-gray-600">Quick filters:</span>
-                        <button class="px-3 py-1.5 bg-gray-100 hover:bg-[#003B95] hover:text-white text-gray-600 rounded-full text-xs font-medium transition-all duration-200">
+                        <button class="px-3 py-1.5 bg-gray-100 hover:bg-[#003B95] hover:text-white text-gray-600 rounded-full text-xs font-medium transition-all duration-200 touch-target">
                             <i data-feather="wifi" class="h-3 w-3 inline mr-1"></i>
                             WiFi
                         </button>
-                        <button class="px-3 py-1.5 bg-gray-100 hover:bg-[#003B95] hover:text-white text-gray-600 rounded-full text-xs font-medium transition-all duration-200">
+                        <button class="px-3 py-1.5 bg-gray-100 hover:bg-[#003B95] hover:text-white text-gray-600 rounded-full text-xs font-medium transition-all duration-200 touch-target">
                             <i data-feather="car" class="h-3 w-3 inline mr-1"></i>
                             Parking
                         </button>
-                        <button class="px-3 py-1.5 bg-gray-100 hover:bg-[#003B95] hover:text-white text-gray-600 rounded-full text-xs font-medium transition-all duration-200">
+                        <button class="px-3 py-1.5 bg-gray-100 hover:bg-[#003B95] hover:text-white text-gray-600 rounded-full text-xs font-medium transition-all duration-200 touch-target">
                             <i data-feather="coffee" class="h-3 w-3 inline mr-1"></i>
                             Breakfast
                         </button>
-                        <button class="px-3 py-1.5 bg-gray-100 hover:bg-[#003B95] hover:text-white text-gray-600 rounded-full text-xs font-medium transition-all duration-200">
+                        <button class="px-3 py-1.5 bg-gray-100 hover:bg-[#003B95] hover:text-white text-gray-600 rounded-full text-xs font-medium transition-all duration-200 touch-target">
                             <i data-feather="shield" class="h-3 w-3 inline mr-1"></i>
                             Security
                         </button>
@@ -333,15 +696,133 @@
     </div>
 
     <!-- Featured Properties -->
-    <div class="bg-gray-50 py-12">
+    <div class="bg-gray-50 py-8 md:py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold text-gray-900">Featured Stays in Chaka Town</h2>
-                <p class="mt-2 text-lg text-gray-600">Highly rated by visitors</p>
+            <div class="text-center mb-6 md:mb-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-900">Featured Stays in Chaka Town</h2>
+                <p class="mt-2 text-base md:text-lg text-gray-600">Highly rated by visitors</p>
             </div>
             
-            <!-- Horizontal Scroll Container -->
-            <div class="relative">
+            <!-- Mobile Properties - Clean Horizontal Scroll -->
+            <div class="md:hidden">
+                <!-- Mobile Properties Container -->
+                <div class="flex space-x-4 overflow-x-auto scrollbar-hide pb-4 -mx-4 px-4" style="scroll-snap-type: x mandatory;">
+                    <!-- Property 1 -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md flex-shrink-0 w-72 scroll-snap-align-start" data-aos="fade-up">
+                        <div class="relative">
+                            <img src="http://static.photos/indoor/640x360/5" alt="Luxury Cottage" class="w-full h-48 object-cover">
+                            <div class="absolute top-3 right-3 bg-[#FFB700] text-white text-xs font-bold px-2 py-1 rounded-full">
+                                Popular
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-base font-bold text-gray-900 leading-tight flex-1 pr-2">Luxury Cottage with Mountain View</h3>
+                                <div class="flex items-center">
+                                    <i data-feather="star" class="text-yellow-400 fill-current h-4 w-4"></i>
+                                    <span class="ml-1 text-gray-900 text-sm">4.9</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">Entire cottage · 2 beds · 1 bath</p>
+                            <div class="flex flex-wrap gap-1 mb-3">
+                                <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                    <i data-feather="wifi" class="h-3 w-3 mr-1"></i> WiFi
+                                </span>
+                                <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                    <i data-feather="coffee" class="h-3 w-3 mr-1"></i> Breakfast
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="text-xs text-gray-500">From</p>
+                                    <p class="text-lg font-bold text-[#003B95]">KSh 5,500 <span class="text-sm font-normal text-gray-500">/ night</span></p>
+                                </div>
+                                <a href="property-detail.html" class="text-sm font-medium text-[#003B95] hover:text-[#002b70] touch-target">
+                                    View details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Property 2 -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md flex-shrink-0 w-72 scroll-snap-align-start" data-aos="fade-up" data-aos-delay="100">
+                        <div class="relative">
+                            <img src="http://static.photos/workspace/640x360/6" alt="Modern Apartment" class="w-full h-48 object-cover">
+                            <div class="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                                -20% Today
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-base font-bold text-gray-900 leading-tight flex-1 pr-2">Modern Apartment in Town Center</h3>
+                                <div class="flex items-center">
+                                    <i data-feather="star" class="text-yellow-400 fill-current h-4 w-4"></i>
+                                    <span class="ml-1 text-gray-900 text-sm">4.7</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">Entire apartment · 1 bed · 1 bath</p>
+                            <div class="flex flex-wrap gap-1 mb-3">
+                                <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                    <i data-feather="wifi" class="h-3 w-3 mr-1"></i> WiFi
+                                </span>
+                                <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                    <i data-feather="tv" class="h-3 w-3 mr-1"></i> Smart TV
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="text-xs text-gray-500">From</p>
+                                    <p class="text-lg font-bold text-[#003B95]">KSh 3,800 <span class="text-sm font-normal text-gray-500 line-through">KSh 4,750</span></p>
+                                </div>
+                                <a href="property-detail.html" class="text-sm font-medium text-[#003B95] hover:text-[#002b70] touch-target">
+                                    View details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Property 3 -->
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md flex-shrink-0 w-72 scroll-snap-align-start" data-aos="fade-up" data-aos-delay="200">
+                        <div class="relative">
+                            <img src="http://static.photos/indoor/640x360/7" alt="Cozy Lodge" class="w-full h-48 object-cover">
+                            <div class="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                                New
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-base font-bold text-gray-900 leading-tight flex-1 pr-2">Cozy Lodge Near Game Reserve</h3>
+                                <div class="flex items-center">
+                                    <i data-feather="star" class="text-yellow-400 fill-current h-4 w-4"></i>
+                                    <span class="ml-1 text-gray-900 text-sm">4.8</span>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">Entire lodge · 3 beds · 2 baths</p>
+                            <div class="flex flex-wrap gap-1 mb-3">
+                                <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                    <i data-feather="wifi" class="h-3 w-3 mr-1"></i> WiFi
+                                </span>
+                                <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                    <i data-feather="car" class="h-3 w-3 mr-1"></i> Parking
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="text-xs text-gray-500">From</p>
+                                    <p class="text-lg font-bold text-[#003B95]">KSh 7,200 <span class="text-sm font-normal text-gray-500">/ night</span></p>
+                                </div>
+                                <a href="property-detail.html" class="text-sm font-medium text-[#003B95] hover:text-[#002b70] touch-target">
+                                    View details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <!-- Desktop Horizontal Scroll Container -->
+            <div class="hidden md:block relative">
                 <!-- Scroll Buttons -->
                 <button id="scroll-left" class="scroll-button absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg transition-all duration-300 opacity-0 pointer-events-none">
                     <i data-feather="chevron-left" class="h-6 w-6 text-gray-600"></i>
@@ -821,20 +1302,135 @@
             });
         }
         
+        // Mobile Navigation Functions
+        function initMobileNavigation() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenuClose = document.getElementById('mobile-menu-close');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileOverlay = document.getElementById('mobile-overlay');
+            
+            function openMobileMenu() {
+                mobileMenu.classList.add('open');
+                mobileOverlay.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeMobileMenu() {
+                mobileMenu.classList.remove('open');
+                mobileOverlay.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+            
+            if (mobileMenuButton) {
+                mobileMenuButton.addEventListener('click', openMobileMenu);
+            }
+            
+            if (mobileMenuClose) {
+                mobileMenuClose.addEventListener('click', closeMobileMenu);
+            }
+            
+            if (mobileOverlay) {
+                mobileOverlay.addEventListener('click', closeMobileMenu);
+            }
+            
+            // Mobile currency selector
+            const mobileCurrencySelector = document.getElementById('mobile-currency-selector');
+            if (mobileCurrencySelector) {
+                mobileCurrencySelector.addEventListener('change', function() {
+                    const selectedCurrency = this.value;
+                    localStorage.setItem('selectedCurrency', selectedCurrency);
+                    updatePrices(selectedCurrency);
+                });
+            }
+            
+            // Mobile currency option buttons
+            document.querySelectorAll('.currency-option').forEach(button => {
+                button.addEventListener('click', function() {
+                    const currency = this.dataset.currency;
+                    localStorage.setItem('selectedCurrency', currency);
+                    updatePrices(currency);
+                    
+                    // Update both selectors
+                    if (document.getElementById('currency-selector')) {
+                        document.getElementById('currency-selector').value = currency;
+                    }
+                    if (document.getElementById('mobile-currency-selector')) {
+                        document.getElementById('mobile-currency-selector').value = currency;
+                    }
+                    
+                    // Update active state
+                    document.querySelectorAll('.currency-option').forEach(btn => {
+                        btn.classList.remove('bg-[#003B95]', 'text-white');
+                        btn.classList.add('bg-white', 'text-gray-700');
+                    });
+                    this.classList.add('bg-[#003B95]', 'text-white');
+                    this.classList.remove('bg-white', 'text-gray-700');
+                });
+            });
+        }
+        
+        // Enhanced mobile user navigation
+        function updateMobileUserNavigation() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const userName = localStorage.getItem('userName');
+            const mobileUserStatus = document.getElementById('mobile-user-status');
+            const mobileUserName = document.getElementById('mobile-user-name');
+            const mobileLoginSection = document.getElementById('mobile-login-section');
+            const mobileLogoutSection = document.getElementById('mobile-logout-section');
+            const mobileLogout = document.getElementById('mobile-logout');
+            
+            if (isLoggedIn && userName) {
+                // User is logged in
+                if (mobileUserStatus) mobileUserStatus.classList.remove('hidden');
+                if (mobileUserName) mobileUserName.textContent = userName;
+                if (mobileLoginSection) mobileLoginSection.classList.add('hidden');
+                if (mobileLogoutSection) mobileLogoutSection.classList.remove('hidden');
+                
+                if (mobileLogout) {
+                    mobileLogout.onclick = function() {
+                        localStorage.removeItem('isLoggedIn');
+                        localStorage.removeItem('userName');
+                        localStorage.removeItem('userEmail');
+                        window.location.reload();
+                    };
+                }
+            } else {
+                // User is not logged in
+                if (mobileUserStatus) mobileUserStatus.classList.add('hidden');
+                if (mobileLoginSection) mobileLoginSection.classList.remove('hidden');
+                if (mobileLogoutSection) mobileLogoutSection.classList.add('hidden');
+            }
+        }
+        
         // Load saved currency preference on page load
         document.addEventListener('DOMContentLoaded', function() {
             const savedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
-            document.getElementById('currency-selector').value = savedCurrency;
+            if (document.getElementById('currency-selector')) {
+                document.getElementById('currency-selector').value = savedCurrency;
+            }
+            if (document.getElementById('mobile-currency-selector')) {
+                document.getElementById('mobile-currency-selector').value = savedCurrency;
+            }
             updatePrices(savedCurrency);
             
             // Check if user is logged in and update navigation
             updateUserNavigation();
+            updateMobileUserNavigation();
             
             // Check list property access
             checkListPropertyAccess();
             
+            // Initialize mobile navigation
+            initMobileNavigation();
+            
             // Initialize horizontal scroll
             initHorizontalScroll();
+            
+            // Initialize touch gestures
+            initTouchGestures();
+            
+            // Initialize mobile performance optimizations
+            initMobilePerformance();
         });
         
         // Function to update navigation based on login status
@@ -955,6 +1551,153 @@
             
             // Initial button state
             updateScrollButtons();
+        }
+        
+        // Touch Gesture Functions
+        function initTouchGestures() {
+            // Add touch feedback to interactive elements
+            document.querySelectorAll('.touch-target, button, a').forEach(element => {
+                element.classList.add('touch-feedback');
+                
+                element.addEventListener('touchstart', function() {
+                    this.classList.add('haptic-light');
+                });
+                
+                element.addEventListener('touchend', function() {
+                    setTimeout(() => {
+                        this.classList.remove('haptic-light');
+                    }, 100);
+                });
+            });
+            
+            // Pull-to-refresh functionality
+            let startY = 0;
+            let currentY = 0;
+            let isPulling = false;
+            const pullRefresh = document.createElement('div');
+            pullRefresh.className = 'pull-refresh';
+            pullRefresh.innerHTML = '<i data-feather="refresh-cw" class="h-4 w-4 inline mr-2"></i>Pull to refresh';
+            document.body.appendChild(pullRefresh);
+            
+            document.addEventListener('touchstart', function(e) {
+                if (window.scrollY === 0) {
+                    startY = e.touches[0].clientY;
+                    isPulling = true;
+                }
+            });
+            
+            document.addEventListener('touchmove', function(e) {
+                if (!isPulling) return;
+                
+                currentY = e.touches[0].clientY;
+                const pullDistance = currentY - startY;
+                
+                if (pullDistance > 0 && window.scrollY === 0) {
+                    e.preventDefault();
+                    const progress = Math.min(pullDistance / 100, 1);
+                    pullRefresh.style.transform = `translateX(-50%) translateY(${progress * 60 - 60}px)`;
+                    
+                    if (pullDistance > 100) {
+                        pullRefresh.classList.add('show');
+                    }
+                }
+            });
+            
+            document.addEventListener('touchend', function() {
+                if (isPulling && currentY - startY > 100) {
+                    // Trigger refresh
+                    pullRefresh.innerHTML = '<i data-feather="loader" class="h-4 w-4 inline mr-2 animate-spin"></i>Refreshing...';
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    pullRefresh.classList.remove('show');
+                    pullRefresh.style.transform = 'translateX(-50%) translateY(-60px)';
+                }
+                isPulling = false;
+            });
+            
+            // Swipe gestures for property cards
+            const propertyCards = document.querySelectorAll('.property-card');
+            propertyCards.forEach(card => {
+                let startX = 0;
+                let startY = 0;
+                let isSwipe = false;
+                
+                card.addEventListener('touchstart', function(e) {
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                    isSwipe = false;
+                });
+                
+                card.addEventListener('touchmove', function(e) {
+                    if (!isSwipe) {
+                        const deltaX = Math.abs(e.touches[0].clientX - startX);
+                        const deltaY = Math.abs(e.touches[0].clientY - startY);
+                        isSwipe = deltaX > deltaY && deltaX > 10;
+                    }
+                });
+                
+                card.addEventListener('touchend', function(e) {
+                    if (isSwipe) {
+                        const deltaX = e.changedTouches[0].clientX - startX;
+                        if (Math.abs(deltaX) > 50) {
+                            this.classList.add('haptic-medium');
+                            setTimeout(() => {
+                                this.classList.remove('haptic-medium');
+                            }, 150);
+                        }
+                    }
+                });
+            });
+        }
+        
+        // Mobile Performance Optimizations
+        function initMobilePerformance() {
+            // Lazy loading for images
+            const images = document.querySelectorAll('img[data-src]');
+            if (images.length > 0) {
+                const imageObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            img.src = img.dataset.src;
+                            img.classList.remove('loading-skeleton');
+                            observer.unobserve(img);
+                        }
+                    });
+                });
+                
+                images.forEach(img => {
+                    img.classList.add('loading-skeleton');
+                    imageObserver.observe(img);
+                });
+            }
+            
+            // Optimize scroll performance
+            let ticking = false;
+            function updateScrollElements() {
+                // Update scroll-dependent elements
+                ticking = false;
+            }
+            
+            document.addEventListener('scroll', function() {
+                if (!ticking) {
+                    requestAnimationFrame(updateScrollElements);
+                    ticking = true;
+                }
+            });
+            
+            // Preload critical resources
+            const criticalImages = [
+                'http://static.photos/indoor/1200x630/5',
+                'http://static.photos/workspace/640x360/6'
+            ];
+            
+            criticalImages.forEach(src => {
+                const img = new Image();
+                img.src = src;
+            });
         }
     </script>
 </body>

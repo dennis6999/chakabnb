@@ -24,6 +24,92 @@
             color: white;
         }
         
+        /* Mobile Navigation */
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+        .mobile-overlay {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+        .mobile-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Touch-friendly interactions */
+        .touch-target {
+            min-height: 44px;
+            min-width: 44px;
+        }
+        
+        /* Mobile form optimizations */
+        .mobile-form-step {
+            padding: 1rem;
+            margin: 0 -1rem;
+        }
+        
+        /* Mobile progress steps */
+        .mobile-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .mobile-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .mobile-step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .mobile-step-label {
+            font-size: 10px;
+            text-align: center;
+            color: #6b7280;
+        }
+        
+        /* Mobile map container */
+        .mobile-map-container {
+            height: 300px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        /* Mobile property type grid */
+        .mobile-property-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        /* Mobile amenities grid */
+        .mobile-amenities-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        
         /* Notification animations */
         #notification {
             transform: translateX(100%);
@@ -32,11 +118,42 @@
         #notification.show {
             transform: translateX(0);
         }
+        
+        /* Mobile-specific styles */
+        @media (max-width: 768px) {
+            .mobile-progress {
+                display: flex;
+            }
+            .desktop-progress {
+                display: none;
+            }
+            .mobile-form-step {
+                display: block;
+            }
+            .desktop-form-step {
+                display: none;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .mobile-progress {
+                display: none;
+            }
+            .desktop-progress {
+                display: flex;
+            }
+            .mobile-form-step {
+                display: none;
+            }
+            .desktop-form-step {
+                display: block;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50">
     <!-- Navigation -->
-    <nav class="bg-white shadow-sm">
+    <nav class="bg-white shadow-sm sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
@@ -67,14 +184,95 @@
                     
                     <a href="login.html" id="login-link" class="bg-[#003B95] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#002b70]">Sign in</a>
                 </div>
-                <div class="-mr-2 flex items-center md:hidden">
-                    <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
-                        <i data-feather="menu"></i>
+                <div class="flex items-center md:hidden">
+                    <!-- Mobile Currency Selector -->
+                    <div class="relative mr-3">
+                        <select id="mobile-currency-selector" class="appearance-none bg-transparent border border-gray-300 rounded-md px-2 py-1 text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#003B95] focus:border-[#003B95] cursor-pointer">
+                            <option value="USD">$</option>
+                            <option value="KES">KSh</option>
+                            <option value="EUR">€</option>
+                            <option value="GBP">£</option>
+                        </select>
+                    </div>
+                    <button type="button" id="mobile-menu-button" class="touch-target inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#003B95]">
+                        <i data-feather="menu" class="h-6 w-6"></i>
                     </button>
                 </div>
             </div>
         </div>
     </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-overlay" class="mobile-overlay fixed inset-0 bg-black bg-opacity-50 z-50 md:hidden"></div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu fixed inset-y-0 left-0 z-50 w-80 bg-white shadow-xl md:hidden">
+        <div class="flex flex-col h-full">
+            <!-- Mobile Menu Header -->
+            <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                <img src="logo.png" alt="ChakaBNB Logo" class="h-8 w-auto">
+                <button id="mobile-menu-close" class="touch-target p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100">
+                    <i data-feather="x" class="h-6 w-6"></i>
+                </button>
+            </div>
+            
+            <!-- Mobile Menu Content -->
+            <div class="flex-1 px-4 py-6 space-y-6">
+                <!-- User Status (Mobile) -->
+                <div id="mobile-user-status" class="hidden">
+                    <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                        <div class="w-10 h-10 bg-[#003B95] rounded-full flex items-center justify-center">
+                            <i data-feather="user" class="h-5 w-5 text-white"></i>
+                        </div>
+                        <div>
+                            <p id="mobile-user-name" class="text-sm font-medium text-gray-900"></p>
+                            <p class="text-xs text-gray-500">Account</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Links -->
+                <div class="space-y-1">
+                    <a href="index.html" class="flex items-center px-3 py-3 text-base font-medium text-gray-900 rounded-lg hover:bg-gray-100 touch-target">
+                        <i data-feather="home" class="h-5 w-5 mr-3"></i>
+                        Browse Properties
+                    </a>
+                    <a href="list-property.html" class="flex items-center px-3 py-3 text-base font-medium text-[#003B95] bg-blue-50 rounded-lg touch-target">
+                        <i data-feather="plus-circle" class="h-5 w-5 mr-3"></i>
+                        List Your Property
+                    </a>
+                </div>
+                
+                <!-- Currency Selector (Mobile) -->
+                <div class="border-t border-gray-200 pt-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Currency</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button class="currency-option px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003B95]" data-currency="USD">$ USD</button>
+                        <button class="currency-option px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003B95]" data-currency="KES">KSh</button>
+                        <button class="currency-option px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003B95]" data-currency="EUR">€ EUR</button>
+                        <button class="currency-option px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003B95]" data-currency="GBP">£ GBP</button>
+                    </div>
+                </div>
+                
+                <!-- Account Actions -->
+                <div class="border-t border-gray-200 pt-6">
+                    <div id="mobile-login-section" class="space-y-3">
+                        <a href="login.html" class="block w-full bg-[#003B95] text-white text-center py-3 px-4 rounded-md font-medium hover:bg-[#002b70] touch-target">
+                            Sign In
+                        </a>
+                        <a href="register.html" class="block w-full border border-[#003B95] text-[#003B95] text-center py-3 px-4 rounded-md font-medium hover:bg-[#003B95] hover:text-white touch-target">
+                            Create Account
+                        </a>
+                    </div>
+                    <div id="mobile-logout-section" class="hidden">
+                        <button id="mobile-logout" class="block w-full bg-red-600 text-white text-center py-3 px-4 rounded-md font-medium hover:bg-red-700 touch-target">
+                            Sign Out
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Notification Container -->
     <div id="notification" class="fixed top-4 right-4 z-50 hidden">
@@ -99,8 +297,8 @@
         </div>
     </div>
 
-    <!-- Progress Steps -->
-    <div class="bg-white border-b">
+    <!-- Desktop Progress Steps -->
+    <div class="desktop-progress bg-white border-b">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
@@ -126,6 +324,26 @@
         </div>
     </div>
 
+    <!-- Mobile Progress Steps -->
+    <div class="mobile-progress">
+        <div class="mobile-step">
+            <div class="mobile-step-number step-active">1</div>
+            <div class="mobile-step-label">Basic Info</div>
+        </div>
+        <div class="mobile-step">
+            <div class="mobile-step-number bg-gray-200 text-gray-500">2</div>
+            <div class="mobile-step-label">Location</div>
+        </div>
+        <div class="mobile-step">
+            <div class="mobile-step-number bg-gray-200 text-gray-500">3</div>
+            <div class="mobile-step-label">Amenities</div>
+        </div>
+        <div class="mobile-step">
+            <div class="mobile-step-number bg-gray-200 text-gray-500">4</div>
+            <div class="mobile-step-label">Photos</div>
+        </div>
+    </div>
+
     <!-- Main Content -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="bg-white rounded-lg shadow-sm p-8">
@@ -143,7 +361,41 @@
                     <!-- Property Type -->
                     <div class="mb-6" id="property-type-section">
                         <label class="block text-sm font-medium text-gray-700 mb-3">Property Type <span class="text-red-500">*</span></label>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        
+                        <!-- Mobile Property Type Grid -->
+                        <div class="mobile-property-grid md:hidden">
+                            <label class="relative cursor-pointer touch-target">
+                                <input type="radio" name="property-type" value="apartment" class="sr-only">
+                                <div class="border-2 border-gray-200 rounded-lg p-4 text-center hover:border-[#003B95] transition-colors">
+                                    <i data-feather="home" class="mx-auto h-6 w-6 text-gray-400 mb-2"></i>
+                                    <div class="text-sm font-medium">Apartment</div>
+                                </div>
+                            </label>
+                            <label class="relative cursor-pointer touch-target">
+                                <input type="radio" name="property-type" value="house" class="sr-only">
+                                <div class="border-2 border-gray-200 rounded-lg p-4 text-center hover:border-[#003B95] transition-colors">
+                                    <i data-feather="home" class="mx-auto h-6 w-6 text-gray-400 mb-2"></i>
+                                    <div class="text-sm font-medium">House</div>
+                                </div>
+                            </label>
+                            <label class="relative cursor-pointer touch-target">
+                                <input type="radio" name="property-type" value="cottage" class="sr-only">
+                                <div class="border-2 border-gray-200 rounded-lg p-4 text-center hover:border-[#003B95] transition-colors">
+                                    <i data-feather="home" class="mx-auto h-6 w-6 text-gray-400 mb-2"></i>
+                                    <div class="text-sm font-medium">Cottage</div>
+                                </div>
+                            </label>
+                            <label class="relative cursor-pointer touch-target">
+                                <input type="radio" name="property-type" value="lodge" class="sr-only">
+                                <div class="border-2 border-gray-200 rounded-lg p-4 text-center hover:border-[#003B95] transition-colors">
+                                    <i data-feather="home" class="mx-auto h-6 w-6 text-gray-400 mb-2"></i>
+                                    <div class="text-sm font-medium">Lodge</div>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <!-- Desktop Property Type Grid -->
+                        <div class="hidden md:grid grid-cols-4 gap-4">
                             <label class="relative cursor-pointer">
                                 <input type="radio" name="property-type" value="apartment" class="sr-only">
                                 <div class="border-2 border-gray-200 rounded-lg p-4 text-center hover:border-[#003B95] transition-colors">
@@ -305,10 +557,18 @@
                     <!-- Interactive Map -->
                     <div class="mb-6">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Property Location on Map <span class="text-red-500">*</span></label>
-                        <div class="w-full h-64 rounded-lg border border-gray-300 overflow-hidden">
+                        
+                        <!-- Mobile Map Container -->
+                        <div class="mobile-map-container md:hidden">
+                            <div id="mobile-map" class="w-full h-full"></div>
+                        </div>
+                        
+                        <!-- Desktop Map Container -->
+                        <div class="hidden md:block w-full h-64 rounded-lg border border-gray-300 overflow-hidden">
                             <div id="map" class="w-full h-full"></div>
                         </div>
-                        <p class="text-sm text-gray-500 mt-2">Click on the map to set your property's exact location</p>
+                        
+                        <p class="text-sm text-gray-500 mt-2">Tap on the map to set your property's exact location</p>
                         <div class="mt-2 flex items-center space-x-4">
                             <div class="flex items-center">
                                 <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
@@ -1121,8 +1381,122 @@
             return isValid;
         }
         
+        // Mobile Navigation Functions
+        function initMobileNavigation() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenuClose = document.getElementById('mobile-menu-close');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileOverlay = document.getElementById('mobile-overlay');
+            
+            function openMobileMenu() {
+                mobileMenu.classList.add('open');
+                mobileOverlay.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeMobileMenu() {
+                mobileMenu.classList.remove('open');
+                mobileOverlay.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+            
+            if (mobileMenuButton) {
+                mobileMenuButton.addEventListener('click', openMobileMenu);
+            }
+            
+            if (mobileMenuClose) {
+                mobileMenuClose.addEventListener('click', closeMobileMenu);
+            }
+            
+            if (mobileOverlay) {
+                mobileOverlay.addEventListener('click', closeMobileMenu);
+            }
+            
+            // Mobile currency selector
+            const mobileCurrencySelector = document.getElementById('mobile-currency-selector');
+            if (mobileCurrencySelector) {
+                mobileCurrencySelector.addEventListener('change', function() {
+                    const selectedCurrency = this.value;
+                    localStorage.setItem('selectedCurrency', selectedCurrency);
+                });
+            }
+            
+            // Mobile currency option buttons
+            document.querySelectorAll('.currency-option').forEach(button => {
+                button.addEventListener('click', function() {
+                    const currency = this.dataset.currency;
+                    localStorage.setItem('selectedCurrency', currency);
+                    
+                    // Update both selectors
+                    if (document.getElementById('currency-selector')) {
+                        document.getElementById('currency-selector').value = currency;
+                    }
+                    if (document.getElementById('mobile-currency-selector')) {
+                        document.getElementById('mobile-currency-selector').value = currency;
+                    }
+                    
+                    // Update active state
+                    document.querySelectorAll('.currency-option').forEach(btn => {
+                        btn.classList.remove('bg-[#003B95]', 'text-white');
+                        btn.classList.add('bg-white', 'text-gray-700');
+                    });
+                    this.classList.add('bg-[#003B95]', 'text-white');
+                    this.classList.remove('bg-white', 'text-gray-700');
+                });
+            });
+        }
+        
+        // Enhanced mobile user navigation
+        function updateMobileUserNavigation() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const userName = localStorage.getItem('userName');
+            const mobileUserStatus = document.getElementById('mobile-user-status');
+            const mobileUserName = document.getElementById('mobile-user-name');
+            const mobileLoginSection = document.getElementById('mobile-login-section');
+            const mobileLogoutSection = document.getElementById('mobile-logout-section');
+            const mobileLogout = document.getElementById('mobile-logout');
+            
+            if (isLoggedIn && userName) {
+                // User is logged in
+                if (mobileUserStatus) mobileUserStatus.classList.remove('hidden');
+                if (mobileUserName) mobileUserName.textContent = userName;
+                if (mobileLoginSection) mobileLoginSection.classList.add('hidden');
+                if (mobileLogoutSection) mobileLogoutSection.classList.remove('hidden');
+                
+                if (mobileLogout) {
+                    mobileLogout.onclick = function() {
+                        localStorage.removeItem('isLoggedIn');
+                        localStorage.removeItem('userName');
+                        localStorage.removeItem('userEmail');
+                        window.location.reload();
+                    };
+                }
+            } else {
+                // User is not logged in
+                if (mobileUserStatus) mobileUserStatus.classList.add('hidden');
+                if (mobileLoginSection) mobileLoginSection.classList.remove('hidden');
+                if (mobileLogoutSection) mobileLogoutSection.classList.add('hidden');
+            }
+        }
+        
+        // Mobile progress steps update
+        function updateMobileProgressSteps() {
+            const steps = document.querySelectorAll('.mobile-step-number');
+            steps.forEach((step, index) => {
+                const stepNumber = index + 1;
+                if (stepNumber < currentStep) {
+                    step.className = 'mobile-step-number step-completed';
+                } else if (stepNumber === currentStep) {
+                    step.className = 'mobile-step-number step-active';
+                } else {
+                    step.className = 'mobile-step-number bg-gray-200 text-gray-500';
+                }
+            });
+        }
+        
         // Initialize
         updateProgressSteps();
+        updateMobileProgressSteps();
         
         // Initialize map when page loads
         initMap();
@@ -1133,9 +1507,16 @@
             if (document.getElementById('currency-selector')) {
                 document.getElementById('currency-selector').value = savedCurrency;
             }
+            if (document.getElementById('mobile-currency-selector')) {
+                document.getElementById('mobile-currency-selector').value = savedCurrency;
+            }
             
             // Check if user is logged in and update navigation
             updateUserNavigation();
+            updateMobileUserNavigation();
+            
+            // Initialize mobile navigation
+            initMobileNavigation();
         });
         
         // Function to update navigation based on login status

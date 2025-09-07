@@ -34,6 +34,83 @@
             color: #003B95;
         }
         
+        /* Mobile Navigation */
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+        .mobile-overlay {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+        .mobile-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Touch-friendly interactions */
+        .touch-target {
+            min-height: 44px;
+            min-width: 44px;
+        }
+        
+        /* Mobile gallery */
+        .mobile-gallery {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+        
+        .mobile-gallery-main {
+            height: 300px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .mobile-gallery-thumbs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+        
+        .mobile-gallery-thumb {
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        /* Mobile booking panel */
+        .mobile-booking-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            padding: 1rem;
+            z-index: 30;
+            transform: translateY(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .mobile-booking-panel.open {
+            transform: translateY(0);
+        }
+        
+        /* Mobile sticky header */
+        .mobile-sticky-header {
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 20;
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
         /* Notification animations */
         #notification {
             transform: translateX(100%);
@@ -41,6 +118,37 @@
         }
         #notification.show {
             transform: translateX(0);
+        }
+        
+        /* Mobile-specific optimizations */
+        @media (max-width: 768px) {
+            .desktop-gallery {
+                display: none;
+            }
+            .mobile-gallery {
+                display: grid;
+            }
+            .desktop-booking-panel {
+                display: none;
+            }
+            .mobile-booking-trigger {
+                display: block;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .desktop-gallery {
+                display: grid;
+            }
+            .mobile-gallery {
+                display: none;
+            }
+            .desktop-booking-panel {
+                display: block;
+            }
+            .mobile-booking-trigger {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -138,9 +246,29 @@
         </div>
     </div>
 
-    <!-- Image Gallery -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+    <!-- Mobile Image Gallery -->
+    <div class="md:hidden px-4 mt-4">
+        <div class="mobile-gallery">
+            <div class="mobile-gallery-main">
+                <img src="http://static.photos/indoor/1200x630/5" alt="Cottage exterior" class="w-full h-full object-cover" id="mobile-main-image">
+            </div>
+            <div class="mobile-gallery-thumbs">
+                <img src="http://static.photos/indoor/1200x630/5" alt="Cottage exterior" class="w-full h-full object-cover cursor-pointer border-2 border-[#003B95]" onclick="changeMobileImage(this.src)">
+                <img src="http://static.photos/indoor/640x360/8" alt="Living room" class="w-full h-full object-cover cursor-pointer border-2 border-transparent hover:border-gray-300" onclick="changeMobileImage(this.src)">
+                <img src="http://static.photos/indoor/640x360/9" alt="Bedroom" class="w-full h-full object-cover cursor-pointer border-2 border-transparent hover:border-gray-300" onclick="changeMobileImage(this.src)">
+                <img src="http://static.photos/outdoor/640x360/10" alt="Mountain view" class="w-full h-full object-cover cursor-pointer border-2 border-transparent hover:border-gray-300" onclick="changeMobileImage(this.src)">
+            </div>
+        </div>
+        <div class="mt-3 text-center">
+            <button class="text-sm font-medium text-gray-700 hover:text-[#003B95] flex items-center mx-auto">
+                <i data-feather="image" class="mr-1"></i> Show all photos
+            </button>
+        </div>
+    </div>
+
+    <!-- Desktop Image Gallery -->
+    <div class="hidden md:block max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        <div class="desktop-gallery grid grid-cols-1 md:grid-cols-4 gap-3">
             <div class="md:col-span-2 row-span-2 rounded-xl overflow-hidden">
                 <img src="http://static.photos/indoor/1200x630/5" alt="Cottage exterior" class="w-full h-full object-cover gallery-image">
             </div>
@@ -448,8 +576,8 @@
                 </div>
             </div>
             
-            <!-- Right Column - Booking Panel -->
-            <div class="mt-8 lg:mt-0 lg:col-span-1">
+            <!-- Right Column - Desktop Booking Panel -->
+            <div class="mt-8 lg:mt-0 lg:col-span-1 desktop-booking-panel">
                 <div class="bg-white rounded-xl booking-panel p-6 sticky top-6">
                     <div class="flex justify-between items-baseline">
                         <p class="text-2xl font-bold text-gray-900">KSh 5,500 <span class="text-base font-normal text-gray-600">night</span></p>
@@ -508,6 +636,82 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Mobile Booking Trigger -->
+    <div class="mobile-booking-trigger fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-30">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-lg font-bold text-gray-900">KSh 5,500 <span class="text-sm font-normal text-gray-600">night</span></p>
+                <div class="flex items-center mt-1">
+                    <i data-feather="star" class="text-yellow-400 fill-current h-4 w-4"></i>
+                    <span class="ml-1 text-gray-900 text-sm">4.9</span>
+                    <span class="mx-1 text-gray-500">·</span>
+                    <span class="text-gray-600 text-sm">24 reviews</span>
+                </div>
+            </div>
+            <button id="mobile-booking-trigger" class="bg-[#FFB700] hover:bg-[#e6a500] text-white font-medium py-3 px-6 rounded-lg touch-target">
+                Check availability
+            </button>
+        </div>
+    </div>
+
+    <!-- Mobile Booking Panel -->
+    <div id="mobile-booking-panel" class="mobile-booking-panel">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Book your stay</h3>
+            <button id="mobile-booking-close" class="touch-target p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100">
+                <i data-feather="x" class="h-5 w-5"></i>
+            </button>
+        </div>
+        
+        <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label for="mobile-check-in" class="block text-sm font-medium text-gray-700 mb-1">Check-in</label>
+                    <input type="date" id="mobile-check-in" class="w-full border border-gray-300 rounded-md py-3 px-3 text-sm touch-target">
+                </div>
+                <div>
+                    <label for="mobile-check-out" class="block text-sm font-medium text-gray-700 mb-1">Check-out</label>
+                    <input type="date" id="mobile-check-out" class="w-full border border-gray-300 rounded-md py-3 px-3 text-sm touch-target">
+                </div>
+            </div>
+            
+            <div>
+                <label for="mobile-guests" class="block text-sm font-medium text-gray-700 mb-1">Guests</label>
+                <select id="mobile-guests" class="w-full border border-gray-300 rounded-md py-3 px-3 text-sm touch-target">
+                    <option>1 guest</option>
+                    <option>2 guests</option>
+                    <option>3 guests</option>
+                    <option>4 guests</option>
+                </select>
+            </div>
+            
+            <button class="w-full bg-[#FFB700] hover:bg-[#e6a500] text-white font-medium py-4 px-4 rounded-lg touch-target">
+                Check availability
+            </button>
+            
+            <div class="text-center text-sm text-gray-600">
+                You won't be charged yet
+            </div>
+            
+            <div class="space-y-3 pt-4 border-t border-gray-200">
+                <div class="flex justify-between">
+                    <span class="text-gray-700">KSh 5,500 x 5 nights</span>
+                    <span class="text-gray-900">KSh 27,500</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-700">Service fee</span>
+                    <span class="text-gray-900">KSh 3,850</span>
+                </div>
+                <div class="border-t border-gray-200 pt-3 flex justify-between font-bold">
+                    <span class="text-gray-900">Total</span>
+                    <span class="text-gray-900">KSh 31,350</span>
+                </div>
+            </div>
+        </div>
+    </div>
         </div>
     </div>
 
@@ -732,6 +936,79 @@
             });
         }
         
+        // Mobile Navigation Functions
+        function initMobileNavigation() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenuClose = document.getElementById('mobile-menu-close');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileOverlay = document.getElementById('mobile-overlay');
+            
+            function openMobileMenu() {
+                mobileMenu.classList.add('open');
+                mobileOverlay.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeMobileMenu() {
+                mobileMenu.classList.remove('open');
+                mobileOverlay.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+            
+            if (mobileMenuButton) {
+                mobileMenuButton.addEventListener('click', openMobileMenu);
+            }
+            
+            if (mobileMenuClose) {
+                mobileMenuClose.addEventListener('click', closeMobileMenu);
+            }
+            
+            if (mobileOverlay) {
+                mobileOverlay.addEventListener('click', closeMobileMenu);
+            }
+        }
+        
+        // Mobile Gallery Functions
+        function changeMobileImage(src) {
+            const mainImage = document.getElementById('mobile-main-image');
+            if (mainImage) {
+                mainImage.src = src;
+            }
+            
+            // Update active thumbnail
+            document.querySelectorAll('.mobile-gallery-thumbs img').forEach(img => {
+                img.classList.remove('border-[#003B95]');
+                img.classList.add('border-transparent');
+            });
+            event.target.classList.add('border-[#003B95]');
+            event.target.classList.remove('border-transparent');
+        }
+        
+        // Mobile Booking Panel Functions
+        function initMobileBooking() {
+            const bookingTrigger = document.getElementById('mobile-booking-trigger');
+            const bookingPanel = document.getElementById('mobile-booking-panel');
+            const bookingClose = document.getElementById('mobile-booking-close');
+            
+            function openBookingPanel() {
+                bookingPanel.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeBookingPanel() {
+                bookingPanel.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+            
+            if (bookingTrigger) {
+                bookingTrigger.addEventListener('click', openBookingPanel);
+            }
+            
+            if (bookingClose) {
+                bookingClose.addEventListener('click', closeBookingPanel);
+            }
+        }
+        
         // Currency selector event listener
         if (document.getElementById('currency-selector')) {
             document.getElementById('currency-selector').addEventListener('change', function() {
@@ -740,6 +1017,12 @@
                 updatePrices(selectedCurrency);
             });
         }
+        
+        // Initialize mobile functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            initMobileNavigation();
+            initMobileBooking();
+        });
     </script>
 </body>
 </html>

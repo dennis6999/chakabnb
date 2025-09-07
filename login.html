@@ -17,6 +17,49 @@
             background: linear-gradient(135deg, #003B95 0%, #4CAF50 100%);
         }
         
+        /* Mobile Navigation */
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+        .mobile-overlay {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+        .mobile-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Touch-friendly interactions */
+        .touch-target {
+            min-height: 44px;
+            min-width: 44px;
+        }
+        
+        /* Mobile form optimizations */
+        .mobile-form-container {
+            padding: 1rem;
+            margin: 0 -1rem;
+        }
+        
+        /* Mobile input styling */
+        .mobile-input {
+            padding: 1rem;
+            font-size: 16px; /* Prevents zoom on iOS */
+        }
+        
+        /* Mobile button styling */
+        .mobile-button {
+            padding: 1rem;
+            font-size: 16px;
+            min-height: 48px;
+        }
+        
         /* Notification animations */
         #notification {
             transform: translateX(100%);
@@ -25,11 +68,23 @@
         #notification.show {
             transform: translateX(0);
         }
+        
+        /* Mobile-specific optimizations */
+        @media (max-width: 768px) {
+            .login-container {
+                min-height: 100vh;
+                padding: 2rem 1rem;
+            }
+            .form-container {
+                width: 100%;
+                max-width: none;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="bg-white shadow-sm">
+    <nav class="bg-white shadow-sm sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
@@ -55,14 +110,65 @@
                         </div>
                     </div>
                 </div>
-                <div class="-mr-2 flex items-center md:hidden">
-                    <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
-                        <i data-feather="menu"></i>
+                <div class="flex items-center md:hidden">
+                    <!-- Mobile Currency Selector -->
+                    <div class="relative mr-3">
+                        <select id="mobile-currency-selector" class="appearance-none bg-transparent border border-gray-300 rounded-md px-2 py-1 text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#003B95] focus:border-[#003B95] cursor-pointer">
+                            <option value="USD">$</option>
+                            <option value="KES">KSh</option>
+                            <option value="EUR">€</option>
+                            <option value="GBP">£</option>
+                        </select>
+                    </div>
+                    <button type="button" id="mobile-menu-button" class="touch-target inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#003B95]">
+                        <i data-feather="menu" class="h-6 w-6"></i>
                     </button>
                 </div>
             </div>
         </div>
     </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-overlay" class="mobile-overlay fixed inset-0 bg-black bg-opacity-50 z-50 md:hidden"></div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu fixed inset-y-0 left-0 z-50 w-80 bg-white shadow-xl md:hidden">
+        <div class="flex flex-col h-full">
+            <!-- Mobile Menu Header -->
+            <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                <img src="logo.png" alt="ChakaBNB Logo" class="h-8 w-auto">
+                <button id="mobile-menu-close" class="touch-target p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100">
+                    <i data-feather="x" class="h-6 w-6"></i>
+                </button>
+            </div>
+            
+            <!-- Mobile Menu Content -->
+            <div class="flex-1 px-4 py-6 space-y-6">
+                <!-- Navigation Links -->
+                <div class="space-y-1">
+                    <a href="index.html" class="flex items-center px-3 py-3 text-base font-medium text-gray-900 rounded-lg hover:bg-gray-100 touch-target">
+                        <i data-feather="home" class="h-5 w-5 mr-3"></i>
+                        Browse Properties
+                    </a>
+                    <a href="list-property.html" class="flex items-center px-3 py-3 text-base font-medium text-gray-900 rounded-lg hover:bg-gray-100 touch-target">
+                        <i data-feather="plus-circle" class="h-5 w-5 mr-3"></i>
+                        List Your Property
+                    </a>
+                </div>
+                
+                <!-- Currency Selector (Mobile) -->
+                <div class="border-t border-gray-200 pt-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Currency</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button class="currency-option px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003B95]" data-currency="USD">$ USD</button>
+                        <button class="currency-option px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003B95]" data-currency="KES">KSh</button>
+                        <button class="currency-option px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003B95]" data-currency="EUR">€ EUR</button>
+                        <button class="currency-option px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003B95]" data-currency="GBP">£ GBP</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Notification Container -->
     <div id="notification" class="fixed top-4 right-4 z-50 hidden">
@@ -237,9 +343,75 @@
             }
         });
         
+        // Mobile Navigation Functions
+        function initMobileNavigation() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenuClose = document.getElementById('mobile-menu-close');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileOverlay = document.getElementById('mobile-overlay');
+            
+            function openMobileMenu() {
+                mobileMenu.classList.add('open');
+                mobileOverlay.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeMobileMenu() {
+                mobileMenu.classList.remove('open');
+                mobileOverlay.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+            
+            if (mobileMenuButton) {
+                mobileMenuButton.addEventListener('click', openMobileMenu);
+            }
+            
+            if (mobileMenuClose) {
+                mobileMenuClose.addEventListener('click', closeMobileMenu);
+            }
+            
+            if (mobileOverlay) {
+                mobileOverlay.addEventListener('click', closeMobileMenu);
+            }
+            
+            // Mobile currency selector
+            const mobileCurrencySelector = document.getElementById('mobile-currency-selector');
+            if (mobileCurrencySelector) {
+                mobileCurrencySelector.addEventListener('change', function() {
+                    const selectedCurrency = this.value;
+                    localStorage.setItem('selectedCurrency', selectedCurrency);
+                });
+            }
+            
+            // Mobile currency option buttons
+            document.querySelectorAll('.currency-option').forEach(button => {
+                button.addEventListener('click', function() {
+                    const currency = this.dataset.currency;
+                    localStorage.setItem('selectedCurrency', currency);
+                    
+                    // Update both selectors
+                    if (document.getElementById('currency-selector')) {
+                        document.getElementById('currency-selector').value = currency;
+                    }
+                    if (document.getElementById('mobile-currency-selector')) {
+                        document.getElementById('mobile-currency-selector').value = currency;
+                    }
+                    
+                    // Update active state
+                    document.querySelectorAll('.currency-option').forEach(btn => {
+                        btn.classList.remove('bg-[#003B95]', 'text-white');
+                        btn.classList.add('bg-white', 'text-gray-700');
+                    });
+                    this.classList.add('bg-[#003B95]', 'text-white');
+                    this.classList.remove('bg-white', 'text-gray-700');
+                });
+            });
+        }
+        
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             checkListPropertyAccess();
+            initMobileNavigation();
         });
     </script>
 </body>
