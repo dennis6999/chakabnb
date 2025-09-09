@@ -1,0 +1,78 @@
+{
+  "name": "ChakaBNB - Vacation Rentals in Chaka Town",
+  "short_name": "ChakaBNB",
+  "description": "Professional vacation rental booking platform for Chaka Town, Nyeri County, Kenya",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#003B95",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en-KE",
+  "dir": "ltr",
+  "categories": ["travel", "lifestyle", "business"],
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-homepage.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "ChakaBNB Homepage"
+    },
+    {
+      "src": "/screenshots/mobile-search.png",
+      "sizes": "375x667",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile Search Interface"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Search Properties",
+      "short_name": "Search",
+      "description": "Search for vacation rentals in Chaka Town",
+      "url": "/search-results.html",
+      "icons": [
+        {
+          "src": "/icons/search.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "List Property",
+      "short_name": "List",
+      "description": "List your property for rent",
+      "url": "/list-property.html",
+      "icons": [
+        {
+          "src": "/icons/list.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
+}

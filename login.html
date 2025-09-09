@@ -5,8 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - ChakaBNB</title>
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#003B95">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="js/security.js"></script>
+    <script src="js/error-handler.js"></script>
+    <script src="js/accessibility.js"></script>
+    <script src="js/seo-optimizer.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         body {
@@ -241,6 +247,7 @@
             
             <form id="login-form" class="mt-4 space-y-3" action="#" method="POST" novalidate>
                 <input type="hidden" name="remember" value="true">
+                <input type="hidden" id="csrf-token" name="csrf_token" value="">
                 <div class="rounded-md shadow-sm space-y-2">
                     <div>
                         <label for="email" class="sr-only">Email address</label>
@@ -261,6 +268,7 @@
                             </div>
                         </div>
                         <p id="password-error" class="mt-1 text-sm text-red-600 hidden">Password must be at least 6 characters.</p>
+                        <div id="rate-limit-info" class="mt-1 text-sm text-orange-600 hidden"></div>
                     </div>
                 </div>
 
@@ -355,62 +363,160 @@
             });
         }
         
-        // Login validation with inline errors and redirect
+        // Enhanced login validation with security features
         document.getElementById('login-form').addEventListener('submit', function(e) {
             e.preventDefault();
+            
             const emailInput = document.getElementById('email');
             const passwordInput = document.getElementById('password');
             const emailError = document.getElementById('email-error');
             const passwordError = document.getElementById('password-error');
+            const rateLimitInfo = document.getElementById('rate-limit-info');
             const submitBtn = document.getElementById('login-submit');
             const submitText = document.getElementById('login-submit-text');
+            const csrfToken = document.getElementById('csrf-token');
 
-            const email = emailInput.value.trim();
-            const password = passwordInput.value;
+            // Get user identifier for rate limiting
+            const userIdentifier = emailInput.value.trim() || 'anonymous';
+            
+            // Check rate limiting
+            const rateLimit = SecurityManager.checkRateLimit(userIdentifier, 5, 15 * 60 * 1000); // 5 attempts in 15 minutes
+            
+            if (!rateLimit.allowed) {
+                rateLimitInfo.textContent = rateLimit.message;
+                rateLimitInfo.classList.remove('hidden');
+                errorHandler.showError({
+                    type: 'authentication',
+                    message: rateLimit.message
+                });
+                return;
+            }
+
+            // Sanitize inputs
+            const email = SecurityManager.sanitizeInput(emailInput.value.trim());
+            const password = SecurityManager.sanitizeInput(passwordInput.value);
 
             // Reset errors
             emailError.classList.add('hidden');
             passwordError.classList.add('hidden');
+            rateLimitInfo.classList.add('hidden');
             emailInput.classList.remove('border-red-500');
             passwordInput.classList.remove('border-red-500');
 
-            let valid = true;
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
+            // Validate email
+            const emailValidation = SecurityManager.validateEmail(email);
+            if (!emailValidation.isValid) {
+                emailError.textContent = emailValidation.message;
                 emailError.classList.remove('hidden');
                 emailInput.classList.add('border-red-500');
-                valid = false;
+                errorHandler.showError({
+                    type: 'validation',
+                    message: emailValidation.message
+                });
+                return;
             }
+
+            // Validate password
             if (!password || password.length < 6) {
+                passwordError.textContent = 'Password must be at least 6 characters.';
                 passwordError.classList.remove('hidden');
                 passwordInput.classList.add('border-red-500');
-                valid = false;
+                errorHandler.showError({
+                    type: 'validation',
+                    message: 'Password must be at least 6 characters.'
+                });
+                return;
             }
 
-            if (!valid) return;
-
-            // Simulate submit
+            // Show loading state
+            const loadingElement = errorHandler.showLoading('Signing in...');
             submitBtn.disabled = true;
             submitText.textContent = 'Signing in...';
+
+            // Simulate API call with error handling
             setTimeout(() => {
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userEmail', email);
-                localStorage.setItem('userName', email.split('@')[0]);
-                const redirectTo = new URLSearchParams(window.location.search).get('redirect') || 'index.html';
-                window.location.href = redirectTo;
-            }, 400);
+                try {
+                    // Simulate network error (10% chance for demo)
+                    if (Math.random() < 0.1) {
+                        throw new Error('Network connection failed');
+                    }
+                    
+                    // Simulate authentication failure (5% chance for demo)
+                    if (Math.random() < 0.05) {
+                        throw new Error('Invalid email or password');
+                    }
+
+                    // Success - clear rate limit and proceed
+                    SecurityManager.clearRateLimit(userIdentifier);
+                    errorHandler.removeError(loadingElement);
+                    
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('userEmail', email);
+                    localStorage.setItem('userName', email.split('@')[0]);
+                    localStorage.setItem('loginTime', new Date().toISOString());
+                    
+                    errorHandler.showSuccess('Login Successful', 'Welcome back!');
+                    
+                    const redirectTo = new URLSearchParams(window.location.search).get('redirect') || 'index.html';
+                    setTimeout(() => {
+                        window.location.href = redirectTo;
+                    }, 1000);
+                    
+                } catch (error) {
+                    errorHandler.removeError(loadingElement);
+                    errorHandler.handleAuthError(error);
+                    
+                    // Reset form state
+                    submitBtn.disabled = false;
+                    submitText.textContent = 'Sign in';
+                }
+            }, 1500);
         });
 
-        // Real-time validation
+        // Initialize security features
+        function initializeSecurity() {
+            // Generate CSRF token
+            const csrfToken = document.getElementById('csrf-token');
+            csrfToken.value = SecurityManager.generateCSRFToken();
+            
+            // Store CSRF token for validation
+            localStorage.setItem('csrf_token', csrfToken.value);
+        }
+
+        // Enhanced real-time validation
         document.getElementById('email').addEventListener('input', function(){
             const emailError = document.getElementById('email-error');
             emailError.classList.add('hidden');
             this.classList.remove('border-red-500');
+            
+            // Real-time email validation
+            const email = SecurityManager.sanitizeInput(this.value.trim());
+            if (email && !SecurityManager.validateEmail(email).isValid) {
+                emailError.textContent = 'Please enter a valid email address';
+                emailError.classList.remove('hidden');
+                this.classList.add('border-red-500');
+            }
         });
+        
         document.getElementById('password').addEventListener('input', function(){
             const passwordError = document.getElementById('password-error');
             passwordError.classList.add('hidden');
             this.classList.remove('border-red-500');
+            
+            // Real-time password validation
+            const password = SecurityManager.sanitizeInput(this.value);
+            if (password && password.length < 6) {
+                passwordError.textContent = 'Password must be at least 6 characters';
+                passwordError.classList.remove('hidden');
+                this.classList.add('border-red-500');
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSecurity();
+            checkListPropertyAccess();
+            feather.replace();
         });
         
         // Mobile Navigation Functions

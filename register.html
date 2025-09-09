@@ -5,8 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Account - ChakaBNB</title>
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#003B95">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="js/security.js"></script>
+    <script src="js/error-handler.js"></script>
+    <script src="js/accessibility.js"></script>
+    <script src="js/seo-optimizer.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         body {
@@ -109,6 +115,7 @@
             
             <!-- Single Registration Form -->
             <form id="registration-form" class="mt-8 space-y-3" action="#" method="POST" novalidate>
+                <input type="hidden" id="csrf-token" name="csrf_token" value="">
                 <div class="rounded-md shadow-sm space-y-2">
                     <!-- Full Name -->
                     <div>
@@ -164,6 +171,43 @@
                             </div>
                         </div>
                         <p id="password-error" class="mt-1 text-sm text-red-600 hidden">Password must be at least 8 characters.</p>
+                        
+                        <!-- Password Strength Indicator -->
+                        <div id="password-strength" class="mt-2 hidden">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <span class="text-xs text-gray-600">Password strength:</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-8 h-1 bg-gray-200 rounded"></div>
+                                    <div class="w-8 h-1 bg-gray-200 rounded"></div>
+                                    <div class="w-8 h-1 bg-gray-200 rounded"></div>
+                                    <div class="w-8 h-1 bg-gray-200 rounded"></div>
+                                    <div class="w-8 h-1 bg-gray-200 rounded"></div>
+                                </div>
+                                <span id="strength-text" class="text-xs font-medium"></span>
+                            </div>
+                            <div class="text-xs text-gray-600 space-y-1">
+                                <div id="req-length" class="flex items-center space-x-2">
+                                    <i data-feather="check" class="h-3 w-3 text-gray-400"></i>
+                                    <span>At least 8 characters</span>
+                                </div>
+                                <div id="req-uppercase" class="flex items-center space-x-2">
+                                    <i data-feather="check" class="h-3 w-3 text-gray-400"></i>
+                                    <span>One uppercase letter</span>
+                                </div>
+                                <div id="req-lowercase" class="flex items-center space-x-2">
+                                    <i data-feather="check" class="h-3 w-3 text-gray-400"></i>
+                                    <span>One lowercase letter</span>
+                                </div>
+                                <div id="req-number" class="flex items-center space-x-2">
+                                    <i data-feather="check" class="h-3 w-3 text-gray-400"></i>
+                                    <span>One number</span>
+                                </div>
+                                <div id="req-special" class="flex items-center space-x-2">
+                                    <i data-feather="check" class="h-3 w-3 text-gray-400"></i>
+                                    <span>One special character</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Confirm Password -->
@@ -227,15 +271,17 @@
     <script>
         feather.replace();
         
-        // Registration validation with inline errors and redirect
+        // Enhanced registration validation with security features
         document.getElementById('registration-form').addEventListener('submit', function(e) {
             e.preventDefault();
+            
             const nameInput = document.getElementById('full-name');
             const emailInput = document.getElementById('email');
             const phoneInput = document.getElementById('phone');
             const passwordInput = document.getElementById('password');
             const confirmInput = document.getElementById('confirm-password');
             const termsInput = document.getElementById('terms');
+            const csrfToken = document.getElementById('csrf-token');
             
             const nameError = document.getElementById('name-error');
             const emailError = document.getElementById('email-error');
@@ -246,43 +292,259 @@
             const submitBtn = document.getElementById('register-submit');
             const submitText = document.getElementById('register-submit-text');
 
-            // Reset
-            [nameError,emailError,phoneError,passwordError,confirmError,termsError].forEach(el=>el.classList.add('hidden'));
-            [nameInput,emailInput,phoneInput,passwordInput,confirmInput].forEach(el=>el.classList.remove('border-red-500'));
+            // Get user identifier for rate limiting
+            const userIdentifier = emailInput.value.trim() || 'anonymous';
+            
+            // Check rate limiting
+            const rateLimit = SecurityManager.checkRateLimit(userIdentifier, 3, 30 * 60 * 1000); // 3 attempts in 30 minutes
+            
+            if (!rateLimit.allowed) {
+                errorHandler.showError({
+                    type: 'authentication',
+                    message: rateLimit.message
+                });
+                return;
+            }
+
+            // Sanitize inputs
+            const name = SecurityManager.sanitizeInput(nameInput.value.trim());
+            const email = SecurityManager.sanitizeInput(emailInput.value.trim());
+            const phone = SecurityManager.sanitizeInput(phoneInput.value.trim());
+            const password = SecurityManager.sanitizeInput(passwordInput.value);
+            const confirmPassword = SecurityManager.sanitizeInput(confirmInput.value);
+
+            // Reset errors
+            [nameError, emailError, phoneError, passwordError, confirmError, termsError].forEach(el => el.classList.add('hidden'));
+            [nameInput, emailInput, phoneInput, passwordInput, confirmInput].forEach(el => el.classList.remove('border-red-500'));
 
             let valid = true;
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            const phoneRegex = /^[0-9+\-()\s]{7,}$/;
+            const errors = [];
 
-            if (!nameInput.value.trim()) { nameError.classList.remove('hidden'); nameInput.classList.add('border-red-500'); valid = false; }
-            if (!emailRegex.test(emailInput.value.trim())) { emailError.classList.remove('hidden'); emailInput.classList.add('border-red-500'); valid = false; }
-            if (!phoneRegex.test(phoneInput.value.trim())) { phoneError.classList.remove('hidden'); phoneInput.classList.add('border-red-500'); valid = false; }
-            if (passwordInput.value.length < 8) { passwordError.classList.remove('hidden'); passwordInput.classList.add('border-red-500'); valid = false; }
-            if (confirmInput.value !== passwordInput.value) { confirmError.classList.remove('hidden'); confirmInput.classList.add('border-red-500'); valid = false; }
-            if (!termsInput.checked) { termsError.classList.remove('hidden'); valid = false; }
+            // Validate name
+            const nameValidation = SecurityManager.validateName(name);
+            if (!nameValidation.isValid) {
+                nameError.textContent = nameValidation.message;
+                nameError.classList.remove('hidden');
+                nameInput.classList.add('border-red-500');
+                errors.push(nameValidation.message);
+                valid = false;
+            }
 
-            if (!valid) return;
+            // Validate email
+            const emailValidation = SecurityManager.validateEmail(email);
+            if (!emailValidation.isValid) {
+                emailError.textContent = emailValidation.message;
+                emailError.classList.remove('hidden');
+                emailInput.classList.add('border-red-500');
+                errors.push(emailValidation.message);
+                valid = false;
+            }
 
+            // Validate phone
+            const phoneValidation = SecurityManager.validatePhone(phone);
+            if (!phoneValidation.isValid) {
+                phoneError.textContent = phoneValidation.message;
+                phoneError.classList.remove('hidden');
+                phoneInput.classList.add('border-red-500');
+                errors.push(phoneValidation.message);
+                valid = false;
+            }
+
+            // Validate password
+            const passwordValidation = SecurityManager.validatePassword(password);
+            if (!passwordValidation.isValid) {
+                passwordError.textContent = passwordValidation.message;
+                passwordError.classList.remove('hidden');
+                passwordInput.classList.add('border-red-500');
+                errors.push(passwordValidation.message);
+                valid = false;
+            }
+
+            // Validate password confirmation
+            if (password !== confirmPassword) {
+                confirmError.textContent = 'Passwords do not match';
+                confirmError.classList.remove('hidden');
+                confirmInput.classList.add('border-red-500');
+                errors.push('Passwords do not match');
+                valid = false;
+            }
+
+            // Validate terms
+            if (!termsInput.checked) {
+                termsError.classList.remove('hidden');
+                errors.push('You must accept the terms and conditions');
+                valid = false;
+            }
+
+            if (!valid) {
+                errorHandler.handleValidationErrors(errors.map(msg => ({ message: msg })));
+                return;
+            }
+
+            // Show loading state
+            const loadingElement = errorHandler.showLoading('Creating your account...');
             submitBtn.disabled = true;
             submitText.textContent = 'Creating account...';
+
+            // Simulate API call with error handling
             setTimeout(() => {
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userEmail', emailInput.value.trim());
-                localStorage.setItem('userName', nameInput.value.trim());
-                const redirectTo = new URLSearchParams(window.location.search).get('redirect') || 'index.html';
-                window.location.href = redirectTo;
-            }, 500);
+                try {
+                    // Simulate network error (10% chance for demo)
+                    if (Math.random() < 0.1) {
+                        throw new Error('Network connection failed');
+                    }
+                    
+                    // Simulate email already exists (5% chance for demo)
+                    if (Math.random() < 0.05) {
+                        throw new Error('Email address is already registered');
+                    }
+
+                    // Success - clear rate limit and proceed
+                    SecurityManager.clearRateLimit(userIdentifier);
+                    errorHandler.removeError(loadingElement);
+                    
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('userEmail', email);
+                    localStorage.setItem('userName', name);
+                    localStorage.setItem('userPhone', phone);
+                    localStorage.setItem('registrationTime', new Date().toISOString());
+                    
+                    errorHandler.showSuccess('Account Created!', 'Welcome to ChakaBNB!');
+                    
+                    const redirectTo = new URLSearchParams(window.location.search).get('redirect') || 'index.html';
+                    setTimeout(() => {
+                        window.location.href = redirectTo;
+                    }, 1500);
+                    
+                } catch (error) {
+                    errorHandler.removeError(loadingElement);
+                    errorHandler.handleAuthError(error);
+                    
+                    // Reset form state
+                    submitBtn.disabled = false;
+                    submitText.textContent = 'Create Account';
+                }
+            }, 2000);
         });
 
-        // Real-time clearing of errors
-        ['full-name','email','phone','password','confirm-password'].forEach(id => {
+        // Initialize security features
+        function initializeSecurity() {
+            // Generate CSRF token
+            const csrfToken = document.getElementById('csrf-token');
+            csrfToken.value = SecurityManager.generateCSRFToken();
+            
+            // Store CSRF token for validation
+            localStorage.setItem('csrf_token', csrfToken.value);
+        }
+
+        // Password strength indicator
+        function updatePasswordStrength(password) {
+            const strengthDiv = document.getElementById('password-strength');
+            const strengthBars = strengthDiv.querySelectorAll('.w-8.h-1');
+            const strengthText = document.getElementById('strength-text');
+            const requirements = {
+                length: document.getElementById('req-length'),
+                uppercase: document.getElementById('req-uppercase'),
+                lowercase: document.getElementById('req-lowercase'),
+                number: document.getElementById('req-number'),
+                special: document.getElementById('req-special')
+            };
+
+            if (!password) {
+                strengthDiv.classList.add('hidden');
+                return;
+            }
+
+            strengthDiv.classList.remove('hidden');
+
+            const validation = SecurityManager.validatePassword(password);
+            const score = validation.score;
+            const strength = validation.strength;
+
+            // Update strength bars
+            strengthBars.forEach((bar, index) => {
+                bar.className = 'w-8 h-1 rounded';
+                if (index < score) {
+                    if (strength === 'weak') {
+                        bar.classList.add('bg-red-500');
+                    } else if (strength === 'medium') {
+                        bar.classList.add('bg-yellow-500');
+                    } else {
+                        bar.classList.add('bg-green-500');
+                    }
+                } else {
+                    bar.classList.add('bg-gray-200');
+                }
+            });
+
+            // Update strength text
+            strengthText.textContent = strength.charAt(0).toUpperCase() + strength.slice(1);
+            strengthText.className = 'text-xs font-medium';
+            if (strength === 'weak') {
+                strengthText.classList.add('text-red-600');
+            } else if (strength === 'medium') {
+                strengthText.classList.add('text-yellow-600');
+            } else {
+                strengthText.classList.add('text-green-600');
+            }
+
+            // Update requirements
+            Object.keys(validation.requirements).forEach((req, index) => {
+                const element = requirements[req];
+                const icon = element.querySelector('i');
+                const span = element.querySelector('span');
+                
+                if (validation.requirements[req]) {
+                    icon.setAttribute('data-feather', 'check');
+                    icon.className = 'h-3 w-3 text-green-500';
+                    span.className = 'text-green-600';
+                } else {
+                    icon.setAttribute('data-feather', 'x');
+                    icon.className = 'h-3 w-3 text-gray-400';
+                    span.className = 'text-gray-600';
+                }
+            });
+
+            feather.replace();
+        }
+
+        // Enhanced real-time validation
+        document.getElementById('password').addEventListener('input', function() {
+            const passwordError = document.getElementById('password-error');
+            passwordError.classList.add('hidden');
+            this.classList.remove('border-red-500');
+            
+            updatePasswordStrength(this.value);
+        });
+
+        document.getElementById('confirm-password').addEventListener('input', function() {
+            const confirmError = document.getElementById('confirm-error');
+            confirmError.classList.add('hidden');
+            this.classList.remove('border-red-500');
+            
+            const password = document.getElementById('password').value;
+            if (this.value && this.value !== password) {
+                confirmError.textContent = 'Passwords do not match';
+                confirmError.classList.remove('hidden');
+                this.classList.add('border-red-500');
+            }
+        });
+
+        // Real-time clearing of errors for other fields
+        ['full-name','email','phone'].forEach(id => {
             const input = document.getElementById(id);
             input.addEventListener('input', function(){
                 this.classList.remove('border-red-500');
-                const map = { 'full-name':'name-error', 'email':'email-error', 'phone':'phone-error', 'password':'password-error', 'confirm-password':'confirm-error' };
+                const map = { 'full-name':'name-error', 'email':'email-error', 'phone':'phone-error' };
                 const err = document.getElementById(map[id]);
                 if (err) err.classList.add('hidden');
             });
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSecurity();
+            feather.replace();
         });
     </script>
 </body>
