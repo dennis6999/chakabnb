@@ -7,10 +7,11 @@ ChakaBNB is a professional vacation rental booking platform focused on Chaka Tow
 ```
 ChakaBNB 2025/
 ├── index.html              # Main homepage with property listings and search
-├── list-property.html      # Multi-step property listing form
-├── login.html              # User authentication page
-├── register.html           # User registration page
-├── property-detail.html    # Detailed property view page
+├── search-results.html     # Search results (filters, sorting, pagination)
+├── list-property.html      # Multi-step property listing form (autosave drafts)
+├── login.html              # User authentication page (inline validation)
+├── register.html           # User registration page (inline validation)
+├── property-detail.html    # Detailed property page (gallery modal, dynamic totals)
 ├── logo.png               # ChakaBNB logo image
 └── README.md              # This documentation file
 ```
@@ -22,6 +23,7 @@ ChakaBNB 2025/
 - **Animations**: AOS (Animate On Scroll)
 - **Maps**: Leaflet.js (for property listing)
 - **Font**: Poppins (Google Fonts)
+ - **Storage**: localStorage (session, preferences, drafts)
 
 ## Key Features
 
@@ -39,12 +41,14 @@ ChakaBNB 2025/
 - Featured properties showcase
 - Popular destinations section
 - Property rating and review system
+ - Search results page with sorting (price/rating/newest) and pagination
 
 ### 👤 **User Management**
 - User registration and login system
 - Local storage for session management
 - User status tracking
 - Property owner verification
+ - Inline validation with real-time error states (login/register)
 
 ### 💱 **Multi-Currency Support**
 - USD, KES, EUR, GBP currency options
@@ -110,6 +114,13 @@ ChakaBNB 2025/
 - **Mobile Navigation**: Complete hamburger menu system
 - **Touch Gestures**: Pull-to-refresh, swipe interactions
 - **Performance**: Lazy loading, scroll optimization
+ - **Search UX** (in progress): recent searches and quick chips
+
+### `search-results.html` - Search Results
+- **Filters**: Price, property type, amenities, bedrooms
+- **Sorting**: Relevance, Price (low→high, high→low), Highest rated, Newest
+- **Pagination**: Page buttons, Prev/Next, results-per-page selector
+- **Responsive**: Mobile filter drawer with overlay and body scroll lock
 
 ### `list-property.html` - Property Listing
 - **Multi-Step Form**: 4-step process (Basic Info, Location, Amenities, Photos)
@@ -118,6 +129,7 @@ ChakaBNB 2025/
 - **Property Types**: Visual selection grid
 - **Form Validation**: Client-side validation with error handling
 - **Mobile Optimization**: Touch-friendly form inputs and layout
+ - **Persistence**: Autosave drafts to localStorage and restore on return
 
 ### `property-detail.html` - Property Details
 - **Image Gallery**: Mobile and desktop gallery layouts
@@ -125,12 +137,16 @@ ChakaBNB 2025/
 - **Property Information**: Detailed amenities, location, reviews
 - **Mobile Gallery**: Touch-friendly image browsing
 - **Booking Flow**: Mobile-optimized booking interface
+ - **Gallery Modal**: Full-screen modal displaying all photos
+ - **Dynamic Totals**: Nights, service fee, and grand total with date validation
 
 ### `login.html` & `register.html` - Authentication
 - **Mobile Forms**: Dedicated mobile form layouts
 - **Touch Optimization**: Large inputs and buttons
 - **Form Validation**: Real-time validation feedback
 - **Social Login**: Facebook and Google integration options
+ - **Inline Errors**: Field-level errors, disabled submit during processing
+ - **Redirects**: Supports `?redirect=` query for post-auth navigation
 
 ## Recent Changes & Updates
 
@@ -146,6 +162,24 @@ ChakaBNB 2025/
 - ✅ Fixed logo consistency across all pages (h-36)
 - ✅ Redesigned mobile featured properties section with clean horizontal scroll
 - ✅ Removed "View All Properties" button from mobile section
+
+### Search & Results Enhancements (New)
+- ✅ Added `search-results.html` with filters, sorting, and pagination
+- ✅ Implemented responsive filter drawer with overlay and scroll lock
+- ✅ Added results-per-page selector and results range display
+- ✅ Implemented sort options: price (asc/desc), rating, newest
+
+### Property Detail Upgrades (New)
+- ✅ Added full-screen gallery modal (mobile/desktop open triggers)
+- ✅ Implemented dynamic booking totals with date validation (desktop/mobile)
+
+### Auth Polish (New)
+- ✅ Inline field validation with real-time feedback
+- ✅ Disabled submit states and success redirects using `?redirect=`
+
+### List Property Improvements (New)
+- ✅ Autosave drafts to localStorage and restore on load
+- ✅ Persist step progress and map location across sessions
 
 ### Key Mobile Features Added
 - **Navigation**: Slide-out mobile menu with smooth animations
@@ -174,6 +208,7 @@ ChakaBNB 2025/
 - User reviews and ratings system
 - Property owner dashboard
 - Mobile app development
+ - Homepage: recent searches, quick filter chips integration
 
 ## AI Context for Future Updates
 This README serves as the primary context document for AI interactions. When making changes to the ChakaBNB project:
@@ -189,4 +224,4 @@ This README serves as the primary context document for AI interactions. When mak
 For questions about this project or to request new features, refer to this documentation for context and current implementation details.
 
 ---
-*Last Updated: [Current Date] - Mobile Responsiveness Overhaul Complete*
+*Last Updated: 2025-09-09 - Search Results, Detail, Auth, and Listing Upgrades*

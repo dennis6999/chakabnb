@@ -981,6 +981,7 @@
         let map;
         let marker;
         let selectedLocation = null;
+        const DRAFT_KEY = 'listPropertyDraft_v1';
         
         // Property type selection
         document.querySelectorAll('input[name="property-type"]').forEach(radio => {
@@ -1025,6 +1026,9 @@
             
             // Update progress
             updateProgressSteps();
+            updateMobileProgressSteps();
+            // Persist current step
+            saveDraft();
             
             // Scroll to top of the form
             const formContainer = document.querySelector('.bg-white.rounded-lg.shadow-sm.p-8');
@@ -1154,6 +1158,7 @@
         // Function to collect all form data
         function collectFormData() {
             const data = {
+                currentStep,
                 basicInfo: {
                     propertyType: document.querySelector('input[name="property-type"]:checked')?.value,
                     title: document.getElementById('property-title').value,
@@ -1188,6 +1193,83 @@
             
             return data;
         }
+
+        // Draft persistence
+        function saveDraft() {
+            const data = collectFormData();
+            try { localStorage.setItem(DRAFT_KEY, JSON.stringify(data)); } catch {}
+        }
+
+        function loadDraft() {
+            try {
+                const raw = localStorage.getItem(DRAFT_KEY);
+                if (!raw) return;
+                const data = JSON.parse(raw);
+                if (data.basicInfo) {
+                    if (data.basicInfo.propertyType) {
+                        const input = document.querySelector(`input[name="property-type"][value="${data.basicInfo.propertyType}"]`);
+                        if (input) {
+                            input.checked = true;
+                            input.dispatchEvent(new Event('change'));
+                        }
+                    }
+                    document.getElementById('property-title').value = data.basicInfo.title || '';
+                    document.getElementById('description').value = data.basicInfo.description || '';
+                    if (data.basicInfo.guests) document.getElementById('guests').value = data.basicInfo.guests;
+                    if (data.basicInfo.bedrooms) document.getElementById('bedrooms').value = data.basicInfo.bedrooms;
+                    if (data.basicInfo.bathrooms) document.getElementById('bathrooms').value = data.basicInfo.bathrooms;
+                    document.getElementById('price-per-night').value = data.basicInfo.pricePerNight || '';
+                    document.getElementById('cleaning-fee').value = data.basicInfo.cleaningFee || '';
+                    document.getElementById('host-name').value = data.basicInfo.hostName || '';
+                    document.getElementById('host-phone').value = data.basicInfo.hostPhone || '';
+                }
+                if (data.location) {
+                    document.getElementById('address').value = data.location.address || '';
+                    document.getElementById('city').value = data.location.city || '';
+                    document.getElementById('area').value = data.location.area || '';
+                    document.getElementById('county').value = data.location.county || '';
+                    document.getElementById('country').value = data.location.country || '';
+                    document.getElementById('postal-code').value = data.location.postalCode || '';
+                    document.getElementById('latitude').value = data.location.latitude || '';
+                    document.getElementById('longitude').value = data.location.longitude || '';
+                    // nearby attractions
+                    (data.location.nearbyAttractions || []).forEach(val => {
+                        const cb = document.querySelector(`input[name="nearby-attractions"][value="${val}"]`);
+                        if (cb) cb.checked = true;
+                    });
+                    if (data.location.latitude && data.location.longitude && typeof L !== 'undefined' && map) {
+                        const lat = parseFloat(data.location.latitude);
+                        const lng = parseFloat(data.location.longitude);
+                        if (!isNaN(lat) && !isNaN(lng)) {
+                            selectedLocation = { lat, lng };
+                            if (marker) map.removeLayer(marker);
+                            marker = L.marker([lat, lng]).addTo(map).bindPopup('Property Location');
+                            map.setView([lat, lng], 13);
+                        }
+                    }
+                }
+                if (Array.isArray(data.amenities)) {
+                    data.amenities.forEach(val => {
+                        const cb = document.querySelector(`input[name="amenities"][value="${val}"]`);
+                        if (cb) cb.checked = true;
+                    });
+                }
+                if (data.highlights) {
+                    document.getElementById('highlight-1').value = data.highlights.highlight1 || '';
+                    document.getElementById('highlight-2').value = data.highlights.highlight2 || '';
+                    document.getElementById('highlight-3').value = data.highlights.highlight3 || '';
+                    document.getElementById('highlight-4').value = data.highlights.highlight4 || '';
+                }
+                if (data.currentStep && data.currentStep >= 1 && data.currentStep <= totalSteps) {
+                    currentStep = data.currentStep;
+                    showStep(currentStep);
+                }
+            } catch {}
+        }
+
+        function clearDraft() {
+            try { localStorage.removeItem(DRAFT_KEY); } catch {}
+        }
         
         // Add real-time validation
         document.addEventListener('input', function(e) {
@@ -1219,36 +1301,42 @@
             if (validateStep1()) {
                 currentStep = 2;
                 showStep(currentStep);
+                saveDraft();
             }
         });
         
         document.getElementById('back-basic-btn').addEventListener('click', function() {
             currentStep = 1;
             showStep(currentStep);
+            saveDraft();
         });
         
         document.getElementById('next-amenities-btn').addEventListener('click', function() {
             if (validateStep2()) {
                 currentStep = 3;
                 showStep(currentStep);
+                saveDraft();
             }
         });
         
         document.getElementById('back-location-btn').addEventListener('click', function() {
             currentStep = 2;
             showStep(currentStep);
+            saveDraft();
         });
         
         document.getElementById('next-photos-btn').addEventListener('click', function() {
             if (validateStep3()) {
                 currentStep = 4;
                 showStep(currentStep);
+                saveDraft();
             }
         });
         
         document.getElementById('back-amenities-btn').addEventListener('click', function() {
             currentStep = 3;
             showStep(currentStep);
+            saveDraft();
         });
         
         document.getElementById('submit-listing-btn').addEventListener('click', function() {
@@ -1261,7 +1349,22 @@
                 
                 // Redirect to home page
                 window.location.href = 'index.html';
+
+                // Clear draft
+                clearDraft();
             }
+        });
+
+        // Autosave on input changes (debounced)
+        let saveTimeout;
+        document.addEventListener('input', function(e){
+            if (!e.target.matches('input, textarea, select')) return;
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(saveDraft, 200);
+        });
+        document.addEventListener('change', function(e){
+            if (!e.target.matches('input, textarea, select')) return;
+            saveDraft();
         });
         
         // Initialize interactive map using Leaflet
@@ -1517,6 +1620,10 @@
             
             // Initialize mobile navigation
             initMobileNavigation();
+
+            // Load draft if exists
+            loadDraft();
+            window.addEventListener('beforeunload', saveDraft);
         });
         
         // Function to update navigation based on login status

@@ -269,8 +269,8 @@
                     <!-- Currency Selector -->
                     <div class="relative">
                         <select id="currency-selector" class="appearance-none bg-transparent border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 hover:border-[#003B95] focus:outline-none focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] cursor-pointer">
+                            <option value="KES">KSh</option>
                             <option value="USD">$ USD</option>
-                            <option value="KES">KES</option>
                             <option value="EUR">€ EUR</option>
                             <option value="GBP">£ GBP</option>
                         </select>
@@ -290,8 +290,8 @@
                     <!-- Mobile Currency Selector -->
                     <div class="relative mr-3">
                         <select id="mobile-currency-selector" class="appearance-none bg-transparent border border-gray-300 rounded-md px-2 py-1 text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#003B95] focus:border-[#003B95] cursor-pointer">
-                            <option value="USD">$</option>
                             <option value="KES">KSh</option>
+                            <option value="USD">$</option>
                             <option value="EUR">€</option>
                             <option value="GBP">£</option>
                         </select>
@@ -349,8 +349,8 @@
                 <div class="border-t border-gray-200 pt-6">
                     <label class="block text-sm font-medium text-gray-700 mb-3">Currency</label>
                     <div class="grid grid-cols-2 gap-2">
-                        <button class="currency-option px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003B95]" data-currency="USD">$ USD</button>
                         <button class="currency-option px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003B95]" data-currency="KES">KSh</button>
+                        <button class="currency-option px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003B95]" data-currency="USD">$ USD</button>
                         <button class="currency-option px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003B95]" data-currency="EUR">€ EUR</button>
                         <button class="currency-option px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003B95]" data-currency="GBP">£ GBP</button>
                     </div>
@@ -582,14 +582,15 @@
                             <label for="price-range" class="block text-sm font-medium text-gray-700 mb-1">Price Range</label>
                             <div class="relative group">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <i data-feather="dollar-sign" class="h-4 w-4 text-[#003B95]"></i>
+                                    <span class="text-[#003B95] font-medium text-sm">KSh</span>
                                 </div>
-                                <select id="price-range" name="price-range" class="w-full pl-10 pr-8 py-3 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200 appearance-none">
+                                <select id="price-range" name="price-range" class="w-full pl-12 pr-8 py-3 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200 appearance-none">
                                     <option>Any price</option>
-                                    <option>Under $50</option>
-                                    <option>$50 - $100</option>
-                                    <option>$100 - $200</option>
-                                    <option>$200+</option>
+                                    <option>Under KSh 5,000</option>
+                                    <option>KSh 5,000 - KSh 10,000</option>
+                                    <option>KSh 10,000 - KSh 20,000</option>
+                                    <option>KSh 20,000 - KSh 50,000</option>
+                                    <option>KSh 50,000+</option>
                                 </select>
                                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                     <i data-feather="chevron-down" class="h-4 w-4 text-gray-400"></i>
@@ -607,23 +608,36 @@
                     </div>
                 </div>
                 
+                <!-- Recent Searches -->
+                <div id="recent-searches" class="mt-4 pt-4 border-t border-gray-200" style="display: none;">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-sm font-medium text-gray-600">Recent searches:</span>
+                        <div id="recent-search-chips" class="flex flex-wrap gap-2">
+                            <!-- Recent search chips will be populated here -->
+                        </div>
+                        <button id="clear-recent-searches" class="text-xs text-gray-400 hover:text-gray-600 underline">
+                            Clear all
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Quick Filters -->
                 <div class="mt-4 pt-4 border-t border-gray-200">
                     <div class="flex flex-wrap items-center gap-2">
                         <span class="text-sm font-medium text-gray-600">Quick filters:</span>
-                        <button class="px-3 py-1.5 bg-gray-100 hover:bg-[#003B95] hover:text-white text-gray-600 rounded-full text-xs font-medium transition-all duration-200 touch-target">
+                        <button class="quick-filter-btn px-3 py-1.5 bg-gray-100 hover:bg-[#003B95] hover:text-white text-gray-600 rounded-full text-xs font-medium transition-all duration-200 touch-target" data-filter="wifi">
                             <i data-feather="wifi" class="h-3 w-3 inline mr-1"></i>
                             WiFi
                         </button>
-                        <button class="px-3 py-1.5 bg-gray-100 hover:bg-[#003B95] hover:text-white text-gray-600 rounded-full text-xs font-medium transition-all duration-200 touch-target">
+                        <button class="quick-filter-btn px-3 py-1.5 bg-gray-100 hover:bg-[#003B95] hover:text-white text-gray-600 rounded-full text-xs font-medium transition-all duration-200 touch-target" data-filter="parking">
                             <i data-feather="car" class="h-3 w-3 inline mr-1"></i>
                             Parking
                         </button>
-                        <button class="px-3 py-1.5 bg-gray-100 hover:bg-[#003B95] hover:text-white text-gray-600 rounded-full text-xs font-medium transition-all duration-200 touch-target">
+                        <button class="quick-filter-btn px-3 py-1.5 bg-gray-100 hover:bg-[#003B95] hover:text-white text-gray-600 rounded-full text-xs font-medium transition-all duration-200 touch-target" data-filter="breakfast">
                             <i data-feather="coffee" class="h-3 w-3 inline mr-1"></i>
                             Breakfast
                         </button>
-                        <button class="px-3 py-1.5 bg-gray-100 hover:bg-[#003B95] hover:text-white text-gray-600 rounded-full text-xs font-medium transition-all duration-200 touch-target">
+                        <button class="quick-filter-btn px-3 py-1.5 bg-gray-100 hover:bg-[#003B95] hover:text-white text-gray-600 rounded-full text-xs font-medium transition-all duration-200 touch-target" data-filter="security">
                             <i data-feather="shield" class="h-3 w-3 inline mr-1"></i>
                             Security
                         </button>
@@ -1564,7 +1578,7 @@
         
         // Load saved currency preference on page load
         document.addEventListener('DOMContentLoaded', function() {
-            const savedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
+            const savedCurrency = localStorage.getItem('selectedCurrency') || 'KES';
             if (document.getElementById('currency-selector')) {
                 document.getElementById('currency-selector').value = savedCurrency;
             }
@@ -1879,44 +1893,181 @@
             });
         }
         
+        // Global search functions
+        const RECENT_SEARCHES_KEY = 'chakabnb_recent_searches';
+        const MAX_RECENT_SEARCHES = 5;
+        
+        function getRecentSearches() {
+            try {
+                const stored = localStorage.getItem(RECENT_SEARCHES_KEY);
+                return stored ? JSON.parse(stored) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+        
+        function saveRecentSearches(searches) {
+            try {
+                localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(searches));
+            } catch (e) {
+                console.warn('Could not save recent searches:', e);
+            }
+        }
+        
+        function addRecentSearch(searchData) {
+            const recentSearches = getRecentSearches();
+            
+            // Remove duplicate if exists (check for exact match)
+            const filtered = recentSearches.filter(search => {
+                const isDuplicate = search.location === searchData.location && 
+                                  search.checkin === searchData.checkin && 
+                                  search.checkout === searchData.checkout &&
+                                  search.guests === searchData.guests &&
+                                  search.tripType === searchData.tripType;
+                return !isDuplicate;
+            });
+            
+            // Add new search to beginning
+            const newSearch = {
+                ...searchData,
+                timestamp: Date.now()
+            };
+            filtered.unshift(newSearch);
+            
+            // Keep only max number of searches
+            const limited = filtered.slice(0, MAX_RECENT_SEARCHES);
+            saveRecentSearches(limited);
+            
+            return limited;
+        }
+        
+        function getFormData() {
+            const isMobile = window.innerWidth < 768;
+            return {
+                location: isMobile ? 
+                    document.getElementById('mobile-location').value : 
+                    document.getElementById('location').value,
+                checkIn: isMobile ? 
+                    document.getElementById('mobile-check-in').value : 
+                    document.getElementById('check-in').value,
+                checkOut: isMobile ? 
+                    document.getElementById('mobile-check-out').value : 
+                    document.getElementById('check-out').value,
+                guests: isMobile ? 
+                    document.getElementById('mobile-guests').value : 
+                    document.getElementById('guests').value,
+                tripType: isMobile ? 
+                    document.getElementById('mobile-trip-type').value : 
+                    document.getElementById('trip-type').value,
+                priceRange: document.getElementById('price-range').value
+            };
+        }
+        
+        function buildSearchParams(searchData) {
+            const params = new URLSearchParams();
+            if (searchData.location) params.set('location', searchData.location);
+            if (searchData.checkIn) params.set('checkin', searchData.checkIn);
+            if (searchData.checkOut) params.set('checkout', searchData.checkOut);
+            if (searchData.guests) params.set('guests', searchData.guests);
+            if (searchData.tripType) params.set('triptype', searchData.tripType);
+            if (searchData.priceRange) params.set('pricerange', searchData.priceRange);
+            if (searchData.amenities) params.set('amenities', searchData.amenities);
+            return params;
+        }
+        
+        function performSearchWithData(searchData) {
+            // Add to recent searches if it's a meaningful search
+            if (searchData.location || searchData.checkIn || searchData.checkOut) {
+                addRecentSearch(searchData);
+            }
+            
+            // Build search URL
+            const params = buildSearchParams(searchData);
+            
+            // Redirect to search results
+            window.location.href = `search-results.html?${params.toString()}`;
+        }
+        
+        function renderRecentSearches() {
+            const recentSearches = getRecentSearches();
+            const container = document.getElementById('recent-search-chips');
+            const section = document.getElementById('recent-searches');
+            
+            if (!container || !section) return;
+            
+            if (recentSearches.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+            
+            section.style.display = 'block';
+            container.innerHTML = '';
+            
+            recentSearches.forEach((search, index) => {
+                const chip = document.createElement('button');
+                chip.className = 'px-3 py-1.5 bg-blue-50 hover:bg-[#003B95] hover:text-white text-blue-600 rounded-full text-xs font-medium transition-all duration-200 touch-target flex items-center gap-1';
+                
+                const location = search.location || 'Anywhere';
+                const dates = search.checkin && search.checkout ? 
+                    `${new Date(search.checkin).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${new Date(search.checkout).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : 
+                    'Any dates';
+                
+                chip.innerHTML = `
+                    <span>${location}</span>
+                    <span class="text-gray-400">•</span>
+                    <span>${dates}</span>
+                `;
+                
+                chip.addEventListener('click', () => {
+                    performSearchWithData(search);
+                });
+                
+                container.appendChild(chip);
+            });
+        }
+        
+        function clearRecentSearches() {
+            saveRecentSearches([]);
+            renderRecentSearches();
+        }
+        
         // Search functionality
         function initSearchFunctionality() {
             const mobileSearchBtn = document.getElementById('mobile-search-btn');
             const desktopSearchBtn = document.getElementById('desktop-search-btn');
             
             function performSearch() {
-                // Get form data based on screen size
-                const isMobile = window.innerWidth < 768;
-                const location = isMobile ? 
-                    document.getElementById('mobile-location').value : 
-                    document.getElementById('location').value;
-                const checkIn = isMobile ? 
-                    document.getElementById('mobile-check-in').value : 
-                    document.getElementById('check-in').value;
-                const checkOut = isMobile ? 
-                    document.getElementById('mobile-check-out').value : 
-                    document.getElementById('check-out').value;
-                const guests = isMobile ? 
-                    document.getElementById('mobile-guests').value : 
-                    document.getElementById('guests').value;
-                const tripType = isMobile ? 
-                    document.getElementById('mobile-trip-type').value : 
-                    document.getElementById('trip-type').value;
-                const priceRange = document.getElementById('price-range').value;
-                
-                // Build search URL
-                const params = new URLSearchParams();
-                if (location) params.set('location', location);
-                if (checkIn) params.set('checkin', checkIn);
-                if (checkOut) params.set('checkout', checkOut);
-                if (guests) params.set('guests', guests);
-                if (tripType) params.set('triptype', tripType);
-                if (priceRange) params.set('pricerange', priceRange);
-                
-                // Redirect to search results
-                window.location.href = `search-results.html?${params.toString()}`;
+                const searchData = getFormData();
+                performSearchWithData(searchData);
             }
             
+            // Quick filter functionality
+            function initQuickFilters() {
+                const quickFilterBtns = document.querySelectorAll('.quick-filter-btn');
+                
+                quickFilterBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const filter = btn.getAttribute('data-filter');
+                        const searchData = getFormData();
+                        
+                        // Add the selected amenity to search data
+                        if (!searchData.amenities) {
+                            searchData.amenities = filter;
+                        } else {
+                            const amenities = searchData.amenities.split(',');
+                            if (!amenities.includes(filter)) {
+                                amenities.push(filter);
+                                searchData.amenities = amenities.join(',');
+                            }
+                        }
+                        
+                        // Perform search with the filter
+                        performSearchWithData(searchData);
+                    });
+                });
+            }
+            
+            // Initialize search functionality
             if (mobileSearchBtn) {
                 mobileSearchBtn.addEventListener('click', performSearch);
             }
@@ -1934,7 +2085,103 @@
                     }
                 });
             });
+            
+            // Initialize quick filters
+            initQuickFilters();
+            
+            // Handle URL parameters to populate form fields
+            function populateFormFromURL() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const isMobile = window.innerWidth < 768;
+                
+                // Populate form fields if URL parameters exist
+                const location = urlParams.get('location');
+                const checkin = urlParams.get('checkin');
+                const checkout = urlParams.get('checkout');
+                const guests = urlParams.get('guests');
+                const triptype = urlParams.get('triptype');
+                const pricerange = urlParams.get('pricerange');
+                
+                if (location) {
+                    const locationField = isMobile ? 
+                        document.getElementById('mobile-location') : 
+                        document.getElementById('location');
+                    if (locationField) locationField.value = location;
+                }
+                
+                if (checkin) {
+                    const checkinField = isMobile ? 
+                        document.getElementById('mobile-check-in') : 
+                        document.getElementById('check-in');
+                    if (checkinField) checkinField.value = checkin;
+                }
+                
+                if (checkout) {
+                    const checkoutField = isMobile ? 
+                        document.getElementById('mobile-check-out') : 
+                        document.getElementById('check-out');
+                    if (checkoutField) checkoutField.value = checkout;
+                }
+                
+                if (guests) {
+                    const guestsField = isMobile ? 
+                        document.getElementById('mobile-guests') : 
+                        document.getElementById('guests');
+                    if (guestsField) guestsField.value = guests;
+                }
+                
+                if (triptype) {
+                    const triptypeField = isMobile ? 
+                        document.getElementById('mobile-trip-type') : 
+                        document.getElementById('trip-type');
+                    if (triptypeField) triptypeField.value = triptype;
+                }
+                
+                if (pricerange) {
+                    const pricerangeField = document.getElementById('price-range');
+                    if (pricerangeField) pricerangeField.value = pricerange;
+                }
+            }
+            
+            // Initialize form population from URL
+            populateFormFromURL();
         }
+        
+        // Test function to add sample searches (for debugging)
+        function addTestSearches() {
+            console.log('Adding test searches...');
+            const testSearches = [
+                { location: 'Nairobi', checkIn: '2024-12-15', checkOut: '2024-12-20', guests: '2', tripType: 'business' },
+                { location: 'Mombasa', checkIn: '2024-12-22', checkOut: '2024-12-27', guests: '4', tripType: 'leisure' },
+                { location: 'Nakuru', checkIn: '2025-01-05', checkOut: '2025-01-10', guests: '2', tripType: 'business' }
+            ];
+            
+            testSearches.forEach((search, index) => {
+                setTimeout(() => {
+                    console.log(`Adding test search ${index + 1}:`, search);
+                    addRecentSearch(search);
+                    renderRecentSearches();
+                }, index * 100);
+            });
+        }
+        
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize recent searches display
+            renderRecentSearches();
+            
+            // Clear recent searches button
+            const clearBtn = document.getElementById('clear-recent-searches');
+            if (clearBtn) {
+                clearBtn.addEventListener('click', clearRecentSearches);
+            }
+            
+            // Initialize search functionality
+            initSearchFunctionality();
+            
+            // Add test function to window for manual testing
+            window.addTestSearches = addTestSearches;
+        });
     </script>
 </body>
 </html>
