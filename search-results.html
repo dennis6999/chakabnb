@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - ChakaBNB</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        /* Mobile Navigation */
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+        .mobile-overlay {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+        .mobile-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Touch-friendly interactions */
+        .touch-target {
+            min-height: 44px;
+            min-width: 44px;
+        }
+        
+        /* Filter sidebar */
+        .filter-sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .filter-sidebar.mobile-hidden {
+            transform: translateX(-100%);
+        }
+        
+        /* Mobile filter overlay */
+        .filter-overlay {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .filter-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Property card hover effects */
+        .property-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 59, 149, 0.15);
+        }
+        
+        /* Price range slider */
+        .price-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            border-radius: 2px;
+            background: #e5e7eb;
+            outline: none;
+        }
+        
+        .price-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #003B95;
+            cursor: pointer;
+        }
+        
+        .price-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #003B95;
+            cursor: pointer;
+            border: none;
+        }
+        
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Mobile-specific optimizations */
+        @media (max-width: 1023px) {
+            .filter-sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 50;
+                background: white;
+                width: 320px;
+                overflow-y: auto;
+                transform: translateX(-100%);
+            }
+            
+            .filter-sidebar.open {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="index.html">
+                            <img src="logo.png" alt="ChakaBNB Logo" class="h-36 w-auto -ml-4 sm:-ml-6 lg:-ml-8">
+                        </a>
+                    </div>
+                </div>
+                <div class="hidden md:ml-6 md:flex md:items-center md:space-x-8">
+                    <a href="list-property.html" id="list-property-link" class="text-gray-900 hover:text-[#003B95] px-3 py-2 text-sm font-medium">List your property</a>
+                    
+                    <!-- Currency Selector -->
+                    <div class="relative">
+                        <select id="currency-selector" class="appearance-none bg-transparent border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 hover:border-[#003B95] focus:outline-none focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] cursor-pointer">
+                            <option value="USD">$ USD</option>
+                            <option value="KES">KES</option>
+                            <option value="EUR">€ EUR</option>
+                            <option value="GBP">£ GBP</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                            <i data-feather="chevron-down" class="h-4 w-4 text-gray-400"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- User status indicator -->
+                    <div id="user-status" class="hidden">
+                        <span id="user-name-display" class="text-sm text-gray-600"></span>
+                    </div>
+                    
+                    <a href="login.html" id="login-link" class="bg-[#003B95] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#002b70]">Sign in</a>
+                </div>
+                <div class="flex items-center md:hidden">
+                    <!-- Mobile Currency Selector -->
+                    <div class="relative mr-3">
+                        <select id="mobile-currency-selector" class="appearance-none bg-transparent border border-gray-300 rounded-md px-2 py-1 text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#003B95] focus:border-[#003B95] cursor-pointer">
+                            <option value="USD">$</option>
+                            <option value="KES">KSh</option>
+                            <option value="EUR">€</option>
+                            <option value="GBP">£</option>
+                        </select>
+                    </div>
+                    <button type="button" id="mobile-menu-button" class="touch-target inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#003B95]">
+                        <i data-feather="menu" class="h-6 w-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-overlay" class="mobile-overlay fixed inset-0 bg-black bg-opacity-50 z-50 md:hidden"></div>
+    
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu fixed inset-y-0 left-0 z-50 w-80 bg-white shadow-xl md:hidden">
+        <div class="flex flex-col h-full">
+            <!-- Mobile Menu Header -->
+            <div class="flex items-center justify-between p-4 border-b border-gray-200">
+                <img src="logo.png" alt="ChakaBNB Logo" class="h-8 w-auto">
+                <button id="mobile-menu-close" class="touch-target p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100">
+                    <i data-feather="x" class="h-6 w-6"></i>
+                </button>
+            </div>
+            
+            <!-- Mobile Menu Content -->
+            <div class="flex-1 px-4 py-6 space-y-6">
+                <!-- User Status (Mobile) -->
+                <div id="mobile-user-status" class="hidden">
+                    <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                        <div class="w-10 h-10 bg-[#003B95] rounded-full flex items-center justify-center">
+                            <i data-feather="user" class="h-5 w-5 text-white"></i>
+                        </div>
+                        <div>
+                            <p id="mobile-user-name" class="text-sm font-medium text-gray-900"></p>
+                            <p class="text-xs text-gray-500">Account</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Links -->
+                <div class="space-y-1">
+                    <a href="index.html" class="flex items-center px-3 py-3 text-base font-medium text-gray-900 rounded-lg hover:bg-gray-100 touch-target">
+                        <i data-feather="home" class="h-5 w-5 mr-3"></i>
+                        Browse Properties
+                    </a>
+                    <a href="list-property.html" id="mobile-list-property-link" class="flex items-center px-3 py-3 text-base font-medium text-gray-900 rounded-lg hover:bg-gray-100 touch-target">
+                        <i data-feather="plus-circle" class="h-5 w-5 mr-3"></i>
+                        List Your Property
+                    </a>
+                </div>
+                
+                <!-- Currency Selector (Mobile) -->
+                <div class="border-t border-gray-200 pt-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Currency</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button class="currency-option px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003B95]" data-currency="USD">$ USD</button>
+                        <button class="currency-option px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003B95]" data-currency="KES">KSh</button>
+                        <button class="currency-option px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003B95]" data-currency="EUR">€ EUR</button>
+                        <button class="currency-option px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#003B95]" data-currency="GBP">£ GBP</button>
+                    </div>
+                </div>
+                
+                <!-- Account Actions -->
+                <div class="border-t border-gray-200 pt-6">
+                    <div id="mobile-login-section" class="space-y-3">
+                        <a href="login.html" class="block w-full bg-[#003B95] text-white text-center py-3 px-4 rounded-md font-medium hover:bg-[#002b70] touch-target">
+                            Sign In
+                        </a>
+                        <a href="register.html" class="block w-full border border-[#003B95] text-[#003B95] text-center py-3 px-4 rounded-md font-medium hover:bg-[#003B95] hover:text-white touch-target">
+                            Create Account
+                        </a>
+                    </div>
+                    <div id="mobile-logout-section" class="hidden">
+                        <button id="mobile-logout" class="block w-full bg-red-600 text-white text-center py-3 px-4 rounded-md font-medium hover:bg-red-700 touch-target">
+                            Sign Out
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Header -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Search Results</h1>
+                    <p id="search-location" class="text-gray-600 mt-1">Chaka Town, Nyeri</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="filter-toggle" class="lg:hidden bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-md text-sm font-medium">
+                        <i data-feather="filter" class="h-4 w-4 mr-2"></i>
+                        Filters
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm text-gray-600">Sort by:</span>
+                        <select id="sort-select" class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#003B95] bg-white">
+                            <option value="relevance">Relevance</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="rating">Highest Rated</option>
+                            <option value="newest">Newest</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Overlay for Mobile -->
+    <div id="filter-overlay" class="filter-overlay fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"></div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="flex flex-col lg:flex-row gap-6">
+            <!-- Filters Sidebar -->
+            <div id="filter-sidebar" class="filter-sidebar lg:w-80 bg-white rounded-lg shadow-sm p-6 h-fit">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900">Filters</h2>
+                    <button id="close-filters" class="lg:hidden p-2 hover:bg-gray-100 rounded-md">
+                        <i data-feather="x" class="h-5 w-5"></i>
+                    </button>
+                </div>
+
+                <!-- Price Range -->
+                <div class="mb-6">
+                    <h3 class="text-sm font-medium text-gray-900 mb-3">Price Range</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-2">
+                            <input type="number" id="min-price" placeholder="Min" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#003B95]">
+                            <span class="text-gray-500">-</span>
+                            <input type="number" id="max-price" placeholder="Max" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#003B95]">
+                        </div>
+                        <input type="range" id="price-range-slider" class="price-slider w-full" min="1000" max="15000" value="8000">
+                        <div class="flex justify-between text-xs text-gray-500">
+                            <span>KSh 1,000</span>
+                            <span>KSh 15,000</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Property Type -->
+                <div class="mb-6">
+                    <h3 class="text-sm font-medium text-gray-900 mb-3">Property Type</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" name="property-type" value="apartment" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                            <span class="ml-2 text-sm text-gray-700">Apartment</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="property-type" value="house" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                            <span class="ml-2 text-sm text-gray-700">House</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="property-type" value="cottage" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                            <span class="ml-2 text-sm text-gray-700">Cottage</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="property-type" value="lodge" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                            <span class="ml-2 text-sm text-gray-700">Lodge</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Amenities -->
+                <div class="mb-6">
+                    <h3 class="text-sm font-medium text-gray-900 mb-3">Amenities</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" name="amenities" value="wifi" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                            <span class="ml-2 text-sm text-gray-700">Free WiFi</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="amenities" value="parking" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                            <span class="ml-2 text-sm text-gray-700">Free Parking</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="amenities" value="kitchen" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                            <span class="ml-2 text-sm text-gray-700">Kitchen</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="amenities" value="ac" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                            <span class="ml-2 text-sm text-gray-700">Air Conditioning</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="amenities" value="pool" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                            <span class="ml-2 text-sm text-gray-700">Swimming Pool</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Bedrooms -->
+                <div class="mb-6">
+                    <h3 class="text-sm font-medium text-gray-900 mb-3">Bedrooms</h3>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" name="bedrooms" value="1" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                            <span class="ml-2 text-sm text-gray-700">1 bedroom</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="bedrooms" value="2" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                            <span class="ml-2 text-sm text-gray-700">2 bedrooms</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="bedrooms" value="3" class="h-4 w-4 text-[#003B95] focus:ring-[#003B95] border-gray-300 rounded">
+                            <span class="ml-2 text-sm text-gray-700">3+ bedrooms</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button id="apply-filters" class="w-full bg-[#003B95] text-white py-2 px-4 rounded-md hover:bg-[#002b70] font-medium">
+                    Apply Filters
+                </button>
+            </div>
+
+            <!-- Results Section -->
+            <div class="flex-1">
+                <!-- Results Header -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+                    <div>
+                        <p id="results-count" class="text-gray-600">24 properties found</p>
+                        <p id="search-dates" class="text-sm text-gray-500">Dec 15-20, 2023</p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <!-- Mobile Sort Selector -->
+                        <div class="lg:hidden flex items-center space-x-2">
+                            <span class="text-sm text-gray-600">Sort:</span>
+                            <select id="mobile-sort-select" class="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#003B95] bg-white">
+                                <option value="relevance">Relevance</option>
+                                <option value="price-low">Price: Low to High</option>
+                                <option value="price-high">Price: High to Low</option>
+                                <option value="rating">Highest Rated</option>
+                                <option value="newest">Newest</option>
+                            </select>
+                        </div>
+                        <button id="mobile-filter-toggle" class="lg:hidden bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-md text-sm font-medium touch-target">
+                            <i data-feather="filter" class="h-4 w-4 mr-2"></i>
+                            Filters
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Grid -->
+                <div id="results-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <!-- Property cards will be dynamically loaded here -->
+                </div>
+
+                <!-- Results Per Page Selector -->
+                <div class="mt-6 flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm text-gray-600">Results per page:</span>
+                        <select id="results-per-page" class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#003B95]">
+                            <option value="6">6</option>
+                            <option value="12">12</option>
+                            <option value="24">24</option>
+                            <option value="48">48</option>
+                        </select>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        Showing <span id="showing-start">1</span>-<span id="showing-end">6</span> of <span id="total-results">24</span> results
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="mt-6 flex items-center justify-center">
+                    <nav class="flex items-center space-x-2" id="pagination-nav">
+                        <!-- Pagination buttons will be dynamically generated here -->
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white mt-16">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Explore</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Destinations</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Experiences</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Travel Guides</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Special Offers</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Company</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Careers</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Press</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Support</h3>
+                    <ul class="mt-4 space-y-4">
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Help Center</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Safety Information</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Cancellation Options</a></li>
+                        <li><a href="#" class="text-base text-gray-300 hover:text-white">Report Issue</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">Connect</h3>
+                    <div class="mt-4 flex space-x-6">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i data-feather="facebook" class="h-6 w-6"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i data-feather="instagram" class="h-6 w-6"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i data-feather="twitter" class="h-6 w-6"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i data-feather="youtube" class="h-6 w-6"></i>
+                        </a>
+                    </div>
+                    <div class="mt-6">
+                        <p class="text-sm text-gray-400">Download our app</p>
+                        <div class="mt-2 flex space-x-4">
+                            <a href="#" class="flex items-center">
+                                <i data-feather="smartphone" class="mr-2"></i>
+                                <span class="text-sm">App Store</span>
+                            </a>
+                            <a href="#" class="flex items-center">
+                                <i data-feather="smartphone" class="mr-2"></i>
+                                <span class="text-sm">Google Play</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 border-t border-gray-800 pt-8">
+                <div class="md:flex md:items-center md:justify-between">
+                    <div class="flex space-x-6 md:order-2">
+                        <a href="#" class="text-sm text-gray-400 hover:text-white">Privacy</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white">Terms</a>
+                        <a href="#" class="text-sm text-gray-400 hover:text-white">Cookie Policy</a>
+                    </div>
+                    <p class="mt-8 text-base text-gray-400 md:mt-0 md:order-1">
+                        &copy; 2023 ChakaBNB. All rights reserved.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+        feather.replace();
+        
+        // Sample property data
+        const properties = [
+            {
+                id: 1,
+                title: "Luxury Cottage with Mountain View",
+                type: "cottage",
+                price: 5500,
+                rating: 4.9,
+                reviews: 24,
+                bedrooms: 2,
+                bathrooms: 1,
+                guests: 4,
+                amenities: ["wifi", "parking", "kitchen"],
+                image: "http://static.photos/indoor/640x360/5",
+                badge: "Popular",
+                dateAdded: "2023-11-20"
+            },
+            {
+                id: 2,
+                title: "Modern Apartment in Town Center",
+                type: "apartment",
+                price: 3800,
+                rating: 4.7,
+                reviews: 18,
+                bedrooms: 1,
+                bathrooms: 1,
+                guests: 2,
+                amenities: ["wifi", "tv", "ac"],
+                image: "http://static.photos/workspace/640x360/6",
+                badge: "Deal",
+                dateAdded: "2023-12-05"
+            },
+            {
+                id: 3,
+                title: "Cozy Lodge Near Game Reserve",
+                type: "lodge",
+                price: 7200,
+                rating: 4.8,
+                reviews: 31,
+                bedrooms: 3,
+                bathrooms: 2,
+                guests: 6,
+                amenities: ["wifi", "parking", "pool"],
+                image: "http://static.photos/indoor/640x360/7",
+                badge: "New"
+            },
+            {
+                id: 4,
+                title: "Cozy Studio Apartment",
+                type: "apartment",
+                price: 2200,
+                rating: 4.7,
+                reviews: 15,
+                bedrooms: 1,
+                bathrooms: 1,
+                guests: 2,
+                amenities: ["wifi", "tv", "kitchen"],
+                image: "http://static.photos/indoor/640x360/8",
+                badge: "New"
+            },
+            {
+                id: 5,
+                title: "Luxury Mountain Villa",
+                type: "house",
+                price: 8500,
+                rating: 4.9,
+                reviews: 42,
+                bedrooms: 4,
+                bathrooms: 3,
+                guests: 8,
+                amenities: ["wifi", "parking", "pool", "kitchen"],
+                image: "http://static.photos/outdoor/640x360/9",
+                badge: "Premium"
+            },
+            {
+                id: 6,
+                title: "Executive Business Suite",
+                type: "apartment",
+                price: 4200,
+                rating: 4.8,
+                reviews: 28,
+                bedrooms: 2,
+                bathrooms: 2,
+                guests: 4,
+                amenities: ["wifi", "tv", "ac", "kitchen"],
+                image: "http://static.photos/indoor/640x360/10",
+                badge: "Business"
+            },
+            {
+                id: 7,
+                title: "Riverside Cabin Retreat",
+                type: "cottage",
+                price: 3800,
+                rating: 4.6,
+                reviews: 19,
+                bedrooms: 2,
+                bathrooms: 1,
+                guests: 4,
+                amenities: ["wifi", "parking", "kitchen"],
+                image: "http://static.photos/outdoor/640x360/11",
+                badge: "Nature"
+            },
+            {
+                id: 8,
+                title: "Urban Loft with City Views",
+                type: "apartment",
+                price: 4500,
+                rating: 4.8,
+                reviews: 33,
+                bedrooms: 2,
+                bathrooms: 2,
+                guests: 4,
+                amenities: ["wifi", "tv", "ac", "kitchen"],
+                image: "http://static.photos/indoor/640x360/12",
+                badge: "Trending"
+            },
+            {
+                id: 9,
+                title: "Garden Villa with Pool",
+                type: "house",
+                price: 6800,
+                rating: 4.9,
+                reviews: 27,
+                bedrooms: 3,
+                bathrooms: 2,
+                guests: 6,
+                amenities: ["wifi", "parking", "pool", "kitchen"],
+                image: "http://static.photos/outdoor/640x360/13",
+                badge: "Luxury"
+            },
+            {
+                id: 10,
+                title: "Cozy Studio Downtown",
+                type: "apartment",
+                price: 2800,
+                rating: 4.5,
+                reviews: 14,
+                bedrooms: 1,
+                bathrooms: 1,
+                guests: 2,
+                amenities: ["wifi", "tv"],
+                image: "http://static.photos/indoor/640x360/14",
+                badge: "Budget"
+            },
+            {
+                id: 11,
+                title: "Mountain Lodge Experience",
+                type: "lodge",
+                price: 9200,
+                rating: 4.9,
+                reviews: 45,
+                bedrooms: 4,
+                bathrooms: 3,
+                guests: 8,
+                amenities: ["wifi", "parking", "pool", "kitchen", "ac"],
+                image: "http://static.photos/outdoor/640x360/15",
+                badge: "Premium"
+            },
+            {
+                id: 12,
+                title: "Beachside Bungalow",
+                type: "cottage",
+                price: 5200,
+                rating: 4.7,
+                reviews: 22,
+                bedrooms: 2,
+                bathrooms: 1,
+                guests: 4,
+                amenities: ["wifi", "parking", "kitchen"],
+                image: "http://static.photos/outdoor/640x360/16",
+                badge: "Beach"
+            },
+            {
+                id: 13,
+                title: "Modern Family Home",
+                type: "house",
+                price: 7500,
+                rating: 4.8,
+                reviews: 36,
+                bedrooms: 3,
+                bathrooms: 2,
+                guests: 6,
+                amenities: ["wifi", "parking", "kitchen", "ac"],
+                image: "http://static.photos/indoor/640x360/17",
+                badge: "Family"
+            },
+            {
+                id: 14,
+                title: "Executive Penthouse",
+                type: "apartment",
+                price: 12000,
+                rating: 4.9,
+                reviews: 18,
+                bedrooms: 2,
+                bathrooms: 2,
+                guests: 4,
+                amenities: ["wifi", "tv", "ac", "kitchen", "pool"],
+                image: "http://static.photos/indoor/640x360/18",
+                badge: "Executive"
+            },
+            {
+                id: 15,
+                title: "Rustic Farmhouse",
+                type: "house",
+                price: 4800,
+                rating: 4.6,
+                reviews: 29,
+                bedrooms: 3,
+                bathrooms: 2,
+                guests: 6,
+                amenities: ["wifi", "parking", "kitchen"],
+                image: "http://static.photos/outdoor/640x360/19",
+                badge: "Rustic"
+            },
+            {
+                id: 16,
+                title: "Minimalist Studio",
+                type: "apartment",
+                price: 3200,
+                rating: 4.4,
+                reviews: 12,
+                bedrooms: 1,
+                bathrooms: 1,
+                guests: 2,
+                amenities: ["wifi", "tv"],
+                image: "http://static.photos/indoor/640x360/20",
+                badge: "Minimal"
+            },
+            {
+                id: 17,
+                title: "Safari Tent Experience",
+                type: "lodge",
+                price: 8500,
+                rating: 4.8,
+                reviews: 41,
+                bedrooms: 2,
+                bathrooms: 1,
+                guests: 4,
+                amenities: ["wifi", "parking", "kitchen"],
+                image: "http://static.photos/outdoor/640x360/21",
+                badge: "Safari"
+            },
+            {
+                id: 18,
+                title: "Historic Townhouse",
+                type: "house",
+                price: 6200,
+                rating: 4.7,
+                reviews: 25,
+                bedrooms: 3,
+                bathrooms: 2,
+                guests: 6,
+                amenities: ["wifi", "parking", "kitchen", "ac"],
+                image: "http://static.photos/indoor/640x360/22",
+                badge: "Historic",
+                dateAdded: "2023-11-15"
+            },
+            {
+                id: 19,
+                title: "Luxury Sky Villa",
+                type: "apartment",
+                price: 15000,
+                rating: 4.9,
+                reviews: 52,
+                bedrooms: 3,
+                bathrooms: 3,
+                guests: 6,
+                amenities: ["wifi", "tv", "ac", "kitchen", "pool"],
+                image: "http://static.photos/indoor/640x360/23",
+                badge: "Luxury",
+                dateAdded: "2023-12-01"
+            },
+            {
+                id: 20,
+                title: "Budget Backpacker Hostel",
+                type: "apartment",
+                price: 1200,
+                rating: 4.2,
+                reviews: 8,
+                bedrooms: 1,
+                bathrooms: 1,
+                guests: 2,
+                amenities: ["wifi"],
+                image: "http://static.photos/indoor/640x360/24",
+                badge: "Budget",
+                dateAdded: "2023-10-20"
+            }
+        ];
+
+        let filteredProperties = [...properties];
+        let currentPage = 1;
+        let itemsPerPage = 6;
+        let totalPages = 1;
+        let currentSort = 'relevance';
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSearchParams();
+            renderProperties();
+            initMobileNavigation();
+            initFilters();
+            initPagination();
+            initSorting();
+            updateUserNavigation();
+            checkListPropertyAccess();
+            
+            // Load saved currency preference
+            const savedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
+            if (document.getElementById('currency-selector')) {
+                document.getElementById('currency-selector').value = savedCurrency;
+            }
+            if (document.getElementById('mobile-currency-selector')) {
+                document.getElementById('mobile-currency-selector').value = savedCurrency;
+            }
+        });
+
+        // Load search parameters from URL
+        function loadSearchParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const location = urlParams.get('location') || 'Chaka Town, Nyeri';
+            const checkIn = urlParams.get('checkin') || '';
+            const checkOut = urlParams.get('checkout') || '';
+            const guests = urlParams.get('guests') || '2 guests';
+            
+            document.getElementById('search-location').textContent = location;
+            if (checkIn && checkOut) {
+                document.getElementById('search-dates').textContent = `${checkIn} - ${checkOut}`;
+            }
+        }
+
+        // Render properties
+        function renderProperties() {
+            const grid = document.getElementById('results-grid');
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageProperties = filteredProperties.slice(startIndex, endIndex);
+            
+            // Update pagination info
+            updatePaginationInfo();
+            
+            grid.innerHTML = pageProperties.map(property => `
+                <div class="bg-white rounded-xl overflow-hidden shadow-md property-card transition-all duration-300" data-aos="fade-up">
+                    <div class="relative">
+                        <img src="${property.image}" alt="${property.title}" class="w-full h-48 object-cover">
+                        ${property.badge ? `<div class="absolute top-3 right-3 bg-[#FFB700] text-white text-xs font-bold px-2 py-1 rounded-full">${property.badge}</div>` : ''}
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-lg font-bold text-gray-900 leading-tight flex-1 pr-2">${property.title}</h3>
+                            <div class="flex items-center">
+                                <i data-feather="star" class="text-yellow-400 fill-current h-4 w-4"></i>
+                                <span class="ml-1 text-gray-900 text-sm">${property.rating}</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-3">${property.bedrooms} bed${property.bedrooms > 1 ? 's' : ''} · ${property.bathrooms} bath${property.bathrooms > 1 ? 's' : ''} · ${property.guests} guest${property.guests > 1 ? 's' : ''}</p>
+                        <div class="flex flex-wrap gap-1 mb-3">
+                            ${property.amenities.slice(0, 2).map(amenity => `
+                                <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
+                                    <i data-feather="${getAmenityIcon(amenity)}" class="h-3 w-3 mr-1"></i> ${getAmenityName(amenity)}
+                                </span>
+                            `).join('')}
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-xs text-gray-500">From</p>
+                                <p class="text-lg font-bold text-[#003B95]">KSh ${property.price.toLocaleString()} <span class="text-sm font-normal text-gray-500">/ night</span></p>
+                            </div>
+                            <a href="property-detail.html" class="text-sm font-medium text-[#003B95] hover:text-[#002b70]">
+                                View details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            feather.replace();
+            updateResultsCount();
+            renderPagination();
+        }
+
+        // Helper functions
+        function getAmenityIcon(amenity) {
+            const icons = {
+                wifi: 'wifi',
+                parking: 'car',
+                kitchen: 'home',
+                tv: 'tv',
+                ac: 'wind',
+                pool: 'droplet'
+            };
+            return icons[amenity] || 'check';
+        }
+
+        function getAmenityName(amenity) {
+            const names = {
+                wifi: 'WiFi',
+                parking: 'Parking',
+                kitchen: 'Kitchen',
+                tv: 'TV',
+                ac: 'AC',
+                pool: 'Pool'
+            };
+            return names[amenity] || amenity;
+        }
+
+        function updateResultsCount() {
+            const sortText = getSortDisplayText();
+            document.getElementById('results-count').textContent = `${filteredProperties.length} properties found${sortText}`;
+        }
+
+        function getSortDisplayText() {
+            switch (currentSort) {
+                case 'price-low':
+                    return ' (sorted by price: low to high)';
+                case 'price-high':
+                    return ' (sorted by price: high to low)';
+                case 'rating':
+                    return ' (sorted by highest rated)';
+                case 'newest':
+                    return ' (sorted by newest)';
+                default:
+                    return '';
+            }
+        }
+
+        // Pagination functions
+        function initPagination() {
+            const resultsPerPageSelect = document.getElementById('results-per-page');
+            if (resultsPerPageSelect) {
+                resultsPerPageSelect.addEventListener('change', function() {
+                    itemsPerPage = parseInt(this.value);
+                    currentPage = 1;
+                    calculateTotalPages();
+                    renderProperties();
+                });
+            }
+        }
+
+        function calculateTotalPages() {
+            totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
+            if (currentPage > totalPages) {
+                currentPage = Math.max(1, totalPages);
+            }
+        }
+
+        function updatePaginationInfo() {
+            const startIndex = (currentPage - 1) * itemsPerPage + 1;
+            const endIndex = Math.min(currentPage * itemsPerPage, filteredProperties.length);
+            
+            document.getElementById('showing-start').textContent = startIndex;
+            document.getElementById('showing-end').textContent = endIndex;
+            document.getElementById('total-results').textContent = filteredProperties.length;
+        }
+
+        function renderPagination() {
+            const paginationNav = document.getElementById('pagination-nav');
+            if (!paginationNav) return;
+
+            calculateTotalPages();
+            
+            if (totalPages <= 1) {
+                paginationNav.innerHTML = '';
+                return;
+            }
+
+            let paginationHTML = '';
+            
+            // Previous button
+            paginationHTML += `
+                <button id="prev-page" class="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md border border-gray-300" 
+                        ${currentPage === 1 ? 'disabled' : ''}>
+                    <i data-feather="chevron-left" class="h-4 w-4 inline mr-1"></i>
+                    Previous
+                </button>
+            `;
+
+            // Page numbers
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+
+            // First page + ellipsis
+            if (startPage > 1) {
+                paginationHTML += `
+                    <button class="page-btn px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 rounded-md border border-gray-300" data-page="1">1</button>
+                `;
+                if (startPage > 2) {
+                    paginationHTML += `<span class="px-3 py-2 text-sm text-gray-500">...</span>`;
+                }
+            }
+
+            // Page numbers
+            for (let i = startPage; i <= endPage; i++) {
+                const isActive = i === currentPage;
+                paginationHTML += `
+                    <button class="page-btn px-3 py-2 text-sm font-medium rounded-md border ${
+                        isActive 
+                            ? 'bg-[#003B95] text-white border-[#003B95]' 
+                            : 'text-gray-700 hover:text-gray-900 border-gray-300'
+                    }" data-page="${i}">${i}</button>
+                `;
+            }
+
+            // Ellipsis + last page
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    paginationHTML += `<span class="px-3 py-2 text-sm text-gray-500">...</span>`;
+                }
+                paginationHTML += `
+                    <button class="page-btn px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 rounded-md border border-gray-300" data-page="${totalPages}">${totalPages}</button>
+                `;
+            }
+
+            // Next button
+            paginationHTML += `
+                <button id="next-page" class="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md border border-gray-300" 
+                        ${currentPage === totalPages ? 'disabled' : ''}>
+                    Next
+                    <i data-feather="chevron-right" class="h-4 w-4 inline ml-1"></i>
+                </button>
+            `;
+
+            paginationNav.innerHTML = paginationHTML;
+            feather.replace();
+
+            // Add event listeners
+            document.getElementById('prev-page').addEventListener('click', () => goToPage(currentPage - 1));
+            document.getElementById('next-page').addEventListener('click', () => goToPage(currentPage + 1));
+            
+            document.querySelectorAll('.page-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const page = parseInt(btn.dataset.page);
+                    goToPage(page);
+                });
+            });
+        }
+
+        function goToPage(page) {
+            if (page < 1 || page > totalPages || page === currentPage) return;
+            
+            currentPage = page;
+            renderProperties();
+            
+            // Scroll to top of results
+            document.getElementById('results-grid').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+
+        // Sorting functionality
+        function initSorting() {
+            const sortSelect = document.getElementById('sort-select');
+            const mobileSortSelect = document.getElementById('mobile-sort-select');
+            
+            function handleSortChange() {
+                currentSort = this.value;
+                currentPage = 1;
+                applySorting();
+                renderProperties();
+                
+                // Sync both selectors
+                if (sortSelect && mobileSortSelect) {
+                    sortSelect.value = this.value;
+                    mobileSortSelect.value = this.value;
+                }
+            }
+            
+            if (sortSelect) {
+                sortSelect.addEventListener('change', handleSortChange);
+            }
+            
+            if (mobileSortSelect) {
+                mobileSortSelect.addEventListener('change', handleSortChange);
+            }
+        }
+
+        function applySorting() {
+            switch (currentSort) {
+                case 'relevance':
+                    // Default order - keep original order
+                    break;
+                case 'price-low':
+                    filteredProperties.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price-high':
+                    filteredProperties.sort((a, b) => b.price - a.price);
+                    break;
+                case 'rating':
+                    filteredProperties.sort((a, b) => {
+                        // Sort by rating (descending), then by number of reviews (descending)
+                        if (b.rating !== a.rating) {
+                            return b.rating - a.rating;
+                        }
+                        return b.reviews - a.reviews;
+                    });
+                    break;
+                case 'newest':
+                    filteredProperties.sort((a, b) => {
+                        // Sort by dateAdded (descending - newest first)
+                        const dateA = new Date(a.dateAdded || '2023-01-01');
+                        const dateB = new Date(b.dateAdded || '2023-01-01');
+                        return dateB - dateA;
+                    });
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // Filter functionality
+        function initFilters() {
+            const applyBtn = document.getElementById('apply-filters');
+            const filterToggle = document.getElementById('filter-toggle');
+            const mobileFilterToggle = document.getElementById('mobile-filter-toggle');
+            const closeFilters = document.getElementById('close-filters');
+            const filterSidebar = document.getElementById('filter-sidebar');
+            const filterOverlay = document.getElementById('filter-overlay');
+
+            function openMobileFilters() {
+                filterSidebar.classList.add('open');
+                filterOverlay.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMobileFilters() {
+                filterSidebar.classList.remove('open');
+                filterOverlay.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+
+            if (applyBtn) {
+                applyBtn.addEventListener('click', applyFilters);
+            }
+            
+            if (filterToggle) {
+                filterToggle.addEventListener('click', openMobileFilters);
+            }
+            
+            if (mobileFilterToggle) {
+                mobileFilterToggle.addEventListener('click', openMobileFilters);
+            }
+            
+            if (closeFilters) {
+                closeFilters.addEventListener('click', closeMobileFilters);
+            }
+            
+            if (filterOverlay) {
+                filterOverlay.addEventListener('click', closeMobileFilters);
+            }
+
+            // Price range slider
+            const priceSlider = document.getElementById('price-range-slider');
+            const minPrice = document.getElementById('min-price');
+            const maxPrice = document.getElementById('max-price');
+
+            if (priceSlider && maxPrice) {
+                priceSlider.addEventListener('input', function() {
+                    const value = this.value;
+                    maxPrice.value = value;
+                });
+            }
+
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 1024) {
+                    // Desktop view - ensure filters are visible and not in mobile mode
+                    filterSidebar.classList.remove('open');
+                    filterOverlay.classList.remove('open');
+                    document.body.style.overflow = '';
+                }
+            });
+        }
+
+        function applyFilters() {
+            const selectedTypes = Array.from(document.querySelectorAll('input[name="property-type"]:checked')).map(cb => cb.value);
+            const selectedAmenities = Array.from(document.querySelectorAll('input[name="amenities"]:checked')).map(cb => cb.value);
+            const selectedBedrooms = Array.from(document.querySelectorAll('input[name="bedrooms"]:checked')).map(cb => parseInt(cb.value));
+            const maxPrice = parseInt(document.getElementById('max-price').value) || 15000;
+
+            filteredProperties = properties.filter(property => {
+                const typeMatch = selectedTypes.length === 0 || selectedTypes.includes(property.type);
+                const amenityMatch = selectedAmenities.length === 0 || selectedAmenities.every(amenity => property.amenities.includes(amenity));
+                const bedroomMatch = selectedBedrooms.length === 0 || selectedBedrooms.includes(property.bedrooms);
+                const priceMatch = property.price <= maxPrice;
+
+                return typeMatch && amenityMatch && bedroomMatch && priceMatch;
+            });
+
+            currentPage = 1;
+            applySorting();
+            calculateTotalPages();
+            renderProperties();
+            
+            // Close mobile filters
+            const filterSidebar = document.getElementById('filter-sidebar');
+            const filterOverlay = document.getElementById('filter-overlay');
+            if (filterSidebar) {
+                filterSidebar.classList.remove('open');
+            }
+            if (filterOverlay) {
+                filterOverlay.classList.remove('open');
+            }
+            document.body.style.overflow = '';
+        }
+
+        // Mobile Navigation Functions
+        function initMobileNavigation() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenuClose = document.getElementById('mobile-menu-close');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileOverlay = document.getElementById('mobile-overlay');
+            
+            function openMobileMenu() {
+                mobileMenu.classList.add('open');
+                mobileOverlay.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeMobileMenu() {
+                mobileMenu.classList.remove('open');
+                mobileOverlay.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+            
+            if (mobileMenuButton) {
+                mobileMenuButton.addEventListener('click', openMobileMenu);
+            }
+            
+            if (mobileMenuClose) {
+                mobileMenuClose.addEventListener('click', closeMobileMenu);
+            }
+            
+            if (mobileOverlay) {
+                mobileOverlay.addEventListener('click', closeMobileMenu);
+            }
+            
+            // Mobile currency selector
+            const mobileCurrencySelector = document.getElementById('mobile-currency-selector');
+            if (mobileCurrencySelector) {
+                mobileCurrencySelector.addEventListener('change', function() {
+                    const selectedCurrency = this.value;
+                    localStorage.setItem('selectedCurrency', selectedCurrency);
+                });
+            }
+            
+            // Mobile currency option buttons
+            document.querySelectorAll('.currency-option').forEach(button => {
+                button.addEventListener('click', function() {
+                    const currency = this.dataset.currency;
+                    localStorage.setItem('selectedCurrency', currency);
+                    
+                    // Update both selectors
+                    if (document.getElementById('currency-selector')) {
+                        document.getElementById('currency-selector').value = currency;
+                    }
+                    if (document.getElementById('mobile-currency-selector')) {
+                        document.getElementById('mobile-currency-selector').value = currency;
+                    }
+                    
+                    // Update active state
+                    document.querySelectorAll('.currency-option').forEach(btn => {
+                        btn.classList.remove('bg-[#003B95]', 'text-white');
+                        btn.classList.add('bg-white', 'text-gray-700');
+                    });
+                    this.classList.add('bg-[#003B95]', 'text-white');
+                    this.classList.remove('bg-white', 'text-gray-700');
+                });
+            });
+        }
+
+        // Enhanced mobile user navigation
+        function updateMobileUserNavigation() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const userName = localStorage.getItem('userName');
+            const mobileUserStatus = document.getElementById('mobile-user-status');
+            const mobileUserName = document.getElementById('mobile-user-name');
+            const mobileLoginSection = document.getElementById('mobile-login-section');
+            const mobileLogoutSection = document.getElementById('mobile-logout-section');
+            const mobileLogout = document.getElementById('mobile-logout');
+            
+            if (isLoggedIn && userName) {
+                // User is logged in
+                if (mobileUserStatus) mobileUserStatus.classList.remove('hidden');
+                if (mobileUserName) mobileUserName.textContent = userName;
+                if (mobileLoginSection) mobileLoginSection.classList.add('hidden');
+                if (mobileLogoutSection) mobileLogoutSection.classList.remove('hidden');
+                
+                if (mobileLogout) {
+                    mobileLogout.onclick = function() {
+                        localStorage.removeItem('isLoggedIn');
+                        localStorage.removeItem('userName');
+                        localStorage.removeItem('userEmail');
+                        window.location.reload();
+                    };
+                }
+            } else {
+                // User is not logged in
+                if (mobileUserStatus) mobileUserStatus.classList.add('hidden');
+                if (mobileLoginSection) mobileLoginSection.classList.remove('hidden');
+                if (mobileLogoutSection) mobileLogoutSection.classList.add('hidden');
+            }
+        }
+        
+        // Function to update navigation based on login status
+        function updateUserNavigation() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const userName = localStorage.getItem('userName');
+            const userStatus = document.getElementById('user-status');
+            const userNameDisplay = document.getElementById('user-name-display');
+            const loginLink = document.getElementById('login-link');
+            
+            if (isLoggedIn && userName) {
+                // User is logged in
+                userStatus.classList.remove('hidden');
+                userNameDisplay.textContent = `Welcome, ${userName}`;
+                userNameDisplay.className = 'text-sm text-green-600 font-medium';
+                loginLink.textContent = 'Sign out';
+                loginLink.href = '#';
+                loginLink.onclick = function() {
+                    localStorage.removeItem('isLoggedIn');
+                    localStorage.removeItem('userName');
+                    localStorage.removeItem('userEmail');
+                    window.location.reload();
+                };
+            } else {
+                // User is not logged in
+                userStatus.classList.add('hidden');
+                loginLink.textContent = 'Sign in';
+                loginLink.href = 'login.html';
+                loginLink.onclick = null;
+            }
+        }
+        
+        // Check login requirement for list property link
+        function checkListPropertyAccess() {
+            const listPropertyLink = document.getElementById('list-property-link');
+            if (listPropertyLink) {
+                listPropertyLink.addEventListener('click', function(e) {
+                    const isLoggedIn = localStorage.getItem('isLoggedIn');
+                    if (!isLoggedIn) {
+                        e.preventDefault();
+                        alert('Please log in to list your property.');
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>

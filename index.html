@@ -491,7 +491,7 @@
                         </div>
                         
                         <!-- Search Button -->
-                        <button type="button" class="w-full bg-gradient-to-r from-[#003B95] to-[#4CAF50] hover:from-[#002b70] hover:to-[#45a049] text-white font-semibold py-4 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center space-x-2 touch-target">
+                        <button type="button" id="mobile-search-btn" class="w-full bg-gradient-to-r from-[#003B95] to-[#4CAF50] hover:from-[#002b70] hover:to-[#45a049] text-white font-semibold py-4 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center space-x-2 touch-target">
                             <i data-feather="search" class="h-5 w-5"></i>
                             <span class="text-lg">Search Properties</span>
                         </button>
@@ -599,7 +599,7 @@
                         
                         <!-- Search Button -->
                         <div class="flex items-end">
-                            <button type="button" class="w-full bg-gradient-to-r from-[#003B95] to-[#4CAF50] hover:from-[#002b70] hover:to-[#45a049] text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center space-x-2">
+                            <button type="button" id="desktop-search-btn" class="w-full bg-gradient-to-r from-[#003B95] to-[#4CAF50] hover:from-[#002b70] hover:to-[#45a049] text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center space-x-2">
                                 <i data-feather="search" class="h-4 w-4"></i>
                                 <span>Search</span>
                             </button>
@@ -984,10 +984,10 @@
             <!-- Desktop Horizontal Scroll Container -->
             <div class="hidden md:block relative">
                 <!-- Scroll Buttons -->
-                <button id="scroll-left" class="scroll-button absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg transition-all duration-300 opacity-0 pointer-events-none">
+                <button id="scroll-left" class="scroll-button absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg opacity-0 pointer-events-none">
                     <i data-feather="chevron-left" class="h-6 w-6 text-gray-600"></i>
                 </button>
-                <button id="scroll-right" class="scroll-button absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg transition-all duration-300">
+                <button id="scroll-right" class="scroll-button absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg">
                     <i data-feather="chevron-right" class="h-6 w-6 text-gray-600"></i>
                 </button>
                 
@@ -1591,6 +1591,9 @@
             
             // Initialize mobile performance optimizations
             initMobilePerformance();
+            
+            // Initialize search functionality
+            initSearchFunctionality();
         });
         
         // Function to update navigation based on login status
@@ -1672,12 +1675,19 @@
             
             if (!container || !scrollLeftBtn || !scrollRightBtn) return;
             
-            const scrollAmount = 320; // Width of one property card + gap
+            // Calculate scroll amount based on container width and card count
+            function getScrollAmount() {
+                const cardWidth = 320; // w-80 = 320px
+                const gap = 24; // space-x-6 = 24px
+                const visibleCards = Math.floor(container.clientWidth / (cardWidth + gap));
+                return Math.max(1, visibleCards - 1) * (cardWidth + gap);
+            }
             
             // Update button visibility based on scroll position
             function updateScrollButtons() {
-                const isAtStart = container.scrollLeft <= 5; // Small tolerance
-                const isAtEnd = container.scrollLeft >= (container.scrollWidth - container.clientWidth - 5);
+                const tolerance = 10;
+                const isAtStart = container.scrollLeft <= tolerance;
+                const isAtEnd = container.scrollLeft >= (container.scrollWidth - container.clientWidth - tolerance);
                 
                 scrollLeftBtn.style.opacity = isAtStart ? '0' : '1';
                 scrollLeftBtn.style.pointerEvents = isAtStart ? 'none' : 'auto';
@@ -1686,16 +1696,18 @@
                 scrollRightBtn.style.pointerEvents = isAtEnd ? 'none' : 'auto';
             }
             
-            // Simple scroll left
+            // Smooth scroll left
             scrollLeftBtn.addEventListener('click', () => {
+                const scrollAmount = getScrollAmount();
                 container.scrollBy({
                     left: -scrollAmount,
                     behavior: 'smooth'
                 });
             });
             
-            // Simple scroll right
+            // Smooth scroll right
             scrollRightBtn.addEventListener('click', () => {
+                const scrollAmount = getScrollAmount();
                 container.scrollBy({
                     left: scrollAmount,
                     behavior: 'smooth'
@@ -1706,7 +1718,14 @@
             let scrollTimeout;
             container.addEventListener('scroll', () => {
                 clearTimeout(scrollTimeout);
-                scrollTimeout = setTimeout(updateScrollButtons, 10);
+                scrollTimeout = setTimeout(updateScrollButtons, 16); // ~60fps
+            });
+            
+            // Update buttons on resize
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(updateScrollButtons, 100);
             });
             
             // Initial button state
@@ -1857,6 +1876,63 @@
             criticalImages.forEach(src => {
                 const img = new Image();
                 img.src = src;
+            });
+        }
+        
+        // Search functionality
+        function initSearchFunctionality() {
+            const mobileSearchBtn = document.getElementById('mobile-search-btn');
+            const desktopSearchBtn = document.getElementById('desktop-search-btn');
+            
+            function performSearch() {
+                // Get form data based on screen size
+                const isMobile = window.innerWidth < 768;
+                const location = isMobile ? 
+                    document.getElementById('mobile-location').value : 
+                    document.getElementById('location').value;
+                const checkIn = isMobile ? 
+                    document.getElementById('mobile-check-in').value : 
+                    document.getElementById('check-in').value;
+                const checkOut = isMobile ? 
+                    document.getElementById('mobile-check-out').value : 
+                    document.getElementById('check-out').value;
+                const guests = isMobile ? 
+                    document.getElementById('mobile-guests').value : 
+                    document.getElementById('guests').value;
+                const tripType = isMobile ? 
+                    document.getElementById('mobile-trip-type').value : 
+                    document.getElementById('trip-type').value;
+                const priceRange = document.getElementById('price-range').value;
+                
+                // Build search URL
+                const params = new URLSearchParams();
+                if (location) params.set('location', location);
+                if (checkIn) params.set('checkin', checkIn);
+                if (checkOut) params.set('checkout', checkOut);
+                if (guests) params.set('guests', guests);
+                if (tripType) params.set('triptype', tripType);
+                if (priceRange) params.set('pricerange', priceRange);
+                
+                // Redirect to search results
+                window.location.href = `search-results.html?${params.toString()}`;
+            }
+            
+            if (mobileSearchBtn) {
+                mobileSearchBtn.addEventListener('click', performSearch);
+            }
+            
+            if (desktopSearchBtn) {
+                desktopSearchBtn.addEventListener('click', performSearch);
+            }
+            
+            // Handle Enter key on search inputs
+            const searchInputs = document.querySelectorAll('#location, #mobile-location, #check-in, #mobile-check-in, #check-out, #mobile-check-out');
+            searchInputs.forEach(input => {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        performSearch();
+                    }
+                });
             });
         }
     </script>

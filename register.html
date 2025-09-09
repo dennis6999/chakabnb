@@ -73,7 +73,7 @@
             </div>
             
             <!-- Single Registration Form -->
-            <form id="registration-form" class="mt-8 space-y-3" action="#" method="POST">
+            <form id="registration-form" class="mt-8 space-y-3" action="#" method="POST" novalidate>
                 <div class="rounded-md shadow-sm space-y-2">
                     <!-- Full Name -->
                     <div>
@@ -86,6 +86,7 @@
                                 <i data-feather="user" class="h-5 w-5 text-gray-400"></i>
                             </div>
                         </div>
+                        <p id="name-error" class="mt-1 text-sm text-red-600 hidden">Please enter your full name.</p>
                     </div>
                     
                     <!-- Email -->
@@ -99,6 +100,7 @@
                                 <i data-feather="mail" class="h-5 w-5 text-gray-400"></i>
                             </div>
                         </div>
+                        <p id="email-error" class="mt-1 text-sm text-red-600 hidden">Please enter a valid email address.</p>
                     </div>
                     
                     <!-- Phone Number -->
@@ -112,6 +114,7 @@
                                 <i data-feather="phone" class="h-5 w-5 text-gray-400"></i>
                             </div>
                         </div>
+                        <p id="phone-error" class="mt-1 text-sm text-red-600 hidden">Please enter a valid phone number.</p>
                     </div>
                     
                     <!-- Password -->
@@ -125,6 +128,7 @@
                                 <i data-feather="lock" class="h-5 w-5 text-gray-400"></i>
                             </div>
                         </div>
+                        <p id="password-error" class="mt-1 text-sm text-red-600 hidden">Password must be at least 8 characters.</p>
                     </div>
                     
                     <!-- Confirm Password -->
@@ -138,6 +142,7 @@
                                 <i data-feather="lock" class="h-5 w-5 text-gray-400"></i>
                             </div>
                         </div>
+                        <p id="confirm-error" class="mt-1 text-sm text-red-600 hidden">Passwords do not match.</p>
                     </div>
                 </div>
                 
@@ -149,11 +154,12 @@
                         I agree to the <a href="#" class="text-[#003B95] hover:text-[#002b70]">Terms of Service</a> and <a href="#" class="text-[#003B95] hover:text-[#002b70]">Privacy Policy</a>
                     </label>
                 </div>
+                <p id="terms-error" class="-mt-2 text-sm text-red-600 hidden">Please accept the terms to continue.</p>
                 
                 <!-- Submit Button -->
                 <div>
-                    <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#003B95] hover:bg-[#002b70] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003B95]">
-                        Create Account
+                    <button id="register-submit" type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#003B95] hover:bg-[#002b70] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003B95]">
+                        <span id="register-submit-text">Create Account</span>
                     </button>
                 </div>
             </form>
@@ -186,58 +192,62 @@
     <script>
         feather.replace();
         
-        // Form validation function
-        function validateForm() {
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
-            const terms = document.getElementById('terms').checked;
-            
-            // Check if passwords match
-            if (password !== confirmPassword) {
-                alert('Passwords do not match. Please try again.');
-                return false;
-            }
-            
-            // Check if terms are accepted
-            if (!terms) {
-                alert('Please accept the Terms of Service and Privacy Policy to continue.');
-                return false;
-            }
-            
-            // Check password strength
-            if (password.length < 8) {
-                alert('Password must be at least 8 characters long.');
-                return false;
-            }
-            
-            return true;
-        }
-        
-        // Single form validation
+        // Registration validation with inline errors and redirect
         document.getElementById('registration-form').addEventListener('submit', function(e) {
             e.preventDefault();
+            const nameInput = document.getElementById('full-name');
+            const emailInput = document.getElementById('email');
+            const phoneInput = document.getElementById('phone');
+            const passwordInput = document.getElementById('password');
+            const confirmInput = document.getElementById('confirm-password');
+            const termsInput = document.getElementById('terms');
             
-            if (validateForm()) {
-                // Store user as logged in (no user type distinction)
+            const nameError = document.getElementById('name-error');
+            const emailError = document.getElementById('email-error');
+            const phoneError = document.getElementById('phone-error');
+            const passwordError = document.getElementById('password-error');
+            const confirmError = document.getElementById('confirm-error');
+            const termsError = document.getElementById('terms-error');
+            const submitBtn = document.getElementById('register-submit');
+            const submitText = document.getElementById('register-submit-text');
+
+            // Reset
+            [nameError,emailError,phoneError,passwordError,confirmError,termsError].forEach(el=>el.classList.add('hidden'));
+            [nameInput,emailInput,phoneInput,passwordInput,confirmInput].forEach(el=>el.classList.remove('border-red-500'));
+
+            let valid = true;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const phoneRegex = /^[0-9+\-()\s]{7,}$/;
+
+            if (!nameInput.value.trim()) { nameError.classList.remove('hidden'); nameInput.classList.add('border-red-500'); valid = false; }
+            if (!emailRegex.test(emailInput.value.trim())) { emailError.classList.remove('hidden'); emailInput.classList.add('border-red-500'); valid = false; }
+            if (!phoneRegex.test(phoneInput.value.trim())) { phoneError.classList.remove('hidden'); phoneInput.classList.add('border-red-500'); valid = false; }
+            if (passwordInput.value.length < 8) { passwordError.classList.remove('hidden'); passwordInput.classList.add('border-red-500'); valid = false; }
+            if (confirmInput.value !== passwordInput.value) { confirmError.classList.remove('hidden'); confirmInput.classList.add('border-red-500'); valid = false; }
+            if (!termsInput.checked) { termsError.classList.remove('hidden'); valid = false; }
+
+            if (!valid) return;
+
+            submitBtn.disabled = true;
+            submitText.textContent = 'Creating account...';
+            setTimeout(() => {
                 localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userEmail', document.getElementById('email').value);
-                localStorage.setItem('userName', document.getElementById('full-name').value);
-                
-                alert('Account created successfully! Welcome to ChakaBNB! You can now browse properties and list your own.');
-                window.location.href = 'index.html';
-            }
+                localStorage.setItem('userEmail', emailInput.value.trim());
+                localStorage.setItem('userName', nameInput.value.trim());
+                const redirectTo = new URLSearchParams(window.location.search).get('redirect') || 'index.html';
+                window.location.href = redirectTo;
+            }, 500);
         });
-        
-        // Real-time password confirmation validation
-        document.getElementById('confirm-password').addEventListener('input', function() {
-            const password = document.getElementById('password').value;
-            const confirmPassword = this.value;
-            
-            if (confirmPassword && password !== confirmPassword) {
-                this.style.borderColor = '#ef4444';
-            } else {
-                this.style.borderColor = '#d1d5db';
-            }
+
+        // Real-time clearing of errors
+        ['full-name','email','phone','password','confirm-password'].forEach(id => {
+            const input = document.getElementById(id);
+            input.addEventListener('input', function(){
+                this.classList.remove('border-red-500');
+                const map = { 'full-name':'name-error', 'email':'email-error', 'phone':'phone-error', 'password':'password-error', 'confirm-password':'confirm-error' };
+                const err = document.getElementById(map[id]);
+                if (err) err.classList.add('hidden');
+            });
         });
     </script>
 </body>

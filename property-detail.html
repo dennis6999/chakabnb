@@ -260,7 +260,7 @@
             </div>
         </div>
         <div class="mt-3 text-center">
-            <button class="text-sm font-medium text-gray-700 hover:text-[#003B95] flex items-center mx-auto">
+            <button id="open-gallery-mobile" class="text-sm font-medium text-gray-700 hover:text-[#003B95] flex items-center mx-auto">
                 <i data-feather="image" class="mr-1"></i> Show all photos
             </button>
         </div>
@@ -286,7 +286,7 @@
             </div>
         </div>
         <div class="mt-3 text-right">
-            <button class="text-sm font-medium text-gray-700 hover:text-[#003B95] flex items-center">
+            <button id="open-gallery-desktop" class="text-sm font-medium text-gray-700 hover:text-[#003B95] flex items-center">
                 <i data-feather="image" class="mr-1"></i> Show all photos
             </button>
         </div>
@@ -580,7 +580,7 @@
             <div class="mt-8 lg:mt-0 lg:col-span-1 desktop-booking-panel">
                 <div class="bg-white rounded-xl booking-panel p-6 sticky top-6">
                     <div class="flex justify-between items-baseline">
-                        <p class="text-2xl font-bold text-gray-900">KSh 5,500 <span class="text-base font-normal text-gray-600">night</span></p>
+                        <p class="text-2xl font-bold text-gray-900">KSh <span id="price-per-night">5,500</span> <span class="text-base font-normal text-gray-600">night</span></p>
                         <div class="flex items-center">
                             <i data-feather="star" class="text-yellow-400 fill-current"></i>
                             <span class="ml-1 text-gray-900">4.9</span>
@@ -600,6 +600,7 @@
                                 <input type="date" id="check-out-detail" class="mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 text-sm">
                             </div>
                         </div>
+                        <p id="date-error" class="mt-2 text-sm text-red-600 hidden">Please select valid dates. Check-out must be after check-in.</p>
                         
                         <div class="mt-4">
                             <label for="guests-detail" class="block text-xs font-medium text-gray-700 uppercase">Guests</label>
@@ -611,7 +612,7 @@
                             </select>
                         </div>
                         
-                        <button class="mt-6 w-full bg-[#FFB700] hover:bg-[#e6a500] text-white font-medium py-3 px-4 rounded-md shadow-sm">
+                        <button id="check-availability-desktop" class="mt-6 w-full bg-[#FFB700] hover:bg-[#e6a500] text-white font-medium py-3 px-4 rounded-md shadow-sm">
                             Check availability
                         </button>
                         
@@ -621,16 +622,16 @@
                         
                         <div class="mt-6 space-y-4">
                             <div class="flex justify-between">
-                                <span class="text-gray-700">KSh 5,500 x 5 nights</span>
-                                <span class="text-gray-900">KSh 27,500</span>
+                                <span class="text-gray-700">KSh <span id="line-nightly-price">5,500</span> x <span id="line-nights">1</span> night(s)</span>
+                                <span class="text-gray-900">KSh <span id="line-nightly-total">5,500</span></span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-700">Service fee</span>
-                                <span class="text-gray-900">KSh 3,850</span>
+                                <span class="text-gray-900">KSh <span id="service-fee">0</span></span>
                             </div>
                             <div class="border-t border-gray-200 pt-4 flex justify-between font-bold">
                                 <span class="text-gray-900">Total</span>
-                                <span class="text-gray-900">KSh 31,350</span>
+                                <span class="text-gray-900">KSh <span id="grand-total">5,500</span></span>
                             </div>
                         </div>
                     </div>
@@ -688,7 +689,8 @@
                 </select>
             </div>
             
-            <button class="w-full bg-[#FFB700] hover:bg-[#e6a500] text-white font-medium py-4 px-4 rounded-lg touch-target">
+            <p id="mobile-date-error" class="-mt-2 mb-2 text-sm text-red-600 hidden">Please select valid dates.</p>
+            <button id="check-availability-mobile" class="w-full bg-[#FFB700] hover:bg-[#e6a500] text-white font-medium py-4 px-4 rounded-lg touch-target">
                 Check availability
             </button>
             
@@ -698,16 +700,16 @@
             
             <div class="space-y-3 pt-4 border-t border-gray-200">
                 <div class="flex justify-between">
-                    <span class="text-gray-700">KSh 5,500 x 5 nights</span>
-                    <span class="text-gray-900">KSh 27,500</span>
+                    <span class="text-gray-700">KSh <span id="m-line-nightly-price">5,500</span> x <span id="m-line-nights">1</span> night(s)</span>
+                    <span class="text-gray-900">KSh <span id="m-line-nightly-total">5,500</span></span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-gray-700">Service fee</span>
-                    <span class="text-gray-900">KSh 3,850</span>
+                    <span class="text-gray-900">KSh <span id="m-service-fee">0</span></span>
                 </div>
                 <div class="border-t border-gray-200 pt-3 flex justify-between font-bold">
                     <span class="text-gray-900">Total</span>
-                    <span class="text-gray-900">KSh 31,350</span>
+                    <span class="text-gray-900">KSh <span id="m-grand-total">5,500</span></span>
                 </div>
             </div>
         </div>
@@ -795,6 +797,28 @@
             </div>
         </div>
     </footer>
+
+    <!-- Gallery Modal -->
+    <div id="gallery-modal" class="fixed inset-0 z-50 bg-black bg-opacity-80 hidden">
+        <div class="absolute inset-0 overflow-y-auto">
+            <div class="max-w-6xl mx-auto px-4 py-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-white text-lg font-semibold">All photos</h3>
+                    <button id="close-gallery" class="p-2 rounded-md bg-white/10 hover:bg-white/20">
+                        <i data-feather="x" class="text-white"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <img src="http://static.photos/indoor/1200x630/5" class="w-full h-64 object-cover rounded-lg" alt="Photo">
+                    <img src="http://static.photos/indoor/640x360/8" class="w-full h-64 object-cover rounded-lg" alt="Photo">
+                    <img src="http://static.photos/indoor/640x360/9" class="w-full h-64 object-cover rounded-lg" alt="Photo">
+                    <img src="http://static.photos/outdoor/640x360/10" class="w-full h-64 object-cover rounded-lg" alt="Photo">
+                    <img src="http://static.photos/indoor/640x360/11" class="w-full h-64 object-cover rounded-lg" alt="Photo">
+                    <img src="http://static.photos/outdoor/640x360/15" class="w-full h-64 object-cover rounded-lg" alt="Photo">
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         AOS.init({
@@ -1022,7 +1046,126 @@
         document.addEventListener('DOMContentLoaded', function() {
             initMobileNavigation();
             initMobileBooking();
+            initBookingCalculations();
+            initGalleryModal();
         });
+    </script>
+    <script>
+        // Booking calculations and validation
+        function initBookingCalculations() {
+            const NIGHTLY_PRICE = 5500;
+            const SERVICE_FEE_RATE = 0.14;
+
+            const pricePerNightEl = document.getElementById('price-per-night');
+            const checkInEl = document.getElementById('check-in-detail');
+            const checkOutEl = document.getElementById('check-out-detail');
+            const dateErrorEl = document.getElementById('date-error');
+            const lineNightlyPriceEl = document.getElementById('line-nightly-price');
+            const lineNightsEl = document.getElementById('line-nights');
+            const lineNightlyTotalEl = document.getElementById('line-nightly-total');
+            const serviceFeeEl = document.getElementById('service-fee');
+            const grandTotalEl = document.getElementById('grand-total');
+            const checkAvailDesktop = document.getElementById('check-availability-desktop');
+
+            const mCheckInEl = document.getElementById('mobile-check-in');
+            const mCheckOutEl = document.getElementById('mobile-check-out');
+            const mDateErrorEl = document.getElementById('mobile-date-error');
+            const mLineNightlyPriceEl = document.getElementById('m-line-nightly-price');
+            const mLineNightsEl = document.getElementById('m-line-nights');
+            const mLineNightlyTotalEl = document.getElementById('m-line-nightly-total');
+            const mServiceFeeEl = document.getElementById('m-service-fee');
+            const mGrandTotalEl = document.getElementById('m-grand-total');
+            const checkAvailMobile = document.getElementById('check-availability-mobile');
+
+            if (pricePerNightEl) pricePerNightEl.textContent = formatNumber(NIGHTLY_PRICE);
+            if (lineNightlyPriceEl) lineNightlyPriceEl.textContent = formatNumber(NIGHTLY_PRICE);
+            if (mLineNightlyPriceEl) mLineNightlyPriceEl.textContent = formatNumber(NIGHTLY_PRICE);
+
+            function getNights(ci, co) {
+                const start = new Date(ci);
+                const end = new Date(co);
+                if (isNaN(start.getTime()) || isNaN(end.getTime())) return 0;
+                const diffMs = end - start;
+                return Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+            }
+
+            function updateDesktopTotals() {
+                const nights = getNights(checkInEl && checkInEl.value, checkOutEl && checkOutEl.value);
+                const valid = nights > 0;
+                if (dateErrorEl) dateErrorEl.classList.toggle('hidden', valid);
+                if (lineNightsEl) lineNightsEl.textContent = nights || 1;
+                const nightlyTotal = NIGHTLY_PRICE * (nights || 1);
+                const serviceFee = Math.round(nightlyTotal * SERVICE_FEE_RATE);
+                if (lineNightlyTotalEl) lineNightlyTotalEl.textContent = formatNumber(nightlyTotal);
+                if (serviceFeeEl) serviceFeeEl.textContent = formatNumber(serviceFee);
+                if (grandTotalEl) grandTotalEl.textContent = formatNumber(nightlyTotal + serviceFee);
+                return valid;
+            }
+
+            function updateMobileTotals() {
+                const nights = getNights(mCheckInEl && mCheckInEl.value, mCheckOutEl && mCheckOutEl.value);
+                const valid = nights > 0;
+                if (mDateErrorEl) mDateErrorEl.classList.toggle('hidden', valid);
+                if (mLineNightsEl) mLineNightsEl.textContent = nights || 1;
+                const nightlyTotal = NIGHTLY_PRICE * (nights || 1);
+                const serviceFee = Math.round(nightlyTotal * SERVICE_FEE_RATE);
+                if (mLineNightlyTotalEl) mLineNightlyTotalEl.textContent = formatNumber(nightlyTotal);
+                if (mServiceFeeEl) mServiceFeeEl.textContent = formatNumber(serviceFee);
+                if (mGrandTotalEl) mGrandTotalEl.textContent = formatNumber(nightlyTotal + serviceFee);
+                return valid;
+            }
+
+            if (checkInEl) checkInEl.addEventListener('change', updateDesktopTotals);
+            if (checkOutEl) checkOutEl.addEventListener('change', updateDesktopTotals);
+            if (mCheckInEl) mCheckInEl.addEventListener('change', updateMobileTotals);
+            if (mCheckOutEl) mCheckOutEl.addEventListener('change', updateMobileTotals);
+
+            if (checkAvailDesktop) {
+                checkAvailDesktop.addEventListener('click', function() {
+                    if (!updateDesktopTotals()) return;
+                    alert('Dates available! Proceed to booking.');
+                });
+            }
+            if (checkAvailMobile) {
+                checkAvailMobile.addEventListener('click', function() {
+                    if (!updateMobileTotals()) return;
+                    alert('Dates available! Proceed to booking.');
+                });
+            }
+
+            updateDesktopTotals();
+            updateMobileTotals();
+        }
+
+        function formatNumber(num) {
+            return (num || 0).toLocaleString('en-KE');
+        }
+
+        // Gallery modal
+        function initGalleryModal() {
+            const openDesktop = document.getElementById('open-gallery-desktop');
+            const openMobile = document.getElementById('open-gallery-mobile');
+            const modal = document.getElementById('gallery-modal');
+            const closeBtn = document.getElementById('close-gallery');
+            function open() {
+                if (!modal) return;
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+            function close() {
+                if (!modal) return;
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+            if (openDesktop) openDesktop.addEventListener('click', open);
+            if (openMobile) openMobile.addEventListener('click', open);
+            if (closeBtn) closeBtn.addEventListener('click', close);
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) close();
+                });
+            }
+        }
     </script>
 </body>
 </html>
