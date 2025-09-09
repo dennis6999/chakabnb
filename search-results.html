@@ -61,6 +61,424 @@
             visibility: visible;
         }
         
+        /* Advanced Responsive Design System for Search Results */
+        
+        /* Fluid Typography Scale */
+        .fluid-text-xs { font-size: clamp(0.75rem, 2vw, 0.875rem); }
+        .fluid-text-sm { font-size: clamp(0.875rem, 2.5vw, 1rem); }
+        .fluid-text-base { font-size: clamp(1rem, 3vw, 1.125rem); }
+        .fluid-text-lg { font-size: clamp(1.125rem, 3.5vw, 1.25rem); }
+        .fluid-text-xl { font-size: clamp(1.25rem, 4vw, 1.5rem); }
+        .fluid-text-2xl { font-size: clamp(1.5rem, 5vw, 2rem); }
+        .fluid-text-3xl { font-size: clamp(1.875rem, 6vw, 2.5rem); }
+        
+        /* Fluid Spacing Scale */
+        .fluid-p-xs { padding: clamp(0.25rem, 1vw, 0.5rem); }
+        .fluid-p-sm { padding: clamp(0.5rem, 2vw, 1rem); }
+        .fluid-p-md { padding: clamp(1rem, 3vw, 1.5rem); }
+        .fluid-p-lg { padding: clamp(1.5rem, 4vw, 2rem); }
+        .fluid-p-xl { padding: clamp(2rem, 5vw, 3rem); }
+        
+        .fluid-m-xs { margin: clamp(0.25rem, 1vw, 0.5rem); }
+        .fluid-m-sm { margin: clamp(0.5rem, 2vw, 1rem); }
+        .fluid-m-md { margin: clamp(1rem, 3vw, 1.5rem); }
+        .fluid-m-lg { margin: clamp(1.5rem, 4vw, 2rem); }
+        .fluid-m-xl { margin: clamp(2rem, 5vw, 3rem); }
+        
+        /* Responsive Grid System */
+        .responsive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: clamp(1rem, 3vw, 2rem);
+        }
+        
+        .responsive-grid-sm {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: clamp(0.75rem, 2vw, 1.5rem);
+        }
+        
+        .responsive-grid-lg {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: clamp(1.5rem, 4vw, 2.5rem);
+        }
+        
+        /* Responsive Container */
+        .responsive-container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 clamp(1rem, 4vw, 2rem);
+        }
+        
+        /* Responsive Property Cards */
+        .responsive-property-card {
+            width: 100%;
+            max-width: 400px;
+            min-width: 280px;
+            margin: 0 auto;
+            border-radius: clamp(0.5rem, 2vw, 1rem);
+            overflow: hidden;
+            box-shadow: 0 clamp(2px, 0.5vw, 4px) clamp(4px, 1vw, 8px) rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .responsive-property-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 clamp(4px, 1vw, 8px) clamp(8px, 2vw, 16px) rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Responsive Filter Sidebar */
+        .responsive-filter-sidebar {
+            width: clamp(280px, 30vw, 350px);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            z-index: 50;
+            background: white;
+            box-shadow: clamp(2px, 0.5vw, 4px) 0 clamp(4px, 1vw, 8px) rgba(0, 0, 0, 0.1);
+        }
+        
+        .responsive-filter-sidebar.open {
+            transform: translateX(0);
+        }
+        
+        @media (min-width: 1024px) {
+            .responsive-filter-sidebar {
+                position: static;
+                width: auto;
+                height: auto;
+                transform: none;
+                box-shadow: none;
+            }
+        }
+        
+        /* Responsive Filter Overlay */
+        .responsive-filter-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+            z-index: 40;
+        }
+        
+        .responsive-filter-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Responsive Search Controls */
+        .responsive-search-controls {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.5rem, 2vw, 1rem);
+            align-items: stretch;
+        }
+        
+        @media (min-width: 640px) {
+            .responsive-search-controls {
+                flex-direction: row;
+                align-items: center;
+            }
+        }
+        
+        /* Responsive Filter Button */
+        .responsive-filter-button {
+            min-height: clamp(44px, 6vw, 48px);
+            padding: clamp(0.75rem, 2vw, 1rem);
+            font-size: clamp(0.875rem, 2.5vw, 1rem);
+            border-radius: clamp(0.25rem, 1vw, 0.5rem);
+        }
+        
+        /* Responsive Sort Select */
+        .responsive-sort-select {
+            min-height: clamp(44px, 6vw, 48px);
+            padding: clamp(0.75rem, 2vw, 1rem);
+            font-size: clamp(0.875rem, 2.5vw, 1rem);
+            border-radius: clamp(0.25rem, 1vw, 0.5rem);
+        }
+        
+        /* Responsive Pagination */
+        .responsive-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: clamp(0.25rem, 1vw, 0.5rem);
+            flex-wrap: wrap;
+        }
+        
+        .responsive-pagination-button {
+            min-height: clamp(40px, 5vw, 44px);
+            min-width: clamp(40px, 5vw, 44px);
+            padding: clamp(0.5rem, 1.5vw, 0.75rem);
+            font-size: clamp(0.75rem, 2vw, 0.875rem);
+            border-radius: clamp(0.25rem, 1vw, 0.5rem);
+        }
+        
+        /* Enhanced Results Header */
+        .results-header-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .results-header-title {
+            background: linear-gradient(135deg, #003B95 0%, #4CAF50 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .filter-count-badge {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .search-location-icon {
+            color: #003B95;
+            filter: drop-shadow(0 1px 2px rgba(0, 59, 149, 0.2));
+        }
+        
+        .results-stats {
+            background: rgba(0, 59, 149, 0.05);
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid rgba(0, 59, 149, 0.1);
+        }
+        
+        .sort-select-enhanced {
+            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+            border: 1px solid #d1d5db;
+            transition: all 0.2s ease;
+        }
+        
+        .sort-select-enhanced:focus {
+            border-color: #003B95;
+            box-shadow: 0 0 0 3px rgba(0, 59, 149, 0.1);
+            background: #ffffff;
+        }
+        
+        .filter-button-enhanced {
+            background: linear-gradient(135deg, #003B95 0%, #002b70 100%);
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 59, 149, 0.2);
+            transition: all 0.2s ease;
+        }
+        
+        .filter-button-enhanced:hover {
+            background: linear-gradient(135deg, #002b70 0%, #001f5c 100%);
+            box-shadow: 0 4px 8px rgba(0, 59, 149, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .filter-button-enhanced:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 59, 149, 0.2);
+        }
+        
+        /* Responsive Results Header */
+        .responsive-results-header {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.5rem, 2vw, 1rem);
+            margin-bottom: clamp(1rem, 3vw, 2rem);
+        }
+        
+        @media (min-width: 768px) {
+            .responsive-results-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+        
+        /* Responsive Property Image */
+        .responsive-property-image {
+            width: 100%;
+            height: clamp(200px, 25vw, 300px);
+            object-fit: cover;
+            aspect-ratio: 16/9;
+        }
+        
+        /* Responsive Property Content */
+        .responsive-property-content {
+            padding: clamp(1rem, 3vw, 1.5rem);
+        }
+        
+        .responsive-property-title {
+            font-size: clamp(1rem, 3vw, 1.25rem);
+            line-height: 1.4;
+            margin-bottom: clamp(0.5rem, 1.5vw, 0.75rem);
+        }
+        
+        .responsive-property-description {
+            font-size: clamp(0.875rem, 2.5vw, 1rem);
+            line-height: 1.5;
+            color: #6b7280;
+            margin-bottom: clamp(0.75rem, 2vw, 1rem);
+        }
+        
+        .responsive-property-price {
+            font-size: clamp(1.125rem, 3.5vw, 1.5rem);
+            font-weight: 700;
+            color: #003B95;
+        }
+        
+        /* Responsive Amenities */
+        .responsive-amenities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: clamp(0.25rem, 1vw, 0.5rem);
+            margin-bottom: clamp(0.75rem, 2vw, 1rem);
+        }
+        
+        .responsive-amenity-tag {
+            font-size: clamp(0.75rem, 2vw, 0.875rem);
+            padding: clamp(0.25rem, 1vw, 0.5rem) clamp(0.5rem, 1.5vw, 0.75rem);
+            border-radius: clamp(0.25rem, 1vw, 0.5rem);
+            background: #f3f4f6;
+            color: #374151;
+        }
+        
+        /* Responsive Loading States */
+        .responsive-skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: clamp(0.25rem, 1vw, 0.5rem);
+        }
+        
+        .responsive-skeleton-text {
+            height: clamp(1rem, 3vw, 1.25rem);
+            margin-bottom: clamp(0.5rem, 1.5vw, 0.75rem);
+        }
+        
+        .responsive-skeleton-image {
+            height: clamp(200px, 25vw, 300px);
+            width: 100%;
+        }
+        
+        /* Responsive Notification */
+        .responsive-notification {
+            position: fixed;
+            top: clamp(1rem, 3vw, 2rem);
+            right: clamp(1rem, 3vw, 2rem);
+            left: clamp(1rem, 3vw, 2rem);
+            max-width: none;
+            z-index: 60;
+        }
+        
+        @media (min-width: 640px) {
+            .responsive-notification {
+                left: auto;
+                max-width: clamp(300px, 40vw, 400px);
+            }
+        }
+        
+        /* Responsive Breakpoints */
+        @media (max-width: 320px) {
+            .xs\\:text-xs { font-size: 0.75rem; }
+            .xs\\:p-2 { padding: 0.5rem; }
+            .xs\\:gap-1 { gap: 0.25rem; }
+        }
+        
+        @media (min-width: 320px) and (max-width: 575px) {
+            .sm\\:text-sm { font-size: 0.875rem; }
+            .sm\\:p-3 { padding: 0.75rem; }
+            .sm\\:gap-2 { gap: 0.5rem; }
+        }
+        
+        @media (min-width: 576px) and (max-width: 767px) {
+            .md\\:text-base { font-size: 1rem; }
+            .md\\:p-4 { padding: 1rem; }
+            .md\\:gap-3 { gap: 0.75rem; }
+        }
+        
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .lg\\:text-lg { font-size: 1.125rem; }
+            .lg\\:p-6 { padding: 1.5rem; }
+            .lg\\:gap-4 { gap: 1rem; }
+        }
+        
+        @media (min-width: 1024px) and (max-width: 1279px) {
+            .xl\\:text-xl { font-size: 1.25rem; }
+            .xl\\:p-8 { padding: 2rem; }
+            .xl\\:gap-6 { gap: 1.5rem; }
+        }
+        
+        @media (min-width: 1280px) {
+            .\\32xl\\:text-2xl { font-size: 1.5rem; }
+            .\\32xl\\:p-10 { padding: 2.5rem; }
+            .\\32xl\\:gap-8 { gap: 2rem; }
+        }
+        
+        /* Responsive Touch Targets */
+        .responsive-touch {
+            min-height: clamp(44px, 6vw, 48px);
+            min-width: clamp(44px, 6vw, 48px);
+        }
+        
+        /* Responsive Focus States */
+        .responsive-focus {
+            outline: none;
+            box-shadow: 0 0 0 clamp(2px, 0.5vw, 3px) #003B95;
+        }
+        
+        /* Responsive Animation */
+        .responsive-animate {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive Print Styles */
+        @media print {
+            .print\\:hidden { display: none !important; }
+            .print\\:block { display: block !important; }
+            .print\\:text-black { color: black !important; }
+        }
+        
+        /* Dark Mode Support */
+        @media (prefers-color-scheme: dark) {
+            .dark\\:bg-gray-900 { background-color: #111827; }
+            .dark\\:text-white { color: #ffffff; }
+            .dark\\:border-gray-700 { border-color: #374151; }
+        }
+        
+        /* Reduced Motion Support */
+        @media (prefers-reduced-motion: reduce) {
+            .motion-reduce\\:animate-none { animation: none; }
+            .motion-reduce\\:transition-none { transition: none; }
+        }
+        
+        /* High Contrast Support */
+        @media (prefers-contrast: high) {
+            .high-contrast\\:border-2 { border-width: 2px; }
+            .high-contrast\\:text-black { color: black; }
+        }
+        
         /* Property card hover effects */
         .property-card:hover {
             transform: translateY(-2px);
@@ -253,42 +671,14 @@
         </div>
     </div>
 
-    <!-- Search Header -->
-    <div class="bg-white border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Search Results</h1>
-                    <p id="search-location" class="text-gray-600 mt-1">Chaka Town, Nyeri</p>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <button id="filter-toggle" class="lg:hidden bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-md text-sm font-medium">
-                        <i data-feather="filter" class="h-4 w-4 mr-2"></i>
-                        Filters
-                    </button>
-                    <div class="flex items-center space-x-2">
-                        <span class="text-sm text-gray-600">Sort by:</span>
-                        <select id="sort-select" class="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#003B95] bg-white">
-                            <option value="relevance">Relevance</option>
-                            <option value="price-low">Price: Low to High</option>
-                            <option value="price-high">Price: High to Low</option>
-                            <option value="rating">Highest Rated</option>
-                            <option value="newest">Newest</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Filter Overlay for Mobile -->
     <div id="filter-overlay" class="filter-overlay fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"></div>
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="responsive-container fluid-p-lg">
         <div class="flex flex-col lg:flex-row gap-6">
             <!-- Filters Sidebar -->
-            <div id="filter-sidebar" class="filter-sidebar lg:w-80 bg-white rounded-lg shadow-sm p-6 h-fit">
+            <div id="filter-sidebar" class="responsive-filter-sidebar lg:w-80 bg-white responsive-rounded-lg responsive-shadow fluid-p-md h-fit">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-lg font-semibold text-gray-900">Filters</h2>
                     <button id="close-filters" class="lg:hidden p-2 hover:bg-gray-100 rounded-md">
@@ -390,32 +780,65 @@
             <!-- Results Section -->
             <div class="flex-1">
                 <!-- Results Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-                    <div>
-                        <p id="results-count" class="text-gray-600">24 properties found</p>
-                        <p id="search-dates" class="text-sm text-gray-500">Dec 15-20, 2023</p>
-                    </div>
-                    <div class="flex items-center space-x-3">
-                        <!-- Mobile Sort Selector -->
-                        <div class="lg:hidden flex items-center space-x-2">
-                            <span class="text-sm text-gray-600">Sort:</span>
-                            <select id="mobile-sort-select" class="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#003B95] bg-white">
-                                <option value="relevance">Relevance</option>
-                                <option value="price-low">Price: Low to High</option>
-                                <option value="price-high">Price: High to Low</option>
-                                <option value="rating">Highest Rated</option>
-                                <option value="newest">Newest</option>
-                            </select>
+                <div class="results-header-card responsive-rounded-lg fluid-p-md mb-6">
+                    <!-- Main Header -->
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
+                        <div class="flex-1">
+                            <h1 class="results-header-title fluid-text-2xl font-bold mb-2">Search Results</h1>
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                                <p id="search-location" class="fluid-text-base text-gray-600 flex items-center">
+                                    <i data-feather="map-pin" class="search-location-icon h-4 w-4 mr-2"></i>
+                                    Chaka Town, Nyeri
+                                </p>
+                                <div class="results-stats flex items-center gap-4 text-sm">
+                                    <p id="results-count" class="text-gray-600 font-medium">24 properties found</p>
+                                    <p id="search-dates" class="text-gray-500">Dec 15-20, 2023</p>
+                                </div>
+                            </div>
                         </div>
-                        <button id="mobile-filter-toggle" class="lg:hidden bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-md text-sm font-medium touch-target">
-                            <i data-feather="filter" class="h-4 w-4 mr-2"></i>
-                            Filters
-                        </button>
+                        
+                        <!-- Desktop Controls -->
+                        <div class="hidden lg:flex items-center gap-4">
+                            <div class="flex items-center gap-2">
+                                <span class="fluid-text-sm text-gray-600 font-medium">Sort by:</span>
+                                <select id="sort-select" class="sort-select-enhanced responsive-rounded responsive-sort-select focus:outline-none">
+                                    <option value="relevance">Relevance</option>
+                                    <option value="price-low">Price: Low to High</option>
+                                    <option value="price-high">Price: High to Low</option>
+                                    <option value="rating">Highest Rated</option>
+                                    <option value="newest">Newest</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile Controls -->
+                    <div class="lg:hidden border-t border-gray-200 pt-4">
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <div class="flex-1">
+                                <label class="block fluid-text-sm font-medium text-gray-700 mb-2">Sort by</label>
+                                <select id="mobile-sort-select" class="w-full sort-select-enhanced responsive-rounded responsive-sort-select focus:outline-none">
+                                    <option value="relevance">Relevance</option>
+                                    <option value="price-low">Price: Low to High</option>
+                                    <option value="price-high">Price: High to Low</option>
+                                    <option value="rating">Highest Rated</option>
+                                    <option value="newest">Newest</option>
+                                </select>
+                            </div>
+                            <div class="sm:w-auto">
+                                <label class="block fluid-text-sm font-medium text-gray-700 mb-2">Filters</label>
+                                <button id="mobile-filter-toggle" class="w-full sm:w-auto filter-button-enhanced text-white responsive-filter-button responsive-rounded font-medium responsive-touch flex items-center justify-center">
+                                    <i data-feather="filter" class="h-4 w-4 mr-2"></i>
+                                    <span>Filters</span>
+                                    <span id="filter-count" class="filter-count-badge ml-2 bg-white text-[#003B95] text-xs font-bold px-2 py-1 rounded-full hidden">0</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Results Grid -->
-                <div id="results-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div id="results-grid" class="responsive-grid">
                     <!-- Property cards will be dynamically loaded here -->
                 </div>
 
@@ -436,7 +859,7 @@
                 </div>
 
                 <!-- Pagination -->
-                <div class="mt-6 flex items-center justify-center">
+                <div class="mt-6 responsive-pagination">
                     <nav class="flex items-center space-x-2" id="pagination-nav">
                         <!-- Pagination buttons will be dynamically generated here -->
                     </nav>
@@ -1156,6 +1579,47 @@
             const closeFilters = document.getElementById('close-filters');
             const filterSidebar = document.getElementById('filter-sidebar');
             const filterOverlay = document.getElementById('filter-overlay');
+            
+            // Filter count elements
+            const mobileFilterCount = document.getElementById('filter-count');
+            
+            // Function to update filter count badges
+            function updateFilterCount() {
+                let activeFilters = 0;
+                
+                // Check price range
+                const priceRange = document.getElementById('price-range');
+                if (priceRange && priceRange.value !== 'any') activeFilters++;
+                
+                // Check property type
+                const propertyType = document.getElementById('property-type');
+                if (propertyType && propertyType.value !== 'any') activeFilters++;
+                
+                // Check amenities
+                const amenityCheckboxes = document.querySelectorAll('input[name="amenities"]:checked');
+                activeFilters += amenityCheckboxes.length;
+                
+                // Check instant book
+                const instantBook = document.getElementById('instant-book');
+                if (instantBook && instantBook.checked) activeFilters++;
+                
+                // Update badge
+                if (activeFilters > 0) {
+                    if (mobileFilterCount) {
+                        mobileFilterCount.textContent = activeFilters;
+                        mobileFilterCount.classList.remove('hidden');
+                    }
+                } else {
+                    if (mobileFilterCount) mobileFilterCount.classList.add('hidden');
+                }
+            }
+            
+            // Update filter count on any filter change
+            document.addEventListener('change', function(e) {
+                if (e.target.matches('input[name="amenities"], #price-range, #property-type, #instant-book')) {
+                    updateFilterCount();
+                }
+            });
 
             function openMobileFilters() {
                 filterSidebar.classList.add('open');

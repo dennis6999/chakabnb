@@ -116,25 +116,391 @@
             100% { transform: scale(1); }
         }
         
-        /* Mobile-specific optimizations */
+        /* Advanced Responsive Design System */
+        
+        /* Fluid Typography Scale */
+        .fluid-text-xs { font-size: clamp(0.75rem, 2vw, 0.875rem); }
+        .fluid-text-sm { font-size: clamp(0.875rem, 2.5vw, 1rem); }
+        .fluid-text-base { font-size: clamp(1rem, 3vw, 1.125rem); }
+        .fluid-text-lg { font-size: clamp(1.125rem, 3.5vw, 1.25rem); }
+        .fluid-text-xl { font-size: clamp(1.25rem, 4vw, 1.5rem); }
+        .fluid-text-2xl { font-size: clamp(1.5rem, 5vw, 2rem); }
+        .fluid-text-3xl { font-size: clamp(1.875rem, 6vw, 2.5rem); }
+        .fluid-text-4xl { font-size: clamp(2.25rem, 7vw, 3rem); }
+        .fluid-text-5xl { font-size: clamp(2.5rem, 8vw, 4rem); }
+        .fluid-text-6xl { font-size: clamp(3rem, 10vw, 5rem); }
+        
+        /* Fluid Spacing Scale */
+        .fluid-p-xs { padding: clamp(0.25rem, 1vw, 0.5rem); }
+        .fluid-p-sm { padding: clamp(0.5rem, 2vw, 1rem); }
+        .fluid-p-md { padding: clamp(1rem, 3vw, 1.5rem); }
+        .fluid-p-lg { padding: clamp(1.5rem, 4vw, 2rem); }
+        .fluid-p-xl { padding: clamp(2rem, 5vw, 3rem); }
+        
+        .fluid-m-xs { margin: clamp(0.25rem, 1vw, 0.5rem); }
+        .fluid-m-sm { margin: clamp(0.5rem, 2vw, 1rem); }
+        .fluid-m-md { margin: clamp(1rem, 3vw, 1.5rem); }
+        .fluid-m-lg { margin: clamp(1.5rem, 4vw, 2rem); }
+        .fluid-m-xl { margin: clamp(2rem, 5vw, 3rem); }
+        
+        /* Responsive Grid System */
+        .responsive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: clamp(1rem, 3vw, 2rem);
+        }
+        
+        .responsive-grid-sm {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: clamp(0.75rem, 2vw, 1.5rem);
+        }
+        
+        .responsive-grid-lg {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: clamp(1.5rem, 4vw, 2.5rem);
+        }
+        
+        /* Responsive Container */
+        .responsive-container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 clamp(1rem, 4vw, 2rem);
+        }
+        
+        /* Responsive Hero Section */
+        .responsive-hero {
+            padding: clamp(2rem, 8vw, 4rem) 0;
+            min-height: clamp(60vh, 80vw, 100vh);
+        }
+        
+        .responsive-hero-title {
+            font-size: clamp(1.875rem, 8vw, 4rem);
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+        
+        .responsive-hero-subtitle {
+            font-size: clamp(1rem, 3vw, 1.25rem);
+            line-height: 1.6;
+            max-width: clamp(300px, 80vw, 600px);
+        }
+        
+        /* Responsive Property Cards */
+        .responsive-property-card {
+            width: 100%;
+            max-width: 400px;
+            min-width: 280px;
+            margin: 0 auto;
+        }
+        
+        /* Responsive Search Form */
+        .responsive-search-form {
+            padding: clamp(1rem, 4vw, 2rem);
+            border-radius: clamp(0.75rem, 2vw, 1rem);
+        }
+        
+        .responsive-search-input {
+            min-height: clamp(44px, 6vw, 56px);
+            padding: clamp(0.75rem, 2vw, 1rem);
+            font-size: clamp(0.875rem, 2.5vw, 1rem);
+        }
+        
+        .responsive-search-button {
+            min-height: clamp(48px, 6vw, 60px);
+            padding: clamp(0.75rem, 2vw, 1rem);
+            font-size: clamp(0.875rem, 2.5vw, 1rem);
+        }
+        
+        /* Responsive Navigation */
+        .responsive-nav {
+            height: clamp(60px, 8vw, 80px);
+            padding: 0 clamp(1rem, 4vw, 2rem);
+        }
+        
+        .responsive-logo {
+            height: clamp(2rem, 6vw, 3rem);
+        }
+        
+        /* Responsive Breakpoints */
+        
+        /* Extra Small Devices (phones, 320px and up) */
+        @media (min-width: 320px) {
+            .xs\\:text-center { text-align: center; }
+            .xs\\:block { display: block; }
+            .xs\\:hidden { display: none; }
+        }
+        
+        /* Small Devices (landscape phones, 576px and up) */
+        @media (min-width: 576px) {
+            .sm\\:text-left { text-align: left; }
+            .sm\\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+            .sm\\:gap-4 { gap: 1rem; }
+        }
+        
+        /* Medium Devices (tablets, 768px and up) */
+        @media (min-width: 768px) {
+            .md\\:grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+            .md\\:gap-6 { gap: 1.5rem; }
+            .md\\:text-xl { font-size: 1.25rem; }
+        }
+        
+        /* Large Devices (desktops, 1024px and up) */
+        @media (min-width: 1024px) {
+            .lg\\:grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+            .lg\\:gap-8 { gap: 2rem; }
+            .lg\\:text-2xl { font-size: 1.5rem; }
+        }
+        
+        /* Extra Large Devices (large desktops, 1280px and up) */
+        @media (min-width: 1280px) {
+            .xl\\:grid-cols-5 { grid-template-columns: repeat(5, 1fr); }
+            .xl\\:gap-10 { gap: 2.5rem; }
+            .xl\\:text-3xl { font-size: 1.875rem; }
+        }
+        
+        /* Ultra Large Devices (extra large desktops, 1536px and up) */
+        @media (min-width: 1536px) {
+            .\\32xl\\:grid-cols-6 { grid-template-columns: repeat(6, 1fr); }
+            .\\32xl\\:gap-12 { gap: 3rem; }
+            .\\32xl\\:text-4xl { font-size: 2.25rem; }
+        }
+        
+        /* Container Queries (Modern Browsers) */
+        @container (min-width: 400px) {
+            .container\\:grid-2 { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        @container (min-width: 600px) {
+            .container\\:grid-3 { grid-template-columns: repeat(3, 1fr); }
+        }
+        
+        @container (min-width: 800px) {
+            .container\\:grid-4 { grid-template-columns: repeat(4, 1fr); }
+        }
+        
+        /* Responsive Images */
+        .responsive-image {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            aspect-ratio: 16/9;
+        }
+        
+        /* Responsive Aspect Ratios */
+        .aspect-responsive {
+            aspect-ratio: 16/9;
+        }
+        
         @media (max-width: 768px) {
-            .hero-gradient {
-                padding: 2rem 0;
+            .aspect-responsive {
+                aspect-ratio: 4/3;
             }
-            .property-card {
-                width: 280px;
-                margin-right: 1rem;
+        }
+        
+        /* Responsive Shadows */
+        .responsive-shadow {
+            box-shadow: 0 clamp(2px, 0.5vw, 4px) clamp(4px, 1vw, 8px) rgba(0, 0, 0, 0.1);
+        }
+        
+        .responsive-shadow-lg {
+            box-shadow: 0 clamp(4px, 1vw, 8px) clamp(8px, 2vw, 16px) rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Responsive Border Radius */
+        .responsive-rounded {
+            border-radius: clamp(0.25rem, 1vw, 0.5rem);
+        }
+        
+        .responsive-rounded-lg {
+            border-radius: clamp(0.5rem, 2vw, 1rem);
+        }
+        
+        /* Responsive Spacing Utilities */
+        .space-responsive > * + * {
+            margin-top: clamp(0.5rem, 2vw, 1rem);
+        }
+        
+        .space-responsive-lg > * + * {
+            margin-top: clamp(1rem, 3vw, 2rem);
+        }
+        
+        /* Responsive Flexbox */
+        .responsive-flex {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.5rem, 2vw, 1rem);
+        }
+        
+        @media (min-width: 768px) {
+            .responsive-flex {
+                flex-direction: row;
             }
-            .scroll-button {
+        }
+        
+        /* Responsive Grid Auto-fit */
+        .responsive-auto-fit {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: clamp(1rem, 3vw, 2rem);
+        }
+        
+        /* Responsive Text Sizing */
+        .responsive-text {
+            font-size: clamp(0.875rem, 2.5vw, 1.125rem);
+            line-height: 1.6;
+        }
+        
+        /* Responsive Button Groups */
+        .responsive-button-group {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.5rem, 2vw, 1rem);
+        }
+        
+        @media (min-width: 640px) {
+            .responsive-button-group {
+                flex-direction: row;
+                align-items: center;
+            }
+        }
+        
+        /* Responsive Modal */
+        .responsive-modal {
+            width: 95%;
+            max-width: clamp(300px, 90vw, 600px);
+            margin: clamp(1rem, 5vw, 2rem) auto;
+        }
+        
+        /* Responsive Navigation Menu */
+        .responsive-nav-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            z-index: 50;
+        }
+        
+        .responsive-nav-menu.open {
+            transform: translateX(0);
+        }
+        
+        @media (min-width: 1024px) {
+            .responsive-nav-menu {
+                position: static;
+                width: auto;
+                height: auto;
+                transform: none;
+                display: flex;
+            }
+        }
+        
+        /* Responsive Card Hover Effects */
+        .responsive-card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        @media (hover: hover) {
+            .responsive-card-hover:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            }
+        }
+        
+        /* Responsive Loading States */
+        .responsive-skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: clamp(0.25rem, 1vw, 0.5rem);
+        }
+        
+        /* Responsive Focus States */
+        .responsive-focus {
+            outline: none;
+            box-shadow: 0 0 0 clamp(2px, 0.5vw, 3px) #003B95;
+        }
+        
+        /* Responsive Touch Targets */
+        .responsive-touch {
+            min-height: clamp(44px, 6vw, 48px);
+            min-width: clamp(44px, 6vw, 48px);
+        }
+        
+        /* Responsive Scroll Snap */
+        .responsive-scroll-snap {
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .responsive-scroll-item {
+            scroll-snap-align: start;
+            flex-shrink: 0;
+        }
+        
+        /* Responsive Overflow */
+        .responsive-overflow {
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .responsive-overflow::-webkit-scrollbar {
                 display: none;
             }
-            .mobile-search-form .grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
+        
+        /* Responsive Animation */
+        .responsive-animate {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
             }
-            .mobile-search-form .md\\:col-span-2 {
-                grid-column: span 1;
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
+        }
+        
+        /* Responsive Print Styles */
+        @media print {
+            .print\\:hidden { display: none !important; }
+            .print\\:block { display: block !important; }
+            .print\\:text-black { color: black !important; }
+        }
+        
+        /* High DPI Display Support */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .high-dpi\\:text-sm { font-size: 0.875rem; }
+            .high-dpi\\:border { border-width: 0.5px; }
+        }
+        
+        /* Dark Mode Support */
+        @media (prefers-color-scheme: dark) {
+            .dark\\:bg-gray-900 { background-color: #111827; }
+            .dark\\:text-white { color: #ffffff; }
+            .dark\\:border-gray-700 { border-color: #374151; }
+        }
+        
+        /* Reduced Motion Support */
+        @media (prefers-reduced-motion: reduce) {
+            .motion-reduce\\:animate-none { animation: none; }
+            .motion-reduce\\:transition-none { transition: none; }
+        }
+        
+        /* High Contrast Support */
+        @media (prefers-contrast: high) {
+            .high-contrast\\:border-2 { border-width: 2px; }
+            .high-contrast\\:text-black { color: black; }
         }
         
         /* Touch gestures for mobile */
@@ -400,19 +766,19 @@
     </div>
 
     <!-- Hero Section with Search -->
-    <div class="hero-gradient py-8 md:py-16 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-7xl mx-auto">
+    <div class="hero-gradient responsive-hero">
+        <div class="responsive-container">
             <div class="text-center">
-                <h1 class="text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold tracking-tight text-white leading-tight">
+                <h1 class="responsive-hero-title font-extrabold tracking-tight text-white">
                     Find your perfect stay in Chaka Town
                 </h1>
-                <p class="mt-3 max-w-md mx-auto text-base md:text-lg lg:text-xl text-white md:mt-5 md:max-w-3xl">
+                <p class="responsive-hero-subtitle text-white mt-3 mx-auto">
                     Discover unique accommodations near Solio Game Reserve, Baden-Powell Museum and more
                 </p>
             </div>
 
             <!-- Mobile-Optimized Search Widget -->
-            <div class="mt-6 md:mt-10 bg-white rounded-xl shadow-lg p-4 md:p-6 max-w-4xl mx-auto" data-aos="fade-up">
+            <div class="mt-6 md:mt-10 bg-white responsive-search-form responsive-shadow-lg max-w-4xl mx-auto responsive-animate" data-aos="fade-up">
                 <!-- Mobile Search Form -->
                 <div class="mobile-search-form md:hidden">
                     <div class="space-y-4">
@@ -424,7 +790,7 @@
                                     <i data-feather="map-pin" class="h-4 w-4 text-[#003B95]"></i>
                                 </div>
                                 <input type="text" name="mobile-location" id="mobile-location" 
-                                       class="w-full pl-10 pr-3 py-3 text-gray-900 placeholder-gray-500 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200 touch-target" 
+                                       class="w-full pl-10 pr-3 text-gray-900 placeholder-gray-500 bg-gray-50 border border-gray-300 responsive-rounded-lg focus:ring-2 focus:ring-[#003B95] focus:border-[#003B95] focus:bg-white transition-all duration-200 responsive-touch responsive-search-input" 
                                        placeholder="Chaka Town, Nyeri" value="Chaka Town, Nyeri">
                             </div>
                         </div>
@@ -491,9 +857,9 @@
                         </div>
                         
                         <!-- Search Button -->
-                        <button type="button" id="mobile-search-btn" class="w-full bg-gradient-to-r from-[#003B95] to-[#4CAF50] hover:from-[#002b70] hover:to-[#45a049] text-white font-semibold py-4 px-4 rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center space-x-2 touch-target">
+                        <button type="button" id="mobile-search-btn" class="w-full bg-gradient-to-r from-[#003B95] to-[#4CAF50] hover:from-[#002b70] hover:to-[#45a049] text-white font-semibold responsive-search-button responsive-rounded-lg responsive-shadow hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center space-x-2 responsive-touch">
                             <i data-feather="search" class="h-5 w-5"></i>
-                            <span class="text-lg">Search Properties</span>
+                            <span class="fluid-text-lg">Search Properties</span>
                         </button>
                     </div>
                 </div>
@@ -620,7 +986,7 @@
                         </button>
                     </div>
                 </div>
-
+                
                 <!-- Quick Filters -->
                 <div class="mt-4 pt-4 border-t border-gray-200">
                     <div class="flex flex-wrap items-center gap-2">
@@ -710,34 +1076,34 @@
     </div>
 
     <!-- Featured Properties -->
-    <div class="bg-gray-50 py-8 md:py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-6 md:mb-8">
-                <h2 class="text-2xl md:text-3xl font-bold text-gray-900">Featured Stays in Chaka Town</h2>
-                <p class="mt-2 text-base md:text-lg text-gray-600">Highly rated by visitors</p>
+    <div class="bg-gray-50 fluid-p-lg">
+        <div class="responsive-container">
+            <div class="text-center fluid-m-lg">
+                <h2 class="fluid-text-3xl font-bold text-gray-900">Featured Stays in Chaka Town</h2>
+                <p class="mt-2 fluid-text-lg text-gray-600">Highly rated by visitors</p>
             </div>
             
             <!-- Mobile Properties - Clean Horizontal Scroll -->
             <div class="md:hidden">
                 <!-- Mobile Properties Container -->
-                <div class="flex space-x-4 overflow-x-auto scrollbar-hide pb-4 -mx-4 px-4" style="scroll-snap-type: x mandatory;">
+                <div class="flex space-x-4 responsive-overflow responsive-scroll-snap pb-4 -mx-4 px-4">
                     <!-- Property 1 -->
-                    <div class="bg-white rounded-xl overflow-hidden shadow-md flex-shrink-0 w-72 scroll-snap-align-start" data-aos="fade-up">
+                    <div class="bg-white responsive-rounded-lg overflow-hidden responsive-shadow flex-shrink-0 w-72 responsive-scroll-item responsive-property-card responsive-card-hover" data-aos="fade-up">
                         <div class="relative">
-                            <img src="http://static.photos/indoor/640x360/5" alt="Luxury Cottage" class="w-full h-48 object-cover">
+                            <img src="http://static.photos/indoor/640x360/5" alt="Luxury Cottage" class="responsive-image aspect-responsive">
                             <div class="absolute top-3 right-3 bg-[#FFB700] text-white text-xs font-bold px-2 py-1 rounded-full">
                                 Popular
                             </div>
                         </div>
                         <div class="p-4">
                             <div class="flex justify-between items-start mb-2">
-                                <h3 class="text-base font-bold text-gray-900 leading-tight flex-1 pr-2">Luxury Cottage with Mountain View</h3>
+                                <h3 class="fluid-text-base font-bold text-gray-900 leading-tight flex-1 pr-2">Luxury Cottage with Mountain View</h3>
                                 <div class="flex items-center">
                                     <i data-feather="star" class="text-yellow-400 fill-current h-4 w-4"></i>
-                                    <span class="ml-1 text-gray-900 text-sm">4.9</span>
+                                    <span class="ml-1 text-gray-900 fluid-text-sm">4.9</span>
                                 </div>
                             </div>
-                            <p class="text-gray-600 text-sm mb-3">Entire cottage · 2 beds · 1 bath</p>
+                            <p class="text-gray-600 fluid-text-sm mb-3">Entire cottage · 2 beds · 1 bath</p>
                             <div class="flex flex-wrap gap-1 mb-3">
                                 <span class="inline-flex items-center text-xs bg-gray-100 rounded-full px-2 py-1">
                                     <i data-feather="wifi" class="h-3 w-3 mr-1"></i> WiFi
@@ -748,10 +1114,10 @@
                             </div>
                             <div class="flex justify-between items-center">
                                 <div>
-                                    <p class="text-xs text-gray-500">From</p>
-                                    <p class="text-lg font-bold text-[#003B95]">KSh 5,500 <span class="text-sm font-normal text-gray-500">/ night</span></p>
+                                    <p class="fluid-text-xs text-gray-500">From</p>
+                                    <p class="fluid-text-lg font-bold text-[#003B95]">KSh 5,500 <span class="fluid-text-sm font-normal text-gray-500">/ night</span></p>
                                 </div>
-                                <a href="property-detail.html" class="text-sm font-medium text-[#003B95] hover:text-[#002b70] touch-target">
+                                <a href="property-detail.html" class="fluid-text-sm font-medium text-[#003B95] hover:text-[#002b70] responsive-touch">
                                     View details
                                 </a>
                             </div>
@@ -759,7 +1125,7 @@
                     </div>
                     
                     <!-- Property 2 -->
-                    <div class="bg-white rounded-xl overflow-hidden shadow-md flex-shrink-0 w-72 scroll-snap-align-start" data-aos="fade-up" data-aos-delay="100">
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md flex-shrink-0 w-72 scroll-snap-align-start mobile-property-card" data-aos="fade-up" data-aos-delay="100">
                         <div class="relative">
                             <img src="http://static.photos/workspace/640x360/6" alt="Modern Apartment" class="w-full h-48 object-cover">
                             <div class="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
@@ -796,7 +1162,7 @@
                     </div>
                     
                     <!-- Property 3 -->
-                    <div class="bg-white rounded-xl overflow-hidden shadow-md flex-shrink-0 w-72 scroll-snap-align-start" data-aos="fade-up" data-aos-delay="200">
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md flex-shrink-0 w-72 scroll-snap-align-start mobile-property-card" data-aos="fade-up" data-aos-delay="200">
                         <div class="relative">
                             <img src="http://static.photos/indoor/640x360/7" alt="Cozy Lodge" class="w-full h-48 object-cover">
                             <div class="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
@@ -833,7 +1199,7 @@
                     </div>
                     
                     <!-- Property 4 -->
-                    <div class="bg-white rounded-xl overflow-hidden shadow-md flex-shrink-0 w-72 scroll-snap-align-start" data-aos="fade-up" data-aos-delay="300">
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md flex-shrink-0 w-72 scroll-snap-align-start mobile-property-card" data-aos="fade-up" data-aos-delay="300">
                         <div class="relative">
                             <img src="http://static.photos/indoor/640x360/8" alt="Cozy Studio" class="w-full h-48 object-cover">
                             <div class="absolute top-3 right-3 bg-purple-500 text-white text-xs font-bold px-2 py-1 rounded-full">

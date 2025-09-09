@@ -16,6 +16,41 @@
         .login-gradient {
             background: linear-gradient(135deg, #003B95 0%, #4CAF50 100%);
         }
+        
+        /* Mobile-specific optimizations */
+        @media (max-width: 768px) {
+            .register-container {
+                min-height: 100vh;
+                padding: 2rem 1rem;
+            }
+            .form-container {
+                width: 100%;
+                max-width: none;
+            }
+            
+            /* Enhanced mobile form inputs */
+            .mobile-form-input {
+                min-height: 48px;
+                padding: 0.75rem 1rem;
+                font-size: 16px; /* Prevents zoom on iOS */
+                border-radius: 0.5rem;
+            }
+            
+            /* Enhanced mobile buttons */
+            .mobile-form-button {
+                min-height: 48px;
+                padding: 0.75rem 1rem;
+                font-size: 1rem;
+                border-radius: 0.5rem;
+            }
+            
+            /* Mobile social buttons */
+            .mobile-social-button {
+                min-height: 48px;
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+            }
+        }
     </style>
 </head>
 <body>

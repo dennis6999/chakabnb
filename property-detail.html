@@ -132,6 +132,138 @@
             transform: scale(1);
         }
         
+        /* Advanced Responsive Design System for Property Detail */
+        
+        /* Fluid Typography Scale */
+        .fluid-text-xs { font-size: clamp(0.75rem, 2vw, 0.875rem); }
+        .fluid-text-sm { font-size: clamp(0.875rem, 2.5vw, 1rem); }
+        .fluid-text-base { font-size: clamp(1rem, 3vw, 1.125rem); }
+        .fluid-text-lg { font-size: clamp(1.125rem, 3.5vw, 1.25rem); }
+        .fluid-text-xl { font-size: clamp(1.25rem, 4vw, 1.5rem); }
+        .fluid-text-2xl { font-size: clamp(1.5rem, 5vw, 2rem); }
+        .fluid-text-3xl { font-size: clamp(1.875rem, 6vw, 2.5rem); }
+        .fluid-text-4xl { font-size: clamp(2.25rem, 7vw, 3rem); }
+        
+        /* Fluid Spacing Scale */
+        .fluid-p-xs { padding: clamp(0.25rem, 1vw, 0.5rem); }
+        .fluid-p-sm { padding: clamp(0.5rem, 2vw, 1rem); }
+        .fluid-p-md { padding: clamp(1rem, 3vw, 1.5rem); }
+        .fluid-p-lg { padding: clamp(1.5rem, 4vw, 2rem); }
+        .fluid-p-xl { padding: clamp(2rem, 5vw, 3rem); }
+        
+        .fluid-m-xs { margin: clamp(0.25rem, 1vw, 0.5rem); }
+        .fluid-m-sm { margin: clamp(0.5rem, 2vw, 1rem); }
+        .fluid-m-md { margin: clamp(1rem, 3vw, 1.5rem); }
+        .fluid-m-lg { margin: clamp(1.5rem, 4vw, 2rem); }
+        .fluid-m-xl { margin: clamp(2rem, 5vw, 3rem); }
+        
+        /* Responsive Container */
+        .responsive-container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 clamp(1rem, 4vw, 2rem);
+        }
+        
+        /* Responsive Property Gallery */
+        .responsive-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: clamp(0.5rem, 2vw, 1rem);
+            border-radius: clamp(0.5rem, 2vw, 1rem);
+            overflow: hidden;
+        }
+        
+        .responsive-gallery-image {
+            width: 100%;
+            height: clamp(200px, 25vw, 300px);
+            object-fit: cover;
+            aspect-ratio: 16/9;
+        }
+        
+        /* Responsive Property Content */
+        .responsive-property-content {
+            padding: clamp(1rem, 3vw, 2rem);
+        }
+        
+        .responsive-property-title {
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            line-height: 1.2;
+            margin-bottom: clamp(0.5rem, 2vw, 1rem);
+        }
+        
+        .responsive-property-description {
+            font-size: clamp(1rem, 3vw, 1.125rem);
+            line-height: 1.6;
+            color: #6b7280;
+        }
+        
+        /* Responsive Booking Panel */
+        .responsive-booking-panel {
+            border-radius: clamp(0.5rem, 2vw, 1rem);
+            box-shadow: 0 clamp(2px, 0.5vw, 4px) clamp(4px, 1vw, 8px) rgba(0, 0, 0, 0.1);
+            padding: clamp(1rem, 3vw, 1.5rem);
+        }
+        
+        .responsive-booking-input {
+            min-height: clamp(44px, 6vw, 48px);
+            padding: clamp(0.75rem, 2vw, 1rem);
+            font-size: clamp(0.875rem, 2.5vw, 1rem);
+            border-radius: clamp(0.25rem, 1vw, 0.5rem);
+        }
+        
+        .responsive-booking-button {
+            min-height: clamp(48px, 6vw, 56px);
+            padding: clamp(0.75rem, 2vw, 1rem);
+            font-size: clamp(0.875rem, 2.5vw, 1rem);
+            border-radius: clamp(0.25rem, 1vw, 0.5rem);
+        }
+        
+        /* Responsive Modal */
+        .responsive-modal {
+            width: 95%;
+            max-width: clamp(300px, 90vw, 600px);
+            margin: clamp(1rem, 5vw, 2rem) auto;
+        }
+        
+        /* Responsive Navigation */
+        .responsive-nav {
+            height: clamp(60px, 8vw, 80px);
+            padding: 0 clamp(1rem, 4vw, 2rem);
+        }
+        
+        .responsive-logo {
+            height: clamp(2rem, 6vw, 3rem);
+        }
+        
+        /* Responsive Touch Targets */
+        .responsive-touch {
+            min-height: clamp(44px, 6vw, 48px);
+            min-width: clamp(44px, 6vw, 48px);
+        }
+        
+        /* Responsive Focus States */
+        .responsive-focus {
+            outline: none;
+            box-shadow: 0 0 0 clamp(2px, 0.5vw, 3px) #003B95;
+        }
+        
+        /* Responsive Animation */
+        .responsive-animate {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
         /* Mobile-specific optimizations */
         @media (max-width: 768px) {
             .desktop-gallery {
@@ -145,6 +277,20 @@
             }
             .mobile-booking-trigger {
                 display: block;
+            }
+            
+            /* Mobile notification positioning */
+            #notification {
+                top: 1rem;
+                right: 1rem;
+                left: 1rem;
+                max-width: none;
+            }
+            
+            /* Mobile booking modal enhancements */
+            #booking-modal .bg-white {
+                margin: 1rem;
+                max-height: calc(100vh - 2rem);
             }
         }
         
@@ -198,7 +344,7 @@
                     </div>
                     
                     <a href="login.html" id="login-link" class="bg-[#003B95] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#002b70]">Sign in</a>
-                    <button class="bg-[#4CAF50] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#45a049]">Book now</button>
+                    <button id="book-now-nav" class="bg-[#4CAF50] text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#45a049]">Book now</button>
                 </div>
                 <div class="-mr-2 flex items-center md:hidden">
                     <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
@@ -822,7 +968,7 @@
                     <span class="text-gray-600 text-sm">24 reviews</span>
                 </div>
             </div>
-            <button id="mobile-booking-trigger" class="bg-[#FFB700] hover:bg-[#e6a500] text-white font-medium py-3 px-6 rounded-lg touch-target">
+            <button id="mobile-booking-trigger" class="bg-[#FFB700] hover:bg-[#e6a500] text-white font-medium py-3 px-6 rounded-lg touch-target mobile-button">
                 Check availability
             </button>
         </div>
@@ -841,17 +987,17 @@
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label for="mobile-check-in" class="block text-sm font-medium text-gray-700 mb-1">Check-in</label>
-                    <input type="date" id="mobile-check-in" class="w-full border border-gray-300 rounded-md py-3 px-3 text-sm touch-target">
+                    <input type="date" id="mobile-check-in" class="w-full border border-gray-300 rounded-md py-3 px-3 text-sm touch-target mobile-input">
                 </div>
                 <div>
                     <label for="mobile-check-out" class="block text-sm font-medium text-gray-700 mb-1">Check-out</label>
-                    <input type="date" id="mobile-check-out" class="w-full border border-gray-300 rounded-md py-3 px-3 text-sm touch-target">
+                    <input type="date" id="mobile-check-out" class="w-full border border-gray-300 rounded-md py-3 px-3 text-sm touch-target mobile-input">
                 </div>
             </div>
             
             <div>
                 <label for="mobile-guests" class="block text-sm font-medium text-gray-700 mb-1">Guests</label>
-                <select id="mobile-guests" class="w-full border border-gray-300 rounded-md py-3 px-3 text-sm touch-target">
+                <select id="mobile-guests" class="w-full border border-gray-300 rounded-md py-3 px-3 text-sm touch-target mobile-input">
                     <option>1 guest</option>
                     <option>2 guests</option>
                     <option>3 guests</option>
@@ -860,7 +1006,7 @@
             </div>
             
             <p id="mobile-date-error" class="-mt-2 mb-2 text-sm text-red-600 hidden">Please select valid dates.</p>
-            <button id="check-availability-mobile" class="w-full bg-[#FFB700] hover:bg-[#e6a500] text-white font-medium py-4 px-4 rounded-lg touch-target">
+            <button id="check-availability-mobile" class="w-full bg-[#FFB700] hover:bg-[#e6a500] text-white font-medium py-4 px-4 rounded-lg touch-target mobile-button">
                 Check availability
             </button>
             
@@ -1313,6 +1459,25 @@
         // Add event listeners for booking modal
         function initBookingModal() {
             const modal = document.getElementById('booking-modal');
+            const bookNowNav = document.getElementById('book-now-nav');
+            
+            // Book now button in navigation
+            if (bookNowNav) {
+                bookNowNav.addEventListener('click', function() {
+                    // Check if user is logged in
+                    const isLoggedIn = localStorage.getItem('isLoggedIn');
+                    if (!isLoggedIn) {
+                        showNotification('Please log in to book this property.', 'error', true);
+                        return;
+                    }
+                    
+                    // Populate modal with current booking data
+                    populateBookingModal();
+                    
+                    // Show the booking modal
+                    openBookingModal();
+                });
+            }
             
             // Close modal when clicking outside
             modal.addEventListener('click', function(e) {
